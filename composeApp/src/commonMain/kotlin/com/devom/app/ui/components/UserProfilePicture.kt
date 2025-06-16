@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import com.devom.app.utils.toDevomImage
 import com.devom.models.auth.UserRequestResponse
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_edit
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_edit
 
 @Composable
 fun UserProfilePicture(

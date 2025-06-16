@@ -24,8 +24,8 @@ import com.devom.app.ui.components.NoContentView
 import com.devom.app.ui.components.StatusTabRow
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.ui.screens.booking.components.BookingCard
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_no_bookings
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_no_bookings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

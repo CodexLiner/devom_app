@@ -32,9 +32,9 @@ import com.devom.app.theme.text_style_h5
 import com.devom.app.utils.dashedBorder
 import io.github.vinceglb.filekit.PlatformFile
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_plus
-import pandijtapp.composeapp.generated.resources.ic_upload
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_plus
+import devom_app.composeapp.generated.resources.ic_upload
 
 @Composable
 fun DocumentPicker(

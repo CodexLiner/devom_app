@@ -18,8 +18,8 @@ import com.devom.app.theme.whiteColor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_menu
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_menu
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

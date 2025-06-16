@@ -39,9 +39,9 @@ import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.NoContentView
 import com.devom.models.notification.GetNotificationResponse
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
-import pandijtapp.composeapp.generated.resources.ic_notification
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.ic_notification
 
 @Composable
 fun NotificationScreen(navHostController: NavHostController) {

@@ -43,19 +43,19 @@ import com.devom.models.auth.UserRequestResponse
 import com.devom.models.payment.GetWalletBalanceResponse
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Biography
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.Review_and_Ratings
-import pandijtapp.composeapp.generated.resources.arrow_drop_down_right
-import pandijtapp.composeapp.generated.resources.help_support
-import pandijtapp.composeapp.generated.resources.ic_help_support
-import pandijtapp.composeapp.generated.resources.ic_nav_bookings
-import pandijtapp.composeapp.generated.resources.ic_nav_wallet
-import pandijtapp.composeapp.generated.resources.ic_refer
-import pandijtapp.composeapp.generated.resources.ic_review
-import pandijtapp.composeapp.generated.resources.my_booking
-import pandijtapp.composeapp.generated.resources.my_wallet
-import pandijtapp.composeapp.generated.resources.refer_earn
+import devom_app.composeapp.generated.resources.Biography
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.Review_and_Ratings
+import devom_app.composeapp.generated.resources.arrow_drop_down_right
+import devom_app.composeapp.generated.resources.help_support
+import devom_app.composeapp.generated.resources.ic_help_support
+import devom_app.composeapp.generated.resources.ic_nav_bookings
+import devom_app.composeapp.generated.resources.ic_nav_wallet
+import devom_app.composeapp.generated.resources.ic_refer
+import devom_app.composeapp.generated.resources.ic_review
+import devom_app.composeapp.generated.resources.my_booking
+import devom_app.composeapp.generated.resources.my_wallet
+import devom_app.composeapp.generated.resources.refer_earn
 
 @Composable
 internal fun NavigationDrawerContent(

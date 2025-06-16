@@ -12,9 +12,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.inter_iltalic
-import pandijtapp.composeapp.generated.resources.inter_normal
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.inter_iltalic
+import devom_app.composeapp.generated.resources.inter_normal
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryLight,

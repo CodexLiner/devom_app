@@ -95,7 +95,7 @@ android {
         minSdk = 24
         targetSdk = 35
 
-        applicationId = "com.devom.pandit.app"
+        applicationId = "com.devom.app"
         versionCode = 1
         versionName = "1.0.0"
 

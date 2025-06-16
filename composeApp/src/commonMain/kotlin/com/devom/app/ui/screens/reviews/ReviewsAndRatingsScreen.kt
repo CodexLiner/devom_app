@@ -49,11 +49,11 @@ import com.devom.app.ui.components.RatingStars
 import com.devom.app.utils.toDevomImage
 import com.devom.models.pandit.Review
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
-import pandijtapp.composeapp.generated.resources.ic_no_reviews
-import pandijtapp.composeapp.generated.resources.ic_star
-import pandijtapp.composeapp.generated.resources.vertical_ellipsis
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.ic_no_reviews
+import devom_app.composeapp.generated.resources.ic_star
+import devom_app.composeapp.generated.resources.vertical_ellipsis
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.roundToInt

@@ -25,11 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.devom.utils.Application
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.resend_otp
-import pandijtapp.composeapp.generated.resources.resend_otp_message
-import pandijtapp.composeapp.generated.resources.verify_mobile_number
-import pandijtapp.composeapp.generated.resources.we_have_sent_the_verification_code
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.resend_otp
+import devom_app.composeapp.generated.resources.resend_otp_message
+import devom_app.composeapp.generated.resources.verify_mobile_number
+import devom_app.composeapp.generated.resources.we_have_sent_the_verification_code
 import com.devom.app.theme.blackColor
 import com.devom.app.theme.greyColor
 import com.devom.app.theme.orangeShadow

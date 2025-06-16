@@ -66,19 +66,19 @@ import com.devom.models.auth.UserRequestResponse
 import com.devom.utils.Application
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Availability
-import pandijtapp.composeapp.generated.resources.Biography
-import pandijtapp.composeapp.generated.resources.Documents
-import pandijtapp.composeapp.generated.resources.Notifications
-import pandijtapp.composeapp.generated.resources.Preferences
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.Review_and_Ratings
-import pandijtapp.composeapp.generated.resources.arrow_drop_down_right
-import pandijtapp.composeapp.generated.resources.ic_edit
-import pandijtapp.composeapp.generated.resources.ic_logout
-import pandijtapp.composeapp.generated.resources.ic_star
-import pandijtapp.composeapp.generated.resources.ic_verified
-import pandijtapp.composeapp.generated.resources.update_profile
+import devom_app.composeapp.generated.resources.Availability
+import devom_app.composeapp.generated.resources.Biography
+import devom_app.composeapp.generated.resources.Documents
+import devom_app.composeapp.generated.resources.Notifications
+import devom_app.composeapp.generated.resources.Preferences
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.Review_and_Ratings
+import devom_app.composeapp.generated.resources.arrow_drop_down_right
+import devom_app.composeapp.generated.resources.ic_edit
+import devom_app.composeapp.generated.resources.ic_logout
+import devom_app.composeapp.generated.resources.ic_star
+import devom_app.composeapp.generated.resources.ic_verified
+import devom_app.composeapp.generated.resources.update_profile
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

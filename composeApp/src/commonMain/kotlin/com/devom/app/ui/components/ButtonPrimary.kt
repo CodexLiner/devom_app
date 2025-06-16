@@ -17,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.btn_continue
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.btn_continue
 import com.devom.app.theme.orangeShadow
 import com.devom.app.theme.text_style_h5
 import com.devom.app.theme.whiteColor

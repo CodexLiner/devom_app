@@ -27,8 +27,8 @@ import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.ButtonPrimary
 import com.devom.app.ui.navigation.Screens
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_check
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_check
 
 @Composable
 fun SignupSuccessScreen(navHostController: NavHostController) {

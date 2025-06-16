@@ -54,10 +54,10 @@ import com.devom.utils.date.convertIsoToDate
 import com.devom.utils.date.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.create_request
-import pandijtapp.composeapp.generated.resources.create_support_request
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.create_request
+import devom_app.composeapp.generated.resources.create_support_request
+import devom_app.composeapp.generated.resources.ic_arrow_left
 
 @Composable
 fun HelpAndSupportScreen(navController: NavHostController) {

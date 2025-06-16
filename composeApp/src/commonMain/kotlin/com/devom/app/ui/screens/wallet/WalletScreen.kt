@@ -42,20 +42,20 @@ import com.devom.app.utils.toColor
 import com.devom.models.payment.WalletBalance
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Add_Account
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.Withdraw
-import pandijtapp.composeapp.generated.resources.arrow_drop_down_right
-import pandijtapp.composeapp.generated.resources.bring_your_friends_on_devom_and_earn_rewards
-import pandijtapp.composeapp.generated.resources.current_balance
-import pandijtapp.composeapp.generated.resources.ic_nav_wallet
-import pandijtapp.composeapp.generated.resources.ic_refer
-import pandijtapp.composeapp.generated.resources.ic_transactions
-import pandijtapp.composeapp.generated.resources.invite_and_collect
-import pandijtapp.composeapp.generated.resources.my_transactions
-import pandijtapp.composeapp.generated.resources.my_wallet
-import pandijtapp.composeapp.generated.resources.view_and_track_your_payments_and_transactions
-import pandijtapp.composeapp.generated.resources.withdrawals
+import devom_app.composeapp.generated.resources.Add_Account
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.Withdraw
+import devom_app.composeapp.generated.resources.arrow_drop_down_right
+import devom_app.composeapp.generated.resources.bring_your_friends_on_devom_and_earn_rewards
+import devom_app.composeapp.generated.resources.current_balance
+import devom_app.composeapp.generated.resources.ic_nav_wallet
+import devom_app.composeapp.generated.resources.ic_refer
+import devom_app.composeapp.generated.resources.ic_transactions
+import devom_app.composeapp.generated.resources.invite_and_collect
+import devom_app.composeapp.generated.resources.my_transactions
+import devom_app.composeapp.generated.resources.my_wallet
+import devom_app.composeapp.generated.resources.view_and_track_your_payments_and_transactions
+import devom_app.composeapp.generated.resources.withdrawals
 
 @Composable
 fun WalletScreen(navHostController: NavHostController, onNavigationIconClick: () -> Unit) {

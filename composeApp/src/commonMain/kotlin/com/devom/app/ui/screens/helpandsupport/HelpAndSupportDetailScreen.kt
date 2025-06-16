@@ -35,8 +35,8 @@ import com.devom.app.utils.toDevomImage
 import com.devom.utils.date.convertIsoToDate
 import com.devom.utils.date.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_arrow_left
 
 @Composable
 fun HelpAndSupportDetailScreen(navController: NavHostController, ticketId: String) {

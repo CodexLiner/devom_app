@@ -44,10 +44,10 @@ import com.devom.models.auth.UserRequestResponse
 import com.devom.utils.Application
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.all_field_required
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
-import pandijtapp.composeapp.generated.resources.referral_code
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.all_field_required
+import devom_app.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.referral_code
 
 @Composable
 fun RegisterMainScreen(

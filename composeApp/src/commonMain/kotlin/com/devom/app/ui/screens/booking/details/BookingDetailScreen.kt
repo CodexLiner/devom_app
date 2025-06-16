@@ -56,16 +56,16 @@ import com.devom.models.slots.BookingItem
 import com.devom.models.slots.GetBookingsResponse
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.enter_pin_visible_on_customer_app
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
-import pandijtapp.composeapp.generated.resources.ic_check
-import pandijtapp.composeapp.generated.resources.ic_plus
-import pandijtapp.composeapp.generated.resources.pooja_samgri_list
-import pandijtapp.composeapp.generated.resources.select_pooja_item
-import pandijtapp.composeapp.generated.resources.start_pooja
-import pandijtapp.composeapp.generated.resources.submit
-import pandijtapp.composeapp.generated.resources.verification_pooja_start
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.enter_pin_visible_on_customer_app
+import devom_app.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.ic_check
+import devom_app.composeapp.generated.resources.ic_plus
+import devom_app.composeapp.generated.resources.pooja_samgri_list
+import devom_app.composeapp.generated.resources.select_pooja_item
+import devom_app.composeapp.generated.resources.start_pooja
+import devom_app.composeapp.generated.resources.submit
+import devom_app.composeapp.generated.resources.verification_pooja_start
 
 @Composable
 fun BookingDetailScreen(navController: NavController, bookingId: String?) {

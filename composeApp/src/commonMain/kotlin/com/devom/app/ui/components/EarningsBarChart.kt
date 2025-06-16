@@ -53,8 +53,8 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_arrow_drop_down
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_arrow_drop_down
 
 val monthNames = listOf(
     "Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"

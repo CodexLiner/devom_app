@@ -46,15 +46,15 @@ import com.devom.utils.share.ShareServiceProvider
 import com.devom.utils.share.shareContent
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.copy
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
-import pandijtapp.composeapp.generated.resources.ic_search
-import pandijtapp.composeapp.generated.resources.img_social_friends
-import pandijtapp.composeapp.generated.resources.invite
-import pandijtapp.composeapp.generated.resources.invite_friends
-import pandijtapp.composeapp.generated.resources.referral_message
-import pandijtapp.composeapp.generated.resources.share
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.copy
+import devom_app.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.ic_search
+import devom_app.composeapp.generated.resources.img_social_friends
+import devom_app.composeapp.generated.resources.invite
+import devom_app.composeapp.generated.resources.invite_friends
+import devom_app.composeapp.generated.resources.referral_message
+import devom_app.composeapp.generated.resources.share
 
 @Composable
 fun ReferAndEarnScreen(navController: NavHostController) {

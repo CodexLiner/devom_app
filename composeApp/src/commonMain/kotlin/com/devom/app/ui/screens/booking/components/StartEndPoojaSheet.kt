@@ -15,7 +15,7 @@ import com.devom.app.ui.components.ButtonPrimary
 import com.devom.app.ui.components.OtpView
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.*
+import devom_app.composeapp.generated.resources.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

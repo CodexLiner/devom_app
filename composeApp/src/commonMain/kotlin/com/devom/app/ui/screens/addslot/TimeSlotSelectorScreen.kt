@@ -70,11 +70,11 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_close
-import pandijtapp.composeapp.generated.resources.ic_dual_dropdown
-import pandijtapp.composeapp.generated.resources.ic_plus
-import pandijtapp.composeapp.generated.resources.text_select_time_slot
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_close
+import devom_app.composeapp.generated.resources.ic_dual_dropdown
+import devom_app.composeapp.generated.resources.ic_plus
+import devom_app.composeapp.generated.resources.text_select_time_slot
 
 @Composable
 fun TimeSlotSelectorScreen(

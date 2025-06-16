@@ -41,9 +41,9 @@ import com.devom.utils.date.convertIsoToDate
 import com.devom.utils.date.toLocalDateTime
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_check
-import pandijtapp.composeapp.generated.resources.ic_close
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_check
+import devom_app.composeapp.generated.resources.ic_close
 
 @Composable
 fun BookingCard(

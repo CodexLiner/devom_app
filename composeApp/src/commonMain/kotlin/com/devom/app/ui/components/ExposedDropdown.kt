@@ -20,8 +20,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import com.devom.utils.Application
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_arrow_drop_down
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_arrow_drop_down
 
 data class DropDownItem(
     val option: String,

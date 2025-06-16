@@ -22,7 +22,7 @@ import com.devom.app.ui.components.DatePickerDialog
 import com.devom.app.ui.components.DropDownItem
 import com.devom.app.ui.components.ExposedDropdown
 import com.devom.models.auth.UserRequestResponse
-import pandijtapp.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.Res
 import com.devom.app.ui.components.TextInputField
 import com.devom.models.other.City
 import com.devom.models.other.Country
@@ -34,16 +34,16 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.calendar_icon_description
-import pandijtapp.composeapp.generated.resources.calendar_linear
-import pandijtapp.composeapp.generated.resources.date_of_birth
-import pandijtapp.composeapp.generated.resources.enter_address
-import pandijtapp.composeapp.generated.resources.enter_city
-import pandijtapp.composeapp.generated.resources.enter_country
-import pandijtapp.composeapp.generated.resources.enter_email
-import pandijtapp.composeapp.generated.resources.enter_full_name
-import pandijtapp.composeapp.generated.resources.enter_phone
-import pandijtapp.composeapp.generated.resources.enter_state
+import devom_app.composeapp.generated.resources.calendar_icon_description
+import devom_app.composeapp.generated.resources.calendar_linear
+import devom_app.composeapp.generated.resources.date_of_birth
+import devom_app.composeapp.generated.resources.enter_address
+import devom_app.composeapp.generated.resources.enter_city
+import devom_app.composeapp.generated.resources.enter_country
+import devom_app.composeapp.generated.resources.enter_email
+import devom_app.composeapp.generated.resources.enter_full_name
+import devom_app.composeapp.generated.resources.enter_phone
+import devom_app.composeapp.generated.resources.enter_state
 
 @Composable
 internal fun UserDetailsScreenMainContent(

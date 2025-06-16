@@ -46,18 +46,18 @@ import com.devom.utils.date.convertIsoToDate
 import com.devom.utils.date.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.bonus_added
-import pandijtapp.composeapp.generated.resources.earnings
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
-import pandijtapp.composeapp.generated.resources.ic_wallet_bonus
-import pandijtapp.composeapp.generated.resources.ic_wallet_credit
-import pandijtapp.composeapp.generated.resources.ic_wallet_debit
-import pandijtapp.composeapp.generated.resources.my_transactions
-import pandijtapp.composeapp.generated.resources.no_transactions_found
-import pandijtapp.composeapp.generated.resources.payment_received
-import pandijtapp.composeapp.generated.resources.successful
-import pandijtapp.composeapp.generated.resources.withdrawals
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.bonus_added
+import devom_app.composeapp.generated.resources.earnings
+import devom_app.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.ic_wallet_bonus
+import devom_app.composeapp.generated.resources.ic_wallet_credit
+import devom_app.composeapp.generated.resources.ic_wallet_debit
+import devom_app.composeapp.generated.resources.my_transactions
+import devom_app.composeapp.generated.resources.no_transactions_found
+import devom_app.composeapp.generated.resources.payment_received
+import devom_app.composeapp.generated.resources.successful
+import devom_app.composeapp.generated.resources.withdrawals
 
 @Composable
 fun TransactionsScreen(navController: NavController) {

@@ -47,8 +47,8 @@ import com.devom.models.slots.Slot
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Confirmation_Time_Slots
-import pandijtapp.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.Confirmation_Time_Slots
+import devom_app.composeapp.generated.resources.Res
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

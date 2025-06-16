@@ -13,8 +13,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import com.devom.app.utils.toColor
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_star
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_star
 
 @Composable
 fun RatingStars(modifier: Modifier = Modifier, rating: Float = 0f, tint: Color = Color(0xFF4CAF50)) {

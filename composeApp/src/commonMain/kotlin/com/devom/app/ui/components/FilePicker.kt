@@ -25,8 +25,8 @@ import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.choose_file
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.choose_file
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

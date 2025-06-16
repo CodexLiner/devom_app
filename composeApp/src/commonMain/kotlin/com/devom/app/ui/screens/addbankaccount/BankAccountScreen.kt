@@ -33,14 +33,14 @@ import kotlinx.io.buffered
 import kotlinx.io.readByteArray
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Account_Number
-import pandijtapp.composeapp.generated.resources.Add_Bank_Account
-import pandijtapp.composeapp.generated.resources.Bank_Name
-import pandijtapp.composeapp.generated.resources.Ifsc_code
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.Update
-import pandijtapp.composeapp.generated.resources.enter_full_name
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.Account_Number
+import devom_app.composeapp.generated.resources.Add_Bank_Account
+import devom_app.composeapp.generated.resources.Bank_Name
+import devom_app.composeapp.generated.resources.Ifsc_code
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.Update
+import devom_app.composeapp.generated.resources.enter_full_name
+import devom_app.composeapp.generated.resources.ic_arrow_left
 
 @Composable
 fun BankAccountScreen(navController: NavController) {

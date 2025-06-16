@@ -18,8 +18,8 @@ import com.devom.app.theme.text_style_h3
 import com.devom.app.theme.text_style_lead_body_1
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.img_bell
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.img_bell
 
 @Composable
 fun NoContentView(

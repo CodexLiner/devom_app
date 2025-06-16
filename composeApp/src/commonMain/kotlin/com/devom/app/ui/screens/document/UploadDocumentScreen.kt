@@ -48,10 +48,10 @@ import com.devom.app.utils.toDevomDocument
 import com.devom.models.document.GetDocumentResponse
 import com.devom.models.pandit.Media
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
-import pandijtapp.composeapp.generated.resources.ic_document_aadhaar
-import pandijtapp.composeapp.generated.resources.ic_document_pan
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.ic_document_aadhaar
+import devom_app.composeapp.generated.resources.ic_document_pan
 
 @Composable
 fun UploadDocumentScreen(navController: NavController) {

@@ -31,8 +31,8 @@ import kotlinx.coroutines.launch
 import kotlinx.io.buffered
 import kotlinx.io.readByteArray
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.all_field_required
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.all_field_required
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

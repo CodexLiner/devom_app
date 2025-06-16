@@ -11,8 +11,8 @@ import com.devom.app.theme.backgroundColor
 import com.devom.app.ui.components.AppBar
 import com.devom.models.payment.WalletTransaction
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_arrow_left
 
 @Composable
 fun TransactionDetailsScreen(

@@ -12,8 +12,8 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter.State
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.placeholder
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.placeholder
 
 @Composable
 fun AsyncImage(

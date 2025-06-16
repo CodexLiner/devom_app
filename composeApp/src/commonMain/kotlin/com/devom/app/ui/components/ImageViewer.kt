@@ -28,8 +28,8 @@ import com.devom.app.theme.whiteColor
 import com.devom.app.utils.toDevomDocument
 import com.devom.models.pandit.Media
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_close
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_close
 
 @Composable
 fun ImageViewer(viewImage: MutableState<Boolean>, selectedMedia: MutableState<Media?>) {

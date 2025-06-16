@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_left
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_left
 
 @Composable
 fun BackButton(

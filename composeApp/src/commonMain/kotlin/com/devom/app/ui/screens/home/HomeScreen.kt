@@ -39,8 +39,8 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_notification
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_notification
 
 @Composable
 fun HomeScreen(navHostController: NavHostController , onNavigationIconClick: () -> Unit) {

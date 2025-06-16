@@ -30,12 +30,12 @@ import com.devom.models.payment.GetWalletBalanceResponse
 import com.devom.network.getUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_nav_add
-import pandijtapp.composeapp.generated.resources.ic_nav_bookings
-import pandijtapp.composeapp.generated.resources.ic_nav_home
-import pandijtapp.composeapp.generated.resources.ic_nav_profile
-import pandijtapp.composeapp.generated.resources.ic_nav_wallet
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_nav_add
+import devom_app.composeapp.generated.resources.ic_nav_bookings
+import devom_app.composeapp.generated.resources.ic_nav_home
+import devom_app.composeapp.generated.resources.ic_nav_profile
+import devom_app.composeapp.generated.resources.ic_nav_wallet
 
 @Composable
 fun DashboardScreen(appNavHostController: NavHostController) {

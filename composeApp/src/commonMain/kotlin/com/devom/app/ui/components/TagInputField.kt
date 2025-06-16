@@ -50,8 +50,8 @@ import com.devom.app.theme.textBlackShade
 import com.devom.app.theme.text_style_lead_text
 import com.devom.app.theme.whiteColor
 import org.jetbrains.compose.resources.painterResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.ic_close
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.ic_close
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

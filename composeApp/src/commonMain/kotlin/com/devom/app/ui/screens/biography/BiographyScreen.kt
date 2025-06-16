@@ -59,16 +59,16 @@ import com.devom.models.pandit.Media
 import com.devom.models.pandit.UpdateBiographyInput
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.Update
-import pandijtapp.composeapp.generated.resources.expertise
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
-import pandijtapp.composeapp.generated.resources.ic_video_camera
-import pandijtapp.composeapp.generated.resources.languages_spoken
-import pandijtapp.composeapp.generated.resources.media_galley
-import pandijtapp.composeapp.generated.resources.placeholder_video
-import pandijtapp.composeapp.generated.resources.preferred_rituals
-import pandijtapp.composeapp.generated.resources.years_of_experience
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.Update
+import devom_app.composeapp.generated.resources.expertise
+import devom_app.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.ic_video_camera
+import devom_app.composeapp.generated.resources.languages_spoken
+import devom_app.composeapp.generated.resources.media_galley
+import devom_app.composeapp.generated.resources.placeholder_video
+import devom_app.composeapp.generated.resources.preferred_rituals
+import devom_app.composeapp.generated.resources.years_of_experience
 
 @Composable
 fun BiographyScreen(navController: NavController) {

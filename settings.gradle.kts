@@ -1,4 +1,3 @@
-rootProject.name = "PandijtApp"
 
 pluginManagement {
     repositories {
@@ -30,6 +29,9 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
+rootProject.name = "devom_app"
+
 include(":composeApp")
 include(":devom")
 include(":network")

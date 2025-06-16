@@ -33,11 +33,11 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import pandijtapp.composeapp.generated.resources.Res
-import pandijtapp.composeapp.generated.resources.add_time_slot
-import pandijtapp.composeapp.generated.resources.ic_arrow_left
-import pandijtapp.composeapp.generated.resources.ic_no_slots
-import pandijtapp.composeapp.generated.resources.set_availablity
+import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.add_time_slot
+import devom_app.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.ic_no_slots
+import devom_app.composeapp.generated.resources.set_availablity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
