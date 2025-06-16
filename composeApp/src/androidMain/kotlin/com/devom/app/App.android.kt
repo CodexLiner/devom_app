@@ -1,5 +1,7 @@
 package com.devom.app
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,9 +20,14 @@ class AppActivity : ComponentActivity() {
         setContent { App() }
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         FileKit.init(this)
+        if (checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS), 1)
+        }
     }
 }
 
 @Preview
 @Composable
-fun AppPreview() { App() }
+fun AppPreview() {
+    App()
+}

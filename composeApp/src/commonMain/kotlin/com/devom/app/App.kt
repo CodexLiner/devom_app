@@ -5,7 +5,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
@@ -20,12 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import co.touchlab.kermit.Logger
-import com.devom.network.NetworkClient
-import com.devom.utils.Application.isLoggedIn
-import com.devom.utils.Application.loaderState
-import com.devom.utils.Application.loginState
-import com.russhwolf.settings.Settings
-import com.russhwolf.settings.get
 import com.devom.app.theme.AppTheme
 import com.devom.app.ui.components.AppContainer
 import com.devom.app.ui.components.ProgressLoader
@@ -33,6 +27,12 @@ import com.devom.app.ui.components.ShowSnackBar
 import com.devom.app.ui.navigation.NavigationHost
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.ui.providers.LoadingCompositionProvider
+import com.devom.network.NetworkClient
+import com.devom.utils.Application.isLoggedIn
+import com.devom.utils.Application.loaderState
+import com.devom.utils.Application.loginState
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.get
 
 val settings = Settings()
 
@@ -62,7 +62,7 @@ internal fun App() = AppTheme {
         isLoggedIn(loggedIn)
         NetworkClient.configure {
             setTokens(access = accessKey.orEmpty(), refresh = refreshToken.orEmpty())
-            baseUrl = "https://devom-api-bold-smoke-8130.fly.dev"
+            baseUrl = BASE_URL
             onLogOut = {
                 Logger.d("ON_LOGOUT") { "user has been logged out" }
                 isLoggedIn(false)
@@ -88,9 +88,9 @@ fun MainScreen(isLoggedIn: Boolean) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     AnimatedContent(
                         targetState = isLoggedIn, transitionSpec = {
-                            fadeIn(animationSpec = tween(300)) with fadeOut(
+                            fadeIn(animationSpec = tween(500)) togetherWith  fadeOut(
                                 animationSpec = tween(
-                                    300
+                                    500
                                 )
                             )
                         }, label = "Auth/Dashboard Transition"

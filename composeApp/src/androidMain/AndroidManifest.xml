@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-<uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:icon="@mipmap/ic_launcher"
-        android:label="Multiplatform App"
+        android:label="DevOm"
+        android:allowBackup="false"
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity
             android:name="com.devom.app.AppActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:exported="true"
             android:launchMode="singleInstance"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="true">
+            android:windowSoftInputMode="adjustPan">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="devom.co.in" />
+                <data android:path="/referral" />
             </intent-filter>
         </activity>
     </application>

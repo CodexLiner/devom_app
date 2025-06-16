@@ -59,9 +59,9 @@ kotlin {
             implementation(libs.filekit.dialogs)
             implementation(libs.filekit.dialogs.compose)
             implementation(libs.filekit.coil)
+            implementation("network.chaintech:cmpcharts:1.0.0")
+            implementation("com.devom:platform:alpha.1.0.0")
 
-
-            implementation(project(":devom"))
         }
 
         commonTest.dependencies {
@@ -92,7 +92,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 24
         targetSdk = 35
 
         applicationId = "com.devom.pandit.app"

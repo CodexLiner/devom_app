@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devom.Project
 import com.devom.app.models.ApplicationStatus
+import com.devom.models.payment.GetWalletTransactionsResponse
 import com.devom.models.slots.GetBookingsResponse
 import com.devom.models.slots.UpdateBookingStatusInput
 import com.devom.utils.cachepolicy.CachePolicy
@@ -13,17 +14,36 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class HomeScreenViewModel : ViewModel(){
+class HomeScreenViewModel : ViewModel() {
 
     private val _bookings = MutableStateFlow<List<GetBookingsResponse>>(listOf())
     val bookings: StateFlow<List<GetBookingsResponse>> = _bookings
 
 
+    private val _transactions = MutableStateFlow(GetWalletTransactionsResponse())
+    val transactions = _transactions
+
+    init {
+        getTransactions()
+    }
+
     fun getBookings() {
         viewModelScope.launch {
-            Project.pandit.getPanditBookingsUseCase.invoke(cachePolicy = CachePolicy.CacheAndNetwork).collect {
+            Project.pandit.getPanditBookingsUseCase.invoke(cachePolicy = CachePolicy.CacheAndNetwork)
+                .collect {
+                    it.onResult {
+                        _bookings.value = it.data
+                    }
+                }
+        }
+    }
+
+
+    fun getTransactions() {
+        viewModelScope.launch {
+            Project.payment.getWalletTransactionsUseCase.invoke().collect {
                 it.onResult {
-                    _bookings.value = it.data
+                    _transactions.value = it.data
                 }
             }
         }

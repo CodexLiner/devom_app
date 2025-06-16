@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import com.devom.utils.Application
 import org.jetbrains.compose.resources.painterResource
 import pandijtapp.composeapp.generated.resources.Res
 import pandijtapp.composeapp.generated.resources.ic_arrow_drop_down
@@ -30,22 +31,34 @@ data class DropDownItem(
 @Composable
 fun ExposedDropdown(
     expanded: Boolean = false,
+    enabled: Boolean = true,
+    disabledMessage: String = "",
     modifier: Modifier = Modifier,
     placeholder: String = "",
+    isSearchEnabled: Boolean = false,
     options: List<DropDownItem> = listOf(),
     selectedOption: DropDownItem? = null,
     onOptionSelected: (DropDownItem) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(expanded) }
+    var isEnabled by remember { mutableStateOf(enabled) }
+
     LaunchedEffect(expanded) {
         isExpanded = expanded
     }
+    LaunchedEffect(enabled) {
+        isEnabled = enabled
+    }
+
     LaunchedEffect(Unit) {
         if (selectedOption != null) {
             onOptionSelected(selectedOption)
         }
     }
     DropDownContent(
+        enabled = isEnabled,
+        disabledMessage = disabledMessage,
+        isSearchEnabled = isSearchEnabled,
         placeholder = placeholder,
         expanded = isExpanded,
         modifier = modifier,
@@ -65,15 +78,20 @@ private fun DropDownContent(
     options: List<DropDownItem>,
     selectedOption: DropDownItem?,
     onDismiss: () -> Unit = {},
+    isSearchEnabled: Boolean = false,
     onSelect: (DropDownItem) -> Unit,
     expanded: Boolean,
     placeholder: String,
+    enabled: Boolean,
+    disabledMessage: String,
 ) {
-    val focusManager = LocalFocusManager.current
-    var expanded = remember { mutableStateOf(expanded) }
+    var expanded by remember { mutableStateOf(expanded) }
     var focusRequester = remember { FocusRequester() }
     val localSelectedOption = remember { mutableStateOf(selectedOption) }
+    var searchQuery by remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
 
+    val filteredOptions = options.filter { it.option.contains(searchQuery, ignoreCase = true) }
 
     LaunchedEffect(Unit) {
         focusManager.clearFocus(true)
@@ -83,36 +101,43 @@ private fun DropDownContent(
         modifier = Modifier.focusRequester(focusRequester),
         expanded = true,
         onExpandedChange = { isExpanded ->
-            expanded.value = isExpanded
+            expanded = isExpanded
         }
     ) {
         TextInputField(
-            readOnly = true,
-            enabled = false,
+            readOnly = !isSearchEnabled,
+            enabled = enabled,
             placeholder = placeholder,
+            onValueChange = {
+                if (it.isNotEmpty() && it != selectedOption?.option.orEmpty()) expanded = true
+                searchQuery = it
+            },
             initialValue = selectedOption?.option.orEmpty(),
-            modifier = Modifier.fillMaxWidth().menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
+            modifier = Modifier.fillMaxWidth().menuAnchor(type = MenuAnchorType.PrimaryEditable),
             trailingIcon = {
                 IconButton(onClick = {
-                    expanded.value = !expanded.value
+                    if (enabled) {
+                        searchQuery = ""
+                        expanded = !expanded
+                    } else if (disabledMessage.isNotEmpty()) Application.showToast(disabledMessage)
                 }) {
                     Image(
                         painter = painterResource(Res.drawable.ic_arrow_drop_down),
                         contentDescription = null
                     )
                 }
-            }
+            },
         )
 
         ExposedDropdownMenu(
             modifier = modifier,
-            expanded = expanded.value,
+            expanded = expanded,
             onDismissRequest = {
-                expanded.value = false
+                expanded = false
                 onDismiss()
             }
         ) {
-            options.forEach { (option, id) ->
+            filteredOptions.forEach { (option, id) ->
                 DropdownMenuItem(
                     text = {
                         Text(text = option)
@@ -123,7 +148,8 @@ private fun DropDownContent(
                         )
                         onSelect(option)
                         localSelectedOption.value = option
-                        expanded.value = false
+                        expanded = false
+                        focusManager.clearFocus()
                     }
                 )
             }

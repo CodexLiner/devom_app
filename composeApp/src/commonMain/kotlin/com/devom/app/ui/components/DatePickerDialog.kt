@@ -89,8 +89,8 @@ fun DatePickerDialog(
                         state = datePickerState,
                     )
                     if (!isValid) {
-                        val minText = minDate?.format(MMM_dd_yyyy)
-                        val maxText = maxDate?.format(MMM_dd_yyyy)
+                        val minText = minDate?.toString()
+                        val maxText = maxDate?.toString()
                         Text(
                             buildString {
                                 append("Please select a valid date")

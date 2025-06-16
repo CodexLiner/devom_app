@@ -28,6 +28,10 @@ fun String?.toDevomDocument(): String? {
     return DOCUMENT_BASE_URL + encodedPath
 }
 
+fun String?.toRupay(): String {
+    return "₹$this"
+}
+
 
 
 fun List<Slot>.updateSlotTimeAndShiftFollowingSlots(
@@ -81,7 +85,12 @@ fun List<Slot>.updateSlotTimeAndShiftFollowingSlots(
 
     return updatedSlots
 }
+fun String.formatStatus(): String =
+    this.lowercase()
+        .replace("_", " ")
+        .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
 val videoExtensions = listOf("mp4", "mov", "avi", "mkv", "webm", "flv", "wmv", "3gp", "mpeg")
+
 
 

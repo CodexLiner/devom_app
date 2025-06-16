@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -24,6 +25,7 @@ import com.devom.app.theme.text_style_lead_text
 @Composable
 fun TextInputField(
     initialValue: String = "",
+    maxLength: Int = Int.MAX_VALUE,
     modifier: Modifier = Modifier.fillMaxWidth(),
     backgroundColor: Color = bgColor,
     placeholderColor: Color = com.devom.app.theme.inputColor,
@@ -54,13 +56,15 @@ fun TextInputField(
 
     LaunchedEffect(initialValue) {
         input = initialValue
+        onValueChange(initialValue)
     }
-    OutlinedTextField(
+    TextField(
         value = input,
         keyboardOptions = keyboardOptions,
         onValueChange = {
-            input = it
-            onValueChange(it)
+            val trimmed = it.take(maxLength)
+            input = trimmed
+            onValueChange(trimmed)
         },
         readOnly = readOnly,
         label = {

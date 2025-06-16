@@ -7,4 +7,5 @@ enum class ApplicationStatus(val status: String) {
     CANCELLED("cancelled"),
     COMPLETED("completed"),
     CONFIRMED("confirmed"),
+    VERIFIED("verified"),
 }

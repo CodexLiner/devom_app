@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,19 +24,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.devom.app.models.SupportedFiles
 import com.devom.app.theme.inputColor
 import com.devom.app.theme.text_style_h5
 import com.devom.app.utils.dashedBorder
-import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
-import io.github.vinceglb.filekit.dialogs.FileKitType
-import io.github.vinceglb.filekit.dialogs.openFilePicker
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import pandijtapp.composeapp.generated.resources.Res
 import pandijtapp.composeapp.generated.resources.ic_plus
@@ -68,7 +61,8 @@ fun DocumentPicker(
         onFilePicked = { file, type ->
             selectedFileInfo = file to type
             onFilePicked(file, type)
-        })
+        }
+    )
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = modifier) {
 
@@ -85,15 +79,7 @@ fun DocumentPicker(
             if (addIconOnly) {
                 Image(
                     modifier = Modifier.size(30.dp).clickable {
-                        handleFilePickerClick(
-                            allowedDocs = allowedDocs,
-                            scope = scope,
-                            onFilePicked = { file, type ->
-                                selectedFileInfo = file to type
-                                onFilePicked(file, type)
-                            },
-                            onShowSheet = { showPicker = true }
-                        )
+                      showPicker = true
                     },
                     painter = painterResource(Res.drawable.ic_plus),
                     contentDescription = null
@@ -114,15 +100,7 @@ fun DocumentPicker(
                     )
                     .background(Color(0xFFF6F9FF), shape = RoundedCornerShape(8.dp))
                     .clickable {
-                        handleFilePickerClick(
-                            allowedDocs = allowedDocs,
-                            scope = scope,
-                            onFilePicked = { file, type ->
-                                selectedFileInfo = file to type
-                                onFilePicked(file, type)
-                            },
-                            onShowSheet = { showPicker = true }
-                        )
+                        showPicker = true
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -142,32 +120,4 @@ fun DocumentPicker(
             }
         }
     }
-}
-
-
-fun handleFilePickerClick(
-    allowedDocs: List<SupportedFiles>,
-    scope: CoroutineScope,
-    onFilePicked: (PlatformFile, SupportedFiles) -> Unit,
-    onShowSheet: () -> Unit
-) {
-    val isImageOrVideoOnly = allowedDocs.all {
-        it == SupportedFiles.IMAGE || it == SupportedFiles.VIDEO || it == SupportedFiles.IMAGE_AND_VIDEO
-    }
-
-    if (isImageOrVideoOnly) {
-        val type = when (allowedDocs.first()) {
-            SupportedFiles.IMAGE -> FileKitType.Image
-            SupportedFiles.VIDEO -> FileKitType.Video
-            SupportedFiles.IMAGE_AND_VIDEO -> FileKitType.ImageAndVideo
-            else -> FileKitType.File("*/*")
-        }
-
-        scope.launch {
-            val file = FileKit.openFilePicker(type = type)
-            file?.let {
-                onFilePicked(it, allowedDocs.first())
-            }
-        }
-    } else onShowSheet()
 }

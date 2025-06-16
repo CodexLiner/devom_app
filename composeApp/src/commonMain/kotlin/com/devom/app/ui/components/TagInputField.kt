@@ -79,9 +79,10 @@ fun TagInputField(
     val mergedTextStyle = LocalTextStyle.current.merge(TextStyle(color = inputColor))
 
     LaunchedEffect(initialTags) {
-        tags = initialTags
-        onTagsChanged(initialTags)
+        tags = initialTags.map { it.trim() }.filter { it.isNotEmpty() }
+        onTagsChanged(tags)
     }
+
 
     BasicTextField(
         value = textValue,
@@ -93,7 +94,7 @@ fun TagInputField(
                     .filter { it.isNotEmpty() }
                 tags = tags + newTags
                 textValue = ""
-                onTagsChanged(tags)
+                onTagsChanged(tags.map { it.trim() })
             } else {
                 textValue = value
             }
@@ -117,18 +118,18 @@ fun TagInputField(
                 if (textValue.isNotBlank()) {
                     tags = tags + textValue.trim()
                     textValue = ""
-                    onTagsChanged(tags)
+                    onTagsChanged(tags.map { it.trim() })
                 }
             }
         ),
         interactionSource = interactionSource,
         decorationBox = { innerTextField ->
             TagDecorationBox(
-                tags = tags,
+                tags = tags.map { it.trim() },
                 textValue = if (tags.isNotEmpty()) " " else textValue,
                 onTagRemoved = {
                     tags = tags - it
-                    onTagsChanged(tags)
+                    onTagsChanged(tags.map { it.trim() })
                 },
                 innerTextField = innerTextField,
                 placeholder = placeholder,
@@ -163,7 +164,7 @@ private fun TagDecorationBox(
     trailingIcon: @Composable (() -> Unit)? = null,
     cornerRadius: Dp
 ) {
-    OutlinedTextFieldDefaults.DecorationBox(
+    TextFieldDefaults.DecorationBox(
         value = textValue,
         innerTextField = {
             FlowRow(

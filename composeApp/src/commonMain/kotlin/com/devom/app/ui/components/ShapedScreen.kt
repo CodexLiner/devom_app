@@ -10,15 +10,20 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.devom.app.theme.blackColor
+import com.devom.app.theme.primaryColor
 import com.devom.app.theme.whiteColor
+
 @Composable
 fun ShapedScreen(
+    modifier: Modifier = Modifier.fillMaxSize().background(color = primaryColor).statusBarsPadding(),
+    mainColor: Color = whiteColor,
+    shapedContentShape: RoundedCornerShape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
     headerContent: @Composable () -> Unit,
-    mainContent: @Composable () -> Unit
+    mainContent: @Composable () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxSize().background(color = blackColor).statusBarsPadding()) {
+    Column(modifier = modifier) {
         Box(modifier = Modifier.fillMaxWidth().wrapContentHeight()) {
             headerContent()
         }
@@ -27,8 +32,8 @@ fun ShapedScreen(
                 .fillMaxSize()
                 .weight(1f, fill = true)
                 .background(
-                    color = whiteColor,
-                    shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+                    color = mainColor,
+                    shape = shapedContentShape
                 )
         ) {
             mainContent()

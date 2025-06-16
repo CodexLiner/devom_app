@@ -16,8 +16,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,13 +37,25 @@ import com.devom.app.theme.text_style_h4
 import com.devom.app.theme.text_style_lead_text
 import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AppBar
+import com.devom.app.ui.navigation.Screens
 import com.devom.app.utils.toColor
 import com.devom.models.payment.WalletBalance
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import pandijtapp.composeapp.generated.resources.Add_Account
 import pandijtapp.composeapp.generated.resources.Res
+import pandijtapp.composeapp.generated.resources.Withdraw
 import pandijtapp.composeapp.generated.resources.arrow_drop_down_right
+import pandijtapp.composeapp.generated.resources.bring_your_friends_on_devom_and_earn_rewards
+import pandijtapp.composeapp.generated.resources.current_balance
 import pandijtapp.composeapp.generated.resources.ic_nav_wallet
+import pandijtapp.composeapp.generated.resources.ic_refer
 import pandijtapp.composeapp.generated.resources.ic_transactions
+import pandijtapp.composeapp.generated.resources.invite_and_collect
+import pandijtapp.composeapp.generated.resources.my_transactions
+import pandijtapp.composeapp.generated.resources.my_wallet
+import pandijtapp.composeapp.generated.resources.view_and_track_your_payments_and_transactions
+import pandijtapp.composeapp.generated.resources.withdrawals
 
 @Composable
 fun WalletScreen(navHostController: NavHostController, onNavigationIconClick: () -> Unit) {
@@ -49,48 +63,60 @@ fun WalletScreen(navHostController: NavHostController, onNavigationIconClick: ()
         WalletViewModel()
     }
     Column(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
-        AppBar(title = "My Wallet", onNavigationIconClick = onNavigationIconClick)
-        WalletScreenContent(navHostController , viewModel)
+        AppBar(
+            title = stringResource(Res.string.my_wallet),
+            onNavigationIconClick = onNavigationIconClick
+        )
+        WalletScreenContent(navHostController, viewModel)
     }
 }
 
 @Composable
 fun WalletScreenContent(navHostController: NavHostController, viewModel: WalletViewModel) {
-    WalletDetailsContent(navHostController , viewModel)
+    WalletDetailsContent(navHostController, viewModel)
 }
 
 @Composable
 fun WalletDetailsContent(navController: NavHostController, viewModel: WalletViewModel) {
-    val balance = viewModel.walletBalances.value.balance
-
+    val balance = viewModel.walletBalances.collectAsState()
+    val bankDetails = viewModel.bankDetails.collectAsState()
     Box(modifier = Modifier.fillMaxWidth().background(primaryColor)) {
-        WalletHeader(balance)
+        WalletHeader(
+            balance.value.balance, if (bankDetails.value == null) stringResource(Res.string.Add_Account)
+            else stringResource(Res.string.Withdraw)
+        ) {
+            navController.navigate(Screens.BankAccountScreen.path)
+        }
     }
-    WalletBreakdownRow(balance)
+    WalletBreakdownRow(balance.value.balance)
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         WalletActionItem(
             painter = painterResource(Res.drawable.ic_transactions),
-            text = "My Transactions",
-            description = "View and track your payments and transactions."
+            text = stringResource(Res.string.my_transactions),
+            description = stringResource(Res.string.view_and_track_your_payments_and_transactions)
         ) {
-
+            navController.navigate(Screens.Transactions.path)
         }
 
         WalletActionItem(
-            painter = painterResource(Res.drawable.ic_transactions),
-            text = "Invite & Collect",
-            description = "Bring your friends on DevOM and earn rewards"
+            painter = painterResource(Res.drawable.ic_refer),
+            text = stringResource(Res.string.invite_and_collect),
+            description = stringResource(Res.string.bring_your_friends_on_devom_and_earn_rewards)
         ) {
-
+            navController.navigate(Screens.ReferAndEarn.path)
         }
     }
 }
 
 @Composable
-private fun WalletHeader(balance: WalletBalance) {
+private fun WalletHeader(
+    balance: WalletBalance,
+    buttonText: String = stringResource(Res.string.Add_Account),
+    onClick: () -> Unit,
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -104,11 +130,11 @@ private fun WalletHeader(balance: WalletBalance) {
                 color = whiteColor,
                 shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
             )
-            .padding(16.dp)
+            .padding(start = 16.dp , top = 16.dp , bottom = 16.dp)
     ) {
         WalletIcon()
         WalletBalanceInfo(balance)
-        WithdrawButton()
+        WithdrawButton(buttonText, onClick)
     }
 }
 
@@ -127,12 +153,12 @@ private fun WalletIcon() {
 private fun RowScope.WalletBalanceInfo(balance: WalletBalance) {
     Column(modifier = Modifier.weight(1f)) {
         Text(
-            text = "Current Balance",
+            text = stringResource(Res.string.current_balance),
             color = greyColor,
             fontWeight = FontWeight.W400,
             fontSize = 14.sp
         )
-        val currentBalance = (balance.cashWallet.toIntOrNull() ?: 0) + (balance.bonusWallet.toIntOrNull() ?: 0)
+        val currentBalance =(balance.cashWallet.toFloatOrNull() ?: 0f) + (balance.bonusWallet.toFloatOrNull() ?: 0f)
 
         Text(
             text = "₹${currentBalance}",
@@ -143,15 +169,16 @@ private fun RowScope.WalletBalanceInfo(balance: WalletBalance) {
 }
 
 @Composable
-private fun WithdrawButton() {
+private fun WithdrawButton(
+    buttonText: String = stringResource(Res.string.Add_Account),
+    onClick: () -> Unit,
+) {
     TextButton(
-        onClick = {},
+        onClick = onClick,
         content = {
             Text(
-                modifier = Modifier
-                    .background(blackColor, RoundedCornerShape(12.dp))
-                    .padding(vertical = 10.dp, horizontal = 16.dp),
-                text = "Add Account",
+                modifier = Modifier.background(blackColor, RoundedCornerShape(12.dp)).padding(vertical = 10.dp, horizontal = 8.dp),
+                text = buttonText,
                 color = whiteColor,
                 style = text_style_lead_text,
             )
@@ -167,8 +194,8 @@ private fun WalletBreakdownRow(balance: WalletBalance) {
             .padding(horizontal = 16.dp)
             .background(whiteColor, RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
             .border(
-                width = 1.dp,
-                color = "#6469823D".toColor().copy(.24f),
+                width = 0.5f.dp,
+                color = greyColor.copy(.24f),
                 shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
             )
     ) {
@@ -217,9 +244,13 @@ fun WalletActionItem(
             .padding(horizontal = 16.dp, vertical = 16.dp),
     ) {
         Row(
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(painter = painter, contentDescription = null)
+            Image(
+                painter = painter,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(greyColor)
+            )
             Column(
                 modifier = Modifier.padding(start = 16.dp).weight(1f),
                 verticalArrangement = Arrangement.spacedBy(2.dp)

@@ -3,9 +3,10 @@ package com.devom.app.ui.screens.addslot
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devom.Project
-import com.devom.models.auth.UserResponse
+import com.devom.models.auth.UserRequestResponse
 import com.devom.models.slots.CreatePanditSlotInput
 import com.devom.models.slots.Slot
+import com.devom.network.getUser
 import com.devom.utils.Application
 import com.devom.utils.network.onResult
 import com.devom.utils.network.withError
@@ -16,29 +17,17 @@ import kotlinx.coroutines.launch
 
 class CreateSlotViewModel : ViewModel() {
 
-    private val _user = MutableStateFlow<UserResponse?>(null)
-    val user = _user
 
     private val _slots = MutableStateFlow(listOf<Slot>())
     val slots = _slots
 
     init {
-        getUserProfile()
+        getAvailableSlots()
     }
 
-    fun getUserProfile() {
+    fun getAvailableSlots() {
         viewModelScope.launch {
-            Project.user.getUserProfileUseCase.invoke().collect {
-                it.onResult {
-                    _user.value = it.data
-                }
-            }
-        }
-    }
-
-    fun getAvailableSlots(userId: Int) {
-        viewModelScope.launch {
-            Project.pandit.getAvailableSlotsUseCase.invoke(userId.toString()).collect {
+            Project.pandit.getAvailableSlotsUseCase.invoke(getUser().userId.toString()).collect {
                 it.onResult {
                     this@CreateSlotViewModel.viewModelScope.launch {
                         _slots.emit(
@@ -69,7 +58,7 @@ class CreateSlotViewModel : ViewModel() {
         viewModelScope.launch {
             Project.pandit.createPanditSlotUseCase.invoke(
                 CreatePanditSlotInput(
-                    panditId = user.value?.userId ?: -1,
+                    panditId = getUser().userId,
                     slots = slots
                 )
             ).collect {
@@ -83,7 +72,7 @@ class CreateSlotViewModel : ViewModel() {
                 it.withSuccessWithoutData {
                     Application.hideLoader()
                     setAvailableSlots(slots)
-                    getAvailableSlots(user.value?.userId ?: -1)
+                    getAvailableSlots()
                 }
             }
         }
@@ -102,7 +91,7 @@ class CreateSlotViewModel : ViewModel() {
                 it.withSuccessWithoutData {
                     Application.hideLoader()
                     _slots.value = _slots.value.filter { it.id != slot.id }
-                    getAvailableSlots(user.value?.userId ?: -1)
+                    getAvailableSlots()
                 }
             }
         }

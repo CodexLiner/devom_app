@@ -8,12 +8,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import com.devom.app.theme.bgColor
 import com.devom.app.theme.primaryColor
 import com.devom.app.theme.text_style_h5
 import com.devom.app.theme.whiteColor
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import pandijtapp.composeapp.generated.resources.Res
 import pandijtapp.composeapp.generated.resources.ic_menu
@@ -22,14 +25,26 @@ import pandijtapp.composeapp.generated.resources.ic_menu
 @Composable
 fun AppBar(
     title: String = "",
-    navigationIcon : Painter = painterResource(Res.drawable.ic_menu),
+    navigationIcon: Painter = painterResource(Res.drawable.ic_menu),
     onNavigationIconClick: () -> Unit = {},
-    actions: @Composable RowScope.() -> Unit = {}
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val isClickAllowed = remember { androidx.compose.runtime.mutableStateOf(true) }
+
     TopAppBar(
-        title = { Text(title, color = whiteColor , style = text_style_h5) },
+        title = { Text(title, color = whiteColor, style = text_style_h5) },
         navigationIcon = {
-            IconButton(onClick = onNavigationIconClick) {
+            IconButton(onClick = {
+                if (isClickAllowed.value) {
+                    isClickAllowed.value = false
+                    onNavigationIconClick()
+                    coroutineScope.launch {
+                        delay(1000)
+                        isClickAllowed.value = true
+                    }
+                }
+            }) {
                 Icon(navigationIcon, contentDescription = null, tint = Color.White)
             }
         },

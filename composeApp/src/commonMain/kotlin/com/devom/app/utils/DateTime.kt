@@ -72,13 +72,18 @@ fun String.to12HourTime(): String {
     }
 }
 fun String.to24HourTime(): String {
-    val regex = Regex("""(\d{1,2}):(\d{2})\s*(AM|PM)""", RegexOption.IGNORE_CASE)
-    val match = regex.matchEntire(this.trim())
+    val trimmed = this.trim()
+    val twentyFourHourRegex = Regex("""^([01]?\d|2[0-3]):[0-5]\d$""")
+    if (twentyFourHourRegex.matches(trimmed)) {
+        return trimmed
+    }
+
+    val twelveHourRegex = Regex("""(\d{1,2}):(\d{2})\s*(AM|PM)""", RegexOption.IGNORE_CASE)
+    val match = twelveHourRegex.matchEntire(trimmed)
 
     if (match != null) {
         val (hourStr, minuteStr, meridian) = match.destructured
         var hour = hourStr.toInt()
-        val minute = minuteStr.toInt()
 
         if (meridian.equals("AM", ignoreCase = true)) {
             if (hour == 12) hour = 0
@@ -91,8 +96,11 @@ fun String.to24HourTime(): String {
 
         return "$hourFormatted:$minuteFormatted"
     }
+
+    // Return empty if not a recognizable time format
     return ""
 }
+
 
 fun LocalDate.format(pattern: String): String {
     return pattern

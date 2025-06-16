@@ -5,11 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.devom.Project
 import com.devom.app.models.SupportedFiles
 import com.devom.app.utils.videoExtensions
-import com.devom.models.auth.UserResponse
+import com.devom.models.auth.UserRequestResponse
 import com.devom.models.document.CreateDocumentInput
 import com.devom.models.pandit.GetBiographyResponse
 import com.devom.models.pandit.UpdateBiographyInput
+import com.devom.network.getUser
+import com.devom.utils.Application
+import com.devom.utils.cachepolicy.CachePolicy
 import com.devom.utils.network.onResult
+import com.devom.utils.network.onResultNothing
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.extension
 import io.github.vinceglb.filekit.name
@@ -20,17 +24,15 @@ import kotlinx.io.buffered
 import kotlinx.io.readByteArray
 
 class BiographyViewModel : ViewModel() {
-    private val _user = MutableStateFlow<UserResponse?>(null)
-    val user = _user
 
     private val _biography = MutableStateFlow<GetBiographyResponse?>(null)
     val biography = _biography
 
-    fun uploadDocument(userId: String, platformFile: PlatformFile, supportedFiles: SupportedFiles) {
+    fun uploadDocument(platformFile: PlatformFile, supportedFiles: SupportedFiles) {
         viewModelScope.launch {
             Project.document.createDocumentUseCase.invoke(
                 input = CreateDocumentInput(
-                    userId = userId,
+                    userId = getUser().userId.toString(),
                     mimeType = "*/*",
                     documentType =  if (platformFile.extension.lowercase() in videoExtensions) "video" else "image",
                     description = supportedFiles.document,
@@ -39,15 +41,27 @@ class BiographyViewModel : ViewModel() {
                 )
             ).collect {
                 it.onResult {
-
+                    getBiography()
+                    Application.showToast("Document uploaded successfully")
                 }
             }
         }
     }
 
-    fun getBiography(userId: String) {
+    fun removeDocument(documentId: String) {
         viewModelScope.launch {
-            Project.pandit.getBiographyUseCase.invoke(userId).collect {
+            Project.document.removeDocumentUseCase.invoke(documentId).collect {
+                it.onResultNothing {
+                    getBiography(cachePolicy = CachePolicy.NetworkOnly)
+                    Application.showToast("Document removed successfully")
+                }
+            }
+        }
+    }
+
+    fun getBiography(cachePolicy: CachePolicy = CachePolicy.CacheAndNetwork) {
+        viewModelScope.launch {
+            Project.pandit.getBiographyUseCase.invoke(cachePolicy).collect {
                 it.onResult {
                     _biography.value = it.data
                 }
@@ -55,27 +69,16 @@ class BiographyViewModel : ViewModel() {
         }
     }
 
-    fun getUserProfile() {
-        viewModelScope.launch {
-            Project.user.getUserProfileUseCase.invoke().collect {
-                it.onResult {
-                    _user.value = it.data
-                    getBiography(it.data.userId.toString())
-                }
-            }
-        }
-    }
-
-
     fun updateBiography(input: UpdateBiographyInput) {
         viewModelScope.launch {
             Project.pandit.updateBiographyUseCase.invoke(
                 input.copy(
-                    userId = _user.value?.userId ?: 0
+                    userId = getUser().userId
                 )
             ).collect {
-                it.onResult {
-                    getBiography(input.userId.toString())
+                it.onResultNothing {
+                    getBiography(cachePolicy = CachePolicy.NetworkOnly)
+                    Application.showToast("Biography updated successfully")
                 }
             }
         }

@@ -1,6 +1,10 @@
 package com.devom.app.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -21,17 +25,34 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.devom.utils.Application.hideToast
 import com.devom.utils.Application.toastState
 import kotlinx.coroutines.launch
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+
 @Composable
 fun ShowSnackBar() {
     val snackBarState = toastState.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    if (snackBarState.value.isNullOrEmpty().not()) {
-        Box(modifier = Modifier.fillMaxWidth().safeDrawingPadding()) {
+    val showSnackbar = snackBarState.value.isNullOrEmpty().not()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding()
+    ) {
+        AnimatedVisibility(
+            visible = showSnackbar,
+            enter = slideInVertically(initialOffsetY = { -40 }) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { -40 }) + fadeOut(),
+            modifier = Modifier.align(Alignment.TopCenter)
+        ) {
             SnackbarHost(
                 hostState = snackBarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter),
                 snackbar = { data ->
                     Snackbar(
                         modifier = Modifier.padding(16.dp),
@@ -45,8 +66,10 @@ fun ShowSnackBar() {
                     }
                 }
             )
+        }
 
-            LaunchedEffect(snackBarState.value) {
+        LaunchedEffect(snackBarState.value) {
+            if (showSnackbar) {
                 scope.launch {
                     snackBarHostState.showSnackbar(
                         message = snackBarState.value.orEmpty()
@@ -57,3 +80,4 @@ fun ShowSnackBar() {
         }
     }
 }
+

@@ -1,6 +1,5 @@
 package com.devom.app.ui.screens.booking.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,7 +25,6 @@ fun StartEndPoojaSheet(
     buttonText: String? = null,
     showSheet: Boolean,
     onDismiss: () -> Unit,
-    onResendOtp: () -> Unit,
     onOtpEntered: (String) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -34,6 +32,7 @@ fun StartEndPoojaSheet(
 
     if (showSheet) {
         ModalBottomSheet(
+            containerColor = whiteColor,
             onDismissRequest = {
                 scope.launch {
                     sheetState.hide()
@@ -46,7 +45,6 @@ fun StartEndPoojaSheet(
                 title = title,
                 message = message,
                 buttonText = buttonText,
-                onResendOtp = onResendOtp,
                 onClick = { otp ->
                     scope.launch {
                         sheetState.hide()
@@ -64,7 +62,6 @@ private fun BottomSheetContent(
     title: String? = null,
     message: String? = null,
     buttonText: String? = null,
-    onResendOtp: () -> Unit,
     onClick: (String) -> Unit,
 ) {
     val otpState = remember { mutableStateOf("") }

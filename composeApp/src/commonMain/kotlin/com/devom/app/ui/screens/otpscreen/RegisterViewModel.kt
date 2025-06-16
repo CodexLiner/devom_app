@@ -13,6 +13,8 @@ import com.devom.app.ACCESS_TOKEN_KEY
 import com.devom.app.REFRESH_TOKEN_KEY
 import com.devom.app.UUID_KEY
 import com.devom.app.settings
+import com.devom.network.NetworkClient
+import com.devom.network.USER
 import com.devom.utils.Application.showToast
 
 class RegisterViewModel : ViewModel() {
@@ -29,6 +31,7 @@ class RegisterViewModel : ViewModel() {
                     settings[ACCESS_TOKEN_KEY] = (result as ResponseResult.Success).data.accessToken
                     settings[REFRESH_TOKEN_KEY] = result.data.refreshToken
                     settings[UUID_KEY] = result.data.uuid
+                    settings[USER] = NetworkClient.config.jsonConfig.encodeToString(result.data)
                     Application.isLoggedIn(true)
                 }
             }

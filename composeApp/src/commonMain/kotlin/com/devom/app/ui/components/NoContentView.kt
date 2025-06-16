@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.devom.app.theme.greyColor
@@ -25,7 +26,8 @@ fun NoContentView(
     modifier: Modifier = Modifier,
     title: String? = "No Notifications",
     message: String? = "You haven't received any notifications yet.",
-    image: DrawableResource? = Res.drawable.img_bell
+    image: DrawableResource? = Res.drawable.img_bell,
+    titleTextStyle : TextStyle = text_style_h3
 ) {
     Column(
         modifier.fillMaxSize(),
@@ -44,7 +46,7 @@ fun NoContentView(
             Text(
                 modifier = Modifier.padding(top = 16.dp),
                 text = title,
-                style = text_style_h3
+                style = titleTextStyle
             )
         }
         message?.let {

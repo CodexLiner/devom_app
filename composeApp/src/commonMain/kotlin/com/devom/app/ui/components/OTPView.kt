@@ -30,8 +30,10 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -54,7 +56,8 @@ fun OtpView(
     itemSpacing: Dp = 16.dp,
     onOtpEntered: (String) -> Unit
 ) {
-    var otp by remember { mutableStateOf("") }
+    var otp by remember { mutableStateOf(TextFieldValue()) }
+
     val focusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -77,10 +80,12 @@ fun OtpView(
         BasicTextField(
             value = otp,
             onValueChange = { newValue ->
-                if (newValue.length <= otpLength && newValue.all { it.isDigit() }) {
-                    otp = newValue
-                    if (otp.length == otpLength) {
-                        onOtpEntered(otp)
+                if (newValue.text.length <= otpLength && newValue.text.all { it.isDigit() }) {
+                    otp = newValue.copy(
+                        selection = TextRange(newValue.text.length)
+                    )
+                    if (otp.text.length == otpLength) {
+                        onOtpEntered(otp.text)
                     }
                 }
             },
@@ -109,12 +114,12 @@ fun OtpView(
                                 modifier = Modifier.size(boxSizeDp)
                                     .background(boxColor, RoundedCornerShape(cornerRadius)).border(
                                         width = 1.dp,
-                                        color = if (otp.length == index) selectedBorderColor else borderColor,
+                                        color = if (otp.text.length == index) selectedBorderColor else borderColor,
                                         shape = RoundedCornerShape(cornerRadius)
                                     ), contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = otp.getOrNull(index)?.toString() ?: "",
+                                    text = otp.text.getOrNull(index)?.toString() ?: "",
                                     style = TextStyle(
                                         fontSize = textSize,
                                         color = textColor,

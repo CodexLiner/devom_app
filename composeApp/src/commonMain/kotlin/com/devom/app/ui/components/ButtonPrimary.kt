@@ -8,6 +8,9 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,6 +40,11 @@ fun ButtonPrimary(
     enabled: Boolean = true,
     onClick: () -> Unit = {},
 ) {
+
+    val buttonEnable = remember { mutableStateOf(enabled) }
+    LaunchedEffect(enabled) {
+        buttonEnable.value = enabled
+    }
 
     Button(enabled = enabled , modifier = modifier, colors = colors, shape = shape, onClick = onClick) {
         Row(

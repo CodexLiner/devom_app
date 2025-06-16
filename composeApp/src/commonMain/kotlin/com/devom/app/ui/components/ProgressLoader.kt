@@ -17,8 +17,7 @@ fun ProgressLoader() {
     if (isLoading) {
         Box(
             modifier = Modifier.fillMaxSize().fillMaxSize()
-                .clickable(interactionSource = null, indication = null) { }
-                .background(Color.Black.copy(alpha = 0.5f)), contentAlignment = Alignment.Center
+                .clickable(interactionSource = null, indication = null) { }, contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
         }

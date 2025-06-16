@@ -3,7 +3,8 @@ package com.devom.app.ui.screens.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devom.Project
-import com.devom.models.auth.UserResponse
+import com.devom.models.auth.UserRequestResponse
+import com.devom.utils.Application
 import com.devom.utils.date.convertIsoToDate
 import com.devom.utils.date.toLocalDateTime
 import com.devom.utils.network.onResult
@@ -11,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class ProfileViewModel : ViewModel() {
-    private val _user = MutableStateFlow<UserResponse>(UserResponse())
+    private val _user = MutableStateFlow<UserRequestResponse>(UserRequestResponse())
     val user = _user
 
     init {
@@ -28,24 +29,26 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    fun updateUserProfile(userResponse: UserResponse) {
+    fun updateUserProfile(userRequestResponse: UserRequestResponse, image : ByteArray? = null, message : String =  "Profile updated successfully") {
         viewModelScope.launch {
             Project.user.updateUserProfileUseCase.invoke(
-                userResponse.copy(
-                    dateOfBirth = if (userResponse.dateOfBirth.contains("T")) userResponse.dateOfBirth.convertIsoToDate()
-                        ?.toLocalDateTime()?.date.toString() else userResponse.dateOfBirth
-                )
+                userRequestResponse.copy(
+                    dateOfBirth = if (userRequestResponse.dateOfBirth.contains("T")) userRequestResponse.dateOfBirth.convertIsoToDate()
+                        ?.toLocalDateTime()?.date.toString() else userRequestResponse.dateOfBirth
+                ),
+                image
             ).collect {
                 it.onResult {
                     _user.value = it.data
+                    Application.showToast(message)
                 }
             }
         }
     }
 
-    fun setUserResponse(userResponse: UserResponse) {
+    fun setUserResponse(userRequestResponse: UserRequestResponse) {
         viewModelScope.launch {
-            _user.emit(userResponse.copy())
+            _user.emit(userRequestResponse.copy())
         }
     }
 }
