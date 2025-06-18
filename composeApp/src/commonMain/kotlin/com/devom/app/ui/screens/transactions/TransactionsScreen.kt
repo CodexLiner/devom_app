@@ -37,6 +37,7 @@ import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.NoContentView
 import com.devom.app.ui.components.StatusTabRow
+import com.devom.app.ui.components.TabRowItem
 import com.devom.app.utils.to12HourTime
 import com.devom.app.utils.toRupay
 import com.devom.models.payment.TransactionSource
@@ -80,7 +81,7 @@ fun TransactionsScreenContent(
     viewModel: TransactionsScreenViewModel,
 ) {
     val transactions = viewModel.transactions.collectAsState()
-    val tabs = listOf(stringResource(Res.string.earnings), stringResource(Res.string.withdrawals))
+    val tabs = listOf(TabRowItem(stringResource(Res.string.earnings)), TabRowItem(stringResource(Res.string.withdrawals)))
     var selectedTabIndex = remember { mutableStateOf(0) }
 
     val filteredTransaction = when(selectedTabIndex.value) {
@@ -89,7 +90,7 @@ fun TransactionsScreenContent(
         else -> transactions.value.transactions
     }
 
-    StatusTabRow(selectedTabIndex, tabs)
+    StatusTabRow(selectedTabIndex = selectedTabIndex, tabs = tabs)
     if (filteredTransaction.isNotEmpty()) TransactionDetailContent(filteredTransaction) else NoContentView(
         message = stringResource(Res.string.no_transactions_found),
         image = null,

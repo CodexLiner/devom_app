@@ -84,4 +84,11 @@
     <string name="all_field_required">Please fill out all required fields.</string>
     <string name="referral_message">🔥 Signup on Devom using my referral code <b>%1$s</b> and we both get rewarded! 📲 Click the link to join now:\n</string>
 
+
+
+
+<!--    app side strings-->
+
+    <string name="search_for_pooja">Search pooja...</string>"
+
 </resources>

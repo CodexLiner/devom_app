@@ -22,6 +22,7 @@ import com.devom.app.theme.backgroundColor
 import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.NoContentView
 import com.devom.app.ui.components.StatusTabRow
+import com.devom.app.ui.components.TabRowItem
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.ui.screens.booking.components.BookingCard
 import devom_app.composeapp.generated.resources.Res
@@ -32,7 +33,7 @@ import devom_app.composeapp.generated.resources.ic_no_bookings
 fun BookingScreen(navHostController: NavHostController , onNavigationIconClick: () -> Unit) {
     val viewModel: BookingViewModel = viewModel { BookingViewModel() }
     val bookings = viewModel.bookings.collectAsState()
-    val tabs = listOf("Pending", "Completed", "Rejected")
+    val tabs = listOf(TabRowItem("Pending"), TabRowItem("Completed"), TabRowItem("Rejected"))
     var selectedTabIndex = remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
@@ -43,7 +44,7 @@ fun BookingScreen(navHostController: NavHostController , onNavigationIconClick: 
         modifier = Modifier.fillMaxSize().background(backgroundColor)
     ) {
         AppBar(title = "Bookings" , onNavigationIconClick = onNavigationIconClick)
-        StatusTabRow(selectedTabIndex, tabs)
+        StatusTabRow(selectedTabIndex = selectedTabIndex, tabs = tabs)
 
         val filteredBookings = when (selectedTabIndex.value) {
             0 -> bookings.value.filter { it.status.lowercase() != ApplicationStatus.COMPLETED.status && it.status.lowercase() != ApplicationStatus.REJECTED.status }
