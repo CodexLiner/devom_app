@@ -88,7 +88,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.devom.pandit"
+    namespace = "com.devom.app"
     compileSdk = 35
 
     defaultConfig {
