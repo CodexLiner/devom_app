@@ -19,7 +19,7 @@ class SignUpViewModel : ViewModel() {
         viewModelScope.launch {
             Project.user.registerUserUseCase.invoke(
                 user.apply {
-                    userTypeId = 2
+                    userTypeId = 1
                     dateOfBirth = if (dateOfBirth.contains("T")) dateOfBirth.convertIsoToDate()
                         ?.toLocalDateTime()?.date.toString() else dateOfBirth
                 }).collect {
