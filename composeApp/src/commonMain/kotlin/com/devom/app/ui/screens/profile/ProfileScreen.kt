@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -44,14 +43,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.devom.app.models.ApplicationStatus
 import com.devom.app.theme.backgroundColor
 import com.devom.app.theme.blackColor
-import com.devom.app.theme.greenColor
 import com.devom.app.theme.greyColor
 import com.devom.app.theme.primaryColor
 import com.devom.app.theme.text_style_h5
@@ -66,13 +63,9 @@ import com.devom.models.auth.UserRequestResponse
 import com.devom.utils.Application
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import devom_app.composeapp.generated.resources.Availability
-import devom_app.composeapp.generated.resources.Biography
-import devom_app.composeapp.generated.resources.Documents
 import devom_app.composeapp.generated.resources.Notifications
 import devom_app.composeapp.generated.resources.Preferences
 import devom_app.composeapp.generated.resources.Res
-import devom_app.composeapp.generated.resources.Review_and_Ratings
 import devom_app.composeapp.generated.resources.arrow_drop_down_right
 import devom_app.composeapp.generated.resources.ic_edit
 import devom_app.composeapp.generated.resources.ic_logout
@@ -123,11 +116,7 @@ fun ProfileScreen(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 200.dp)
         ) {
-            item {
-                ProfileCompletionProgressIndicator(
-                    user.profileCompletion.toFloat().coerceIn(0.1f, 100f)
-                )
-            }
+
             item {
                 ProfileUserImageAndRatingsContent(user, user.reviewRating.toFloat()) {
                     navHostController.navigate(Screens.EditProfile.path)
@@ -140,17 +129,10 @@ fun ProfileScreen(
             item {
                 SettingPreferencesCard(
                     notificationsEnabled = notificationsEnabled,
-                    availabilityEnabled = availabilityEnabled,
-                    onAvailabilityToggle = {
-                        availabilityEnabled = it
-                        viewModel.updateUserProfile(
-                            user.copy(isOnline = if (it) 1 else 0),
-                            message = "Availability updated successfully"
-                        )
-                    },
                     onNotificationToggle = {
                         notificationsEnabled = it
-                    })
+                    }
+                )
             }
         }
     }
@@ -159,9 +141,7 @@ fun ProfileScreen(
 @Composable
 fun SettingPreferencesCard(
     notificationsEnabled: Boolean,
-    availabilityEnabled: Boolean,
     onNotificationToggle: (Boolean) -> Unit,
-    onAvailabilityToggle: (Boolean) -> Unit,
 ) {
     Text(
         text = stringResource(Res.string.Preferences),
@@ -180,9 +160,6 @@ fun SettingPreferencesCard(
             PreferenceItem(
                 stringResource(Res.string.Notifications), notificationsEnabled, onNotificationToggle
             )
-            PreferenceItem(
-                stringResource(Res.string.Availability), availabilityEnabled, onAvailabilityToggle
-            )
         }
     }
 
@@ -199,15 +176,6 @@ fun ProfileActionOptionsCard(navHostController: NavHostController) {
         Column {
             ProfileOption(stringResource(Res.string.update_profile)) {
                 navHostController.navigate(Screens.EditProfile.path)
-            }
-            ProfileOption(stringResource(Res.string.Biography)) {
-                navHostController.navigate(Screens.Biography.path)
-            }
-            ProfileOption(stringResource(Res.string.Documents)) {
-                navHostController.navigate(Screens.UploadDocument.path)
-            }
-            ProfileOption(stringResource(Res.string.Review_and_Ratings)) {
-                navHostController.navigate(Screens.ReviewsAndRatings.path)
             }
         }
     }
@@ -292,32 +260,6 @@ private fun RatingsBar(rating: Float) {
         )
     }
 }
-
-
-@Composable
-fun ProfileCompletionProgressIndicator(progress: Float) {
-    AnimatedVisibility(progress > 1) {
-        Box(
-            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(50)).background(whiteColor)
-        ) {
-            Box(
-                modifier = Modifier.fillMaxHeight().fillMaxWidth(progress / 100f)
-                    .clip(RoundedCornerShape(50)).background(greenColor),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "${progress}% Completed",
-                    style = text_style_h5,
-                    fontSize = 10.sp,
-                    color = whiteColor,
-                    maxLines = 1,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-            }
-        }
-    }
-}
-
 
 @Composable
 fun ProfileOption(title: String, onClick: () -> Unit = {}) {

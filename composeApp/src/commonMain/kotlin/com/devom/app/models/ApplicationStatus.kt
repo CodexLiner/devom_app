@@ -6,6 +6,8 @@ enum class ApplicationStatus(val status: String) {
     REJECTED("rejected"),
     CANCELLED("cancelled"),
     COMPLETED("completed"),
+    UPCOMING("upcoming"),
     CONFIRMED("confirmed"),
     VERIFIED("verified"),
+    PAST("past"),
 }

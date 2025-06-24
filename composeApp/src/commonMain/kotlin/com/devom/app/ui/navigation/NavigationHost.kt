@@ -16,7 +16,7 @@ import com.devom.app.ui.navigation.Screens.BookingDetails
 import com.devom.app.ui.navigation.Screens.Notifications
 import com.devom.app.ui.navigation.Screens.ReviewsAndRatings
 import com.devom.app.ui.screens.addbankaccount.BankAccountScreen
-import com.devom.app.ui.screens.addslot.CreateSlotScreen
+import com.devom.app.ui.screens.addslot.ChooseSlotScreen
 import com.devom.app.ui.screens.biography.BiographyScreen
 import com.devom.app.ui.screens.booking.details.BookingDetailScreen
 import com.devom.app.ui.screens.dashboard.DashboardScreen
@@ -96,8 +96,8 @@ fun NavigationHost(
         composable(Screens.EditProfile.path) {
             EditProfileScreen(navController)
         }
-        composable(Screens.CreateSlot.path) {
-            CreateSlotScreen(
+        composable(Screens.SelectSlot.path) {
+            ChooseSlotScreen(
                 navController,
             )
         }

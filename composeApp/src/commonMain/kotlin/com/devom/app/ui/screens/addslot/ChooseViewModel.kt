@@ -3,7 +3,6 @@ package com.devom.app.ui.screens.addslot
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devom.Project
-import com.devom.models.auth.UserRequestResponse
 import com.devom.models.slots.CreatePanditSlotInput
 import com.devom.models.slots.Slot
 import com.devom.network.getUser
@@ -15,7 +14,7 @@ import com.devom.utils.network.withSuccessWithoutData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class CreateSlotViewModel : ViewModel() {
+class ChooseViewModel : ViewModel() {
 
 
     private val _slots = MutableStateFlow(listOf<Slot>())
@@ -27,9 +26,9 @@ class CreateSlotViewModel : ViewModel() {
 
     fun getAvailableSlots() {
         viewModelScope.launch {
-            Project.pandit.getAvailableSlotsUseCase.invoke(getUser().userId.toString()).collect {
+            Project.pandit.getAvailableSlotsUseCase.invoke("139").collect {
                 it.onResult {
-                    this@CreateSlotViewModel.viewModelScope.launch {
+                    this@ChooseViewModel.viewModelScope.launch {
                         _slots.emit(
                             it.data.map {
                                 Slot(

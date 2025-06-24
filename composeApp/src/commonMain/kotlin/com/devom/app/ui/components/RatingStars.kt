@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.devom.app.utils.toColor
 import org.jetbrains.compose.resources.painterResource
@@ -17,14 +18,24 @@ import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_star
 
 @Composable
-fun RatingStars(modifier: Modifier = Modifier, rating: Float = 0f, tint: Color = Color(0xFF4CAF50)) {
-    Row(modifier, verticalAlignment = Alignment.CenterVertically , horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+fun RatingStars(
+    modifier: Modifier = Modifier,
+    rating: Float = 0f,
+    tint: Color = Color(0xFF4CAF50),
+    spacing: Dp = 4.dp,
+    iconModifier: Modifier = Modifier.size(20.dp),
+) {
+    Row(
+        modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(spacing)
+    ) {
         val fullStars = rating.toInt()
         val emptyStars = 5 - fullStars
 
         repeat(fullStars) {
             Image(
-                modifier = Modifier.size(20.dp),
+                modifier = iconModifier,
                 painter = painterResource(Res.drawable.ic_star),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(tint)
@@ -33,7 +44,7 @@ fun RatingStars(modifier: Modifier = Modifier, rating: Float = 0f, tint: Color =
 
         repeat(emptyStars) {
             Image(
-                modifier = Modifier.size(20.dp),
+                modifier = iconModifier,
                 painter = painterResource(Res.drawable.ic_star),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint("#DDDDDD".toColor())

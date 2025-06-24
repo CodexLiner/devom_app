@@ -12,15 +12,16 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.devom.app.theme.greenColor
 import com.devom.app.theme.textBlackShade
 import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AsyncImage
-import com.devom.app.utils.toColor
 import com.devom.app.utils.toDevomImage
 import com.devom.models.pooja.GetPoojaResponse
 
@@ -41,10 +42,11 @@ fun PoojaList(poojaList: List<GetPoojaResponse>) {
 @Composable
 fun PoojaCard(pooja: GetPoojaResponse) {
     Card(
-        border = BorderStroke(1.dp, color = "#A0A5BA3D".toColor()),
+        border = BorderStroke(1.dp, color = greenColor.copy(.24f)),
         colors = CardDefaults.cardColors(containerColor = whiteColor)
     ) {
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {

@@ -1,7 +1,6 @@
 package com.devom.app.ui.screens.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,7 +38,6 @@ import com.devom.app.ui.screens.home.fragments.BhajansContent
 import com.devom.app.ui.screens.home.fragments.PoojaContent
 import com.devom.models.pooja.GetPoojaResponse
 import com.devom.network.getUser
-import org.jetbrains.compose.resources.painterResource
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_grid_cells
 import devom_app.composeapp.generated.resources.ic_music
@@ -47,6 +45,7 @@ import devom_app.composeapp.generated.resources.ic_notification
 import devom_app.composeapp.generated.resources.ic_pray
 import devom_app.composeapp.generated.resources.ic_search
 import devom_app.composeapp.generated.resources.search_for_pooja
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

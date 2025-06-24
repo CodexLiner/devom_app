@@ -89,6 +89,11 @@
 
 <!--    app side strings-->
 
-    <string name="search_for_pooja">Search pooja...</string>"
+    <string name="search_for_pooja">Search pooja...</string>
+    <string name="search">Search...</string>"
+    <string name="choose_pandit">Choose Panditji</string>
+    <string name="book_now">Book Now</string>
+    <string name="booking_confirmation">Booking Confirmation</string>
+    <string name="experience_years">Exp: %1$s Years </string>
 
 </resources>
