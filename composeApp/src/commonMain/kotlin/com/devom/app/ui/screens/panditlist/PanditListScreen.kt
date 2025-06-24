@@ -182,8 +182,15 @@ fun ColumnScope.PanditListScreenContent(
             }
         )
     }
+    PanditListFilters(
+        showSheet = true,
+        onDismiss = {
+            showSheet.value = false
+        },
+        pandits = panditList.value
+    )
 
-    AddEditPoojaBottomSheet(
+    PanditDetailsSheet(
         showSheet = showSheet.value,
         onDismiss = {
             showSheet.value = false
@@ -303,7 +310,7 @@ fun PanditRatingsAndPricing(pandit: GetAllPanditByPoojaIdResponse) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditPoojaBottomSheet(
+fun PanditDetailsSheet(
     showSheet: Boolean,
     title: String? = null,
     onDismiss: () -> Unit,
@@ -413,6 +420,62 @@ fun AddEditPoojaBottomSheet(
                     modifier = Modifier.navigationBarsPadding().padding(top = 26.dp).fillMaxWidth()
                         .height(48.dp),
                     buttonText = stringResource(Res.string.book_now),
+                    onClick = onClick
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PanditListFilters(
+    showSheet: Boolean,
+    title: String? = null,
+    onDismiss: () -> Unit,
+    pandits: List<GetAllPanditByPoojaIdResponse>?,
+    onClick: () -> Unit = {},
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
+    val selectedIndex = remember { mutableStateOf(0) }
+    if (showSheet) {
+        ModalBottomSheet(
+            containerColor = whiteColor,
+            onDismissRequest = {
+                scope.launch {
+                    sheetState.hide()
+                    onDismiss()
+                }
+            }, sheetState = sheetState
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+                modifier = Modifier.padding(horizontal = 24.dp)
+            ) {
+                title?.let {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = it, style = text_style_h4, color = blackColor)
+                        IconButton(onDismiss) {
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_close),
+                                contentDescription = null,
+                                tint = blackColor
+                            )
+                        }
+                    }
+                }
+
+                FilterScreen(pandits = pandits.orEmpty())
+
+                ButtonPrimary(
+                    modifier = Modifier.navigationBarsPadding().padding(top = 26.dp).fillMaxWidth()
+                        .height(48.dp),
+                    buttonText = "Apply",
                     onClick = onClick
                 )
             }
