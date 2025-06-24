@@ -19,6 +19,7 @@ import com.devom.app.ui.screens.addbankaccount.BankAccountScreen
 import com.devom.app.ui.screens.addslot.ChooseSlotScreen
 import com.devom.app.ui.screens.biography.BiographyScreen
 import com.devom.app.ui.screens.booking.details.BookingDetailScreen
+import com.devom.app.ui.screens.bookingpayment.BookingPaymentScreen
 import com.devom.app.ui.screens.dashboard.DashboardScreen
 import com.devom.app.ui.screens.document.UploadDocumentScreen
 import com.devom.app.ui.screens.helpandsupport.HelpAndSupportDetailScreen
@@ -26,6 +27,7 @@ import com.devom.app.ui.screens.helpandsupport.HelpAndSupportScreen
 import com.devom.app.ui.screens.login.LoginScreen
 import com.devom.app.ui.screens.notification.NotificationScreen
 import com.devom.app.ui.screens.otpscreen.VerifyOtpScreen
+import com.devom.app.ui.screens.panditlist.PanditListScreen
 import com.devom.app.ui.screens.profile.EditProfileScreen
 import com.devom.app.ui.screens.referandearn.ReferAndEarnScreen
 import com.devom.app.ui.screens.reviews.ReviewsAndRatingsScreen
@@ -35,6 +37,9 @@ import com.devom.app.ui.screens.signup.RegisterMainScreen
 import com.devom.app.ui.screens.signup.SignupSuccessScreen
 import com.devom.app.ui.screens.transactions.TransactionDetailsScreen
 import com.devom.app.ui.screens.transactions.TransactionsScreen
+import com.devom.app.utils.decodeFromString
+import com.devom.app.utils.urlDecode
+import com.devom.models.slots.BookPanditSlotInput
 
 @Composable
 fun NavigationHost(
@@ -65,13 +70,10 @@ fun NavigationHost(
         }
 
         composable(
-            route = Screens.Register.path,
-            deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "${ASSET_LINK_BASE_URL}referral?phone={phone}&code={code}"
-                }
-            )
-        ) {
+            route = Screens.Register.path, deepLinks = listOf(
+            navDeepLink {
+                uriPattern = "${ASSET_LINK_BASE_URL}referral?phone={phone}&code={code}"
+            })) {
             val phone = it.arguments?.getString("phone") ?: ""
             val code = it.arguments?.getString("code") ?: ""
             RegisterMainScreen(navController, phone, code = code)
@@ -84,8 +86,7 @@ fun NavigationHost(
             arguments = listOf(navArgument("booking") { type = NavType.StringType })
         ) {
             BookingDetailScreen(
-                navController = navController,
-                bookingId = it.arguments?.getString("booking")
+                navController = navController, bookingId = it.arguments?.getString("booking")
             )
         }
         composable(
@@ -96,10 +97,13 @@ fun NavigationHost(
         composable(Screens.EditProfile.path) {
             EditProfileScreen(navController)
         }
-        composable(Screens.SelectSlot.path) {
-            ChooseSlotScreen(
-                navController,
-            )
+        composable(
+            arguments = listOf(
+                navArgument("input") { type = NavType.StringType }
+            ),
+            route = Screens.SelectSlot.path.plus("/{input}")) {
+            val input = it.arguments?.getString("input")?.urlDecode()?.decodeFromString<BookPanditSlotInput>()
+            ChooseSlotScreen(navController, input = input)
         }
         composable(Notifications.path) {
             NotificationScreen(navController)
@@ -135,12 +139,26 @@ fun NavigationHost(
             arguments = listOf(navArgument("ticketId") { type = NavType.StringType })
         ) {
             HelpAndSupportDetailScreen(
-                navController = navController,
-                ticketId = it.arguments?.getString("ticketId") ?: ""
+                navController = navController, ticketId = it.arguments?.getString("ticketId") ?: ""
             )
         }
         composable(Screens.BankAccountScreen.path) {
             BankAccountScreen(navController = navController)
+        }
+        composable(
+            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+            route = Screens.PanditListScreen.path.plus("/{id}")
+        ) {
+            val id = it.arguments?.getString("id") ?: ""
+            PanditListScreen(navController = navController, poojaId = id.toIntOrNull() ?: 0)
+        }
+
+        composable(
+            arguments = listOf(navArgument("input") { type = NavType.StringType }),
+            route = Screens.BookingPaymentScreen.path.plus("/{input}")
+        ) {
+            val input = it.arguments?.getString("input")?.urlDecode()?.decodeFromString<BookPanditSlotInput>()
+            BookingPaymentScreen(navHostController = navController, input = input)
         }
     }
 }

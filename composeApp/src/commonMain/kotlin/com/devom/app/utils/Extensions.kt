@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import com.devom.app.DOCUMENT_BASE_URL
 import com.devom.app.IMAGE_BASE_URL
 import com.devom.models.slots.Slot
+import com.devom.network.NetworkClient
 import io.ktor.http.encodeURLPath
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -93,4 +94,55 @@ fun String.formatStatus(): String =
 val videoExtensions = listOf("mp4", "mov", "avi", "mkv", "webm", "flv", "wmv", "3gp", "mpeg")
 
 
+/**
+ * Percent-encodes a string according to RFC 3986 for use in URLs.
+ * Safe characters: ALPHA / DIGIT / "-" / "." / "_" / "~"
+ */
+fun String.urlEncode(): String {
+    return buildString {
+        val bytes = this@urlEncode.encodeToByteArray() // UTF‑8
+        for (b in bytes) {
+            val ch = b.toInt() and 0xFF
+            when {
+                ch in 'a'.code..'z'.code ||
+                        ch in 'A'.code..'Z'.code ||
+                        ch in '0'.code..'9'.code ||
+                        ch == '-'.code || ch == '.'.code ||
+                        ch == '_'.code || ch == '~'.code -> append(ch.toChar())
+                else -> append("%" + ch.toString(16).uppercase().padStart(2, '0'))
+            }
+        }
+    }
+}
 
+/**
+ * Decodes percent-encoded UTF‑8 strings.
+ * Converts '%HH' to corresponding byte and then to characters.
+ */
+fun String.urlDecode(): String {
+    val bytes = mutableListOf<Byte>()
+    var i = 0
+    while (i < length) {
+        when (val c = this[i]) {
+            '%' -> {
+                val hex = substring(i + 1, i + 3)
+                val b = hex.toInt(16).toByte()
+                bytes.add(b)
+                i += 3
+            }
+            else -> {
+                bytes.add(c.code.toByte())
+                i++
+            }
+        }
+    }
+    return bytes.toByteArray().decodeToString()
+}
+
+
+inline fun <reified T> T.toJsonString(): String {
+    return NetworkClient.config.jsonConfig.encodeToString(this)
+}
+inline fun <reified T> String.decodeFromString(): T {
+    return NetworkClient.config.jsonConfig.decodeFromString(this)
+}

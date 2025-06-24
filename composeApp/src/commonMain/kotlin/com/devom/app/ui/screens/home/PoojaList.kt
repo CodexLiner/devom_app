@@ -1,5 +1,6 @@
 package com.devom.app.ui.screens.home
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,7 +27,7 @@ import com.devom.app.utils.toDevomImage
 import com.devom.models.pooja.GetPoojaResponse
 
 @Composable
-fun PoojaList(poojaList: List<GetPoojaResponse>) {
+fun PoojaList(poojaList: List<GetPoojaResponse> , onClick: (GetPoojaResponse) -> Unit = {}) {
     LazyVerticalGrid(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -34,14 +35,17 @@ fun PoojaList(poojaList: List<GetPoojaResponse>) {
         contentPadding = PaddingValues(16.dp)
     ) {
         items(poojaList) {
-            PoojaCard(it)
+            PoojaCard(it) {
+                onClick(it)
+            }
         }
     }
 }
 
 @Composable
-fun PoojaCard(pooja: GetPoojaResponse) {
+fun PoojaCard(pooja: GetPoojaResponse , onClick: () -> Unit = {}) {
     Card(
+        modifier = Modifier.clickable(onClick = onClick),
         border = BorderStroke(1.dp, color = greenColor.copy(.24f)),
         colors = CardDefaults.cardColors(containerColor = whiteColor)
     ) {

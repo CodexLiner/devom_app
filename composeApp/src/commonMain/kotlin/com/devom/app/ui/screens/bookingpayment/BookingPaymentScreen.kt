@@ -37,17 +37,15 @@ import com.devom.app.theme.text_style_lead_text
 import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.TextInputField
-import com.devom.app.utils.to12HourTime
-import com.devom.models.slots.Slot
+import com.devom.models.slots.BookPanditSlotInput
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.booking_confirmation
-import devom_app.composeapp.generated.resources.copy
 import devom_app.composeapp.generated.resources.ic_arrow_left
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun BookingPaymentScreen(navHostController: NavHostController) {
+fun BookingPaymentScreen(navHostController: NavHostController, input: BookPanditSlotInput?) {
     val viewModel: BookingPaymentScreenViewModel = viewModel {
         BookingPaymentScreenViewModel()
     }
@@ -61,6 +59,7 @@ fun BookingPaymentScreen(navHostController: NavHostController) {
             onNavigationIconClick = { navHostController.popBackStack() },
         )
         BookingPaymentScreenContent(viewModel, navHostController)
+
     }
 }
 

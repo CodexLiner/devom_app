@@ -36,7 +36,9 @@ import com.devom.app.ui.components.TextInputField
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.ui.screens.home.fragments.BhajansContent
 import com.devom.app.ui.screens.home.fragments.PoojaContent
+import com.devom.app.utils.urlEncode
 import com.devom.models.pooja.GetPoojaResponse
+import com.devom.network.NetworkClient
 import com.devom.network.getUser
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_grid_cells
@@ -45,6 +47,7 @@ import devom_app.composeapp.generated.resources.ic_notification
 import devom_app.composeapp.generated.resources.ic_pray
 import devom_app.composeapp.generated.resources.ic_search
 import devom_app.composeapp.generated.resources.search_for_pooja
+import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -110,72 +113,18 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
             )
         }
         when (selectedTabIndex.value) {
-            0 -> HomeScreenAllContent(poojaList)
+            0 -> HomeScreenAllContent(poojaList , navHostController)
             1 -> PoojaContent(poojaList.value)
             2 -> BhajansContent()
         }
     }
-
-
-//    if (bookings.value.isEmpty()) NoContentView(
-//        message = "No Bookings Found",
-//        title = null,
-//        image = null
-//    ) else
-//        LazyColumn(
-//            verticalArrangement = Arrangement.spacedBy(12.dp),
-//            contentPadding = PaddingValues(
-//                start = 16.dp,
-//                end = 16.dp,
-//                top = 16.dp,
-//                bottom = 200.dp
-//            ),
-//            modifier = Modifier.fillMaxSize().animateContentSize()
-//        ) {
-//
-//            item {
-//                EarningsBarChart(transactions = transactions.value.transactions)
-//            }
-//
-//            item {
-//                Text(
-//                    modifier = Modifier.padding(top = 12.dp),
-//                    text = "Today's Bookings",
-//                    style = text_style_h5,
-//                    color = blackColor
-//                )
-//            }
-//            val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-//
-//            val todayBookings = bookings.value.filter {
-//                it.bookingDate.convertIsoToDate()?.toLocalDateTime(TimeZone.currentSystemDefault())?.date == today
-//            }
-//            if (todayBookings.isNotEmpty()) {
-//                items(todayBookings.take(5)) { booking ->
-//                    BookingCard(
-//                        booking = booking,
-//                        onBookingUpdate = {
-//                            viewModel.updateBookingStatus(booking.bookingId, it)
-//                        }, onClick = {
-//                            navHostController.navigate(Screens.BookingDetails.path + "/${booking.bookingId}")
-//                        }
-//                    )
-//                }
-//            } else item {
-//                Box(modifier = Modifier.fillMaxSize().background(whiteColor , RoundedCornerShape(12.dp)).height(278.dp)) {
-//                    NoContentView(
-//                        titleTextStyle = text_style_h4,
-//                        title = "No Bookings Available",
-//                        message = "You haven’t made any bookings yet. Once you do, they’ll appear here.",
-//                        image = null
-//                    )
-//                }
-//            }
-//        }
 }
 
 @Composable
-fun HomeScreenAllContent(poojaList: State<List<GetPoojaResponse>>) {
+fun HomeScreenAllContent(
+    poojaList: State<List<GetPoojaResponse>>,
+    navHostController: NavHostController
+) {
     Row(
         verticalAlignment = Alignment.Bottom,
         modifier = Modifier.fillMaxWidth().padding(16.dp).background(primaryColor, RoundedCornerShape(12.dp))
@@ -203,6 +152,10 @@ fun HomeScreenAllContent(poojaList: State<List<GetPoojaResponse>>) {
             color = blackColor,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
-        PoojaList(poojaList.value)
+        PoojaList(poojaList.value) {
+            navHostController.navigate(
+                Screens.PanditListScreen.path + "/${it.id}"
+            )
+        }
     }
 }

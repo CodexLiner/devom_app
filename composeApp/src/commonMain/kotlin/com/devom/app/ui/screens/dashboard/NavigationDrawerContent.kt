@@ -89,22 +89,6 @@ internal fun NavigationDrawerContent(
         }
 
         DrawerItem(
-            painter = painterResource(Res.drawable.ic_nav_wallet),
-            text = stringResource(Res.string.Biography)
-        ) {
-            appNavHostController.navigate(Screens.Biography.path)
-            onDismiss()
-        }
-
-        DrawerItem(
-            painter = painterResource(Res.drawable.ic_review),
-            text = stringResource(Res.string.Review_and_Ratings)
-        ) {
-            appNavHostController.navigate(Screens.ReviewsAndRatings.path)
-            onDismiss()
-        }
-
-        DrawerItem(
             painter = painterResource(Res.drawable.ic_help_support),
             text = stringResource(Res.string.help_support)
         ) {

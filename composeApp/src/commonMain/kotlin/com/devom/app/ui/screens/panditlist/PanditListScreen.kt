@@ -2,7 +2,6 @@ package com.devom.app.ui.screens.panditlist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -64,11 +63,16 @@ import com.devom.app.ui.components.RatingStars
 import com.devom.app.ui.components.StatusTabRow
 import com.devom.app.ui.components.TabRowItem
 import com.devom.app.ui.components.TextInputField
+import com.devom.app.ui.navigation.Screens
 import com.devom.app.ui.screens.biography.MediaItem
 import com.devom.app.ui.screens.reviews.ReviewItem
 import com.devom.app.utils.toDevomImage
+import com.devom.app.utils.toJsonString
+import com.devom.app.utils.urlEncode
 import com.devom.models.pandit.Review
+import com.devom.models.slots.BookPanditSlotInput
 import com.devom.models.slots.GetAllPanditByPoojaIdResponse
+import com.devom.network.NetworkClient
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.book_now
 import devom_app.composeapp.generated.resources.choose_pandit
@@ -85,7 +89,7 @@ import kotlin.math.round
 
 @Composable
 
-fun PanditListScreen(navController: NavController, poojaId: Int = 18) {
+fun PanditListScreen(navController: NavController, poojaId: Int = 0) {
     val viewModel: PanditListScreenViewModel = viewModel {
         PanditListScreenViewModel()
     }
@@ -98,7 +102,7 @@ fun PanditListScreen(navController: NavController, poojaId: Int = 18) {
             title = stringResource(Res.string.choose_pandit),
             onNavigationIconClick = { navController.popBackStack() },
         )
-        PanditListScreenContent(viewModel, navController)
+        PanditListScreenContent(viewModel, navController, poojaId)
     }
 }
 
@@ -106,10 +110,12 @@ fun PanditListScreen(navController: NavController, poojaId: Int = 18) {
 fun ColumnScope.PanditListScreenContent(
     viewModel: PanditListScreenViewModel,
     navController: NavController,
+    poojaId: Int,
 ) {
     val panditList = viewModel.allPanditList.collectAsState()
     var selectedPandit by remember { mutableStateOf<GetAllPanditByPoojaIdResponse?>(null) }
     val showSheet = remember { mutableStateOf(false) }
+    val filterSheet = remember { mutableStateOf(false) }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -131,13 +137,16 @@ fun ColumnScope.PanditListScreenContent(
                 )
             }
         )
+
         IconButton(
             modifier = Modifier.background(whiteColor, RoundedCornerShape(12.dp)).border(
                 width = 1.dp,
                 color = greyColor.copy(0.24f),
                 shape = RoundedCornerShape(12.dp)
             ).size(56.dp),
-            onClick = { /*TODO*/ }) {
+            onClick = {
+                filterSheet.value = true
+            }) {
             Icon(
                 painter = painterResource(Res.drawable.ic_filters),
                 contentDescription = null,
@@ -178,15 +187,23 @@ fun ColumnScope.PanditListScreenContent(
                 .height(48.dp),
             buttonText = stringResource(Res.string.book_now),
             onClick = {
-
+                val input = BookPanditSlotInput(
+                    panditId = selectedPandit?.userId ?: 0,
+                    poojaId = poojaId
+                )
+                navController.navigate(
+                    Screens.SelectSlot.path.plus(
+                        "/${
+                            input.toJsonString().urlEncode()
+                        }"
+                    )
+                )
             }
         )
     }
     PanditListFilters(
-        showSheet = true,
-        onDismiss = {
-            showSheet.value = false
-        },
+        showSheet = filterSheet.value,
+        onDismiss = { filterSheet.value = false },
         pandits = panditList.value
     )
 

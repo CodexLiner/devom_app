@@ -29,9 +29,14 @@ import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.ButtonPrimary
 import com.devom.app.ui.components.DateItem
 import com.devom.app.ui.components.NoContentView
+import com.devom.app.ui.navigation.Screens
 import com.devom.app.utils.dashedBorder
 import com.devom.app.utils.format
 import com.devom.app.utils.to12HourTime
+import com.devom.app.utils.toJsonString
+import com.devom.app.utils.urlDecode
+import com.devom.app.utils.urlEncode
+import com.devom.models.slots.BookPanditSlotInput
 import com.devom.models.slots.Slot
 import com.devom.utils.date.addDays
 import com.devom.utils.date.formatIsoTo
@@ -41,7 +46,6 @@ import kotlinx.datetime.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import devom_app.composeapp.generated.resources.Res
-import devom_app.composeapp.generated.resources.add_time_slot
 import devom_app.composeapp.generated.resources.book_now
 import devom_app.composeapp.generated.resources.ic_arrow_left
 import devom_app.composeapp.generated.resources.ic_no_slots
@@ -51,19 +55,14 @@ import devom_app.composeapp.generated.resources.set_availablity
 @Composable
 fun ChooseSlotScreen(
     navController: NavController,
-    initialSelectedDate: LocalDate = Clock.System.now().addDays(1)
-        .toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    initialSelectedDate: LocalDate = Clock.System.now().addDays(1).toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    input: BookPanditSlotInput?,
 ) {
     val viewModel = viewModel { ChooseViewModel() }
-
-    val buttonText = remember { mutableStateOf("Update Time Slot") }
 
     LaunchedEffect(Unit) {
         viewModel.getAvailableSlots()
     }
-
-    val sheetState = remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier.fillMaxSize().background(backgroundColor)
@@ -78,10 +77,13 @@ fun ChooseSlotScreen(
             ChooseScreenContent(
                 innerPadding = PaddingValues(0.dp),
                 initialSelectedDate = initialSelectedDate,
-                viewModel = viewModel,
-                sheetState = sheetState
+                viewModel = viewModel
             ) {
-                buttonText.value = it
+                input?.copy(
+                    bookingStartTime = it.startTime,
+                    bookingEndTime = it.endTime,
+                    slotId = it.id.toIntOrNull() ?: 0
+                )
             }
         }
 
@@ -90,9 +92,8 @@ fun ChooseSlotScreen(
             modifier = Modifier.fillMaxWidth().navigationBarsPadding()
                 .padding(horizontal = 16.dp, vertical = 16.dp).height(58.dp)
         ) {
-            scope.launch {
-                sheetState.value = true
-            }
+            val jsonInput = input.toJsonString().urlEncode()
+            navController.navigate(Screens.BookingPaymentScreen.path.plus("/${jsonInput}"))
         }
     }
 }
@@ -103,10 +104,8 @@ fun ChooseScreenContent(
     innerPadding: PaddingValues,
     initialSelectedDate: LocalDate,
     viewModel: ChooseViewModel,
-    sheetState: MutableState<Boolean>,
-    buttonTextChange: (String) -> Unit = {},
-
-    ) {
+    onSlotSelected: (Slot) -> Unit = {}
+) {
 
     val availableSlots = viewModel.slots.collectAsState()
     var selectedDate by remember { mutableStateOf(initialSelectedDate) }
@@ -123,8 +122,6 @@ fun ChooseScreenContent(
         val isSlotsAvailable = availableSlots.value.any {
             it.availableDate.formatIsoTo(yyyy_MM_DD) == selectedDate.format(yyyy_MM_DD)
         }
-        val buttonText = if (isSlotsAvailable) "Update Time Slot" else "Add Time Slot"
-        buttonTextChange(buttonText)
     }
 
     Column(
@@ -144,7 +141,7 @@ fun ChooseScreenContent(
         }
 
         Spacer(Modifier.height(24.dp))
-        SlotsSections(availableSlots, selectedDate)
+        SlotsSections(availableSlots, selectedDate ,onSlotSelected)
     }
 }
 
@@ -152,7 +149,7 @@ fun ChooseScreenContent(
 fun ColumnScope.SlotsSections(
     availableSlots: State<List<Slot>>,
     selectedDate: LocalDate,
-
+    onSlotSelected: (Slot) -> Unit = {}
     ) {
     Text(text = "Slots Available", fontSize = 18.sp, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(8.dp))
@@ -183,7 +180,10 @@ fun ColumnScope.SlotsSections(
                     SlotItem(
                         slot = slot,
                         isSelected = slot == selectedSlot,
-                        onClick = { selectedSlot = slot }
+                        onClick = {
+                            selectedSlot = slot
+                            onSlotSelected(slot)
+                        }
                     )
                 }
             }
