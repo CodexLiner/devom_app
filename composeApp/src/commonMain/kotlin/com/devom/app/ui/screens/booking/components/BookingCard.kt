@@ -52,6 +52,7 @@ fun BookingCard(
     onClick: () -> Unit = {}
 ) {
     Row(
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth().background(whiteColor, shape = RoundedCornerShape(12.dp)).clickable { onClick() }
     ) {
@@ -61,12 +62,12 @@ fun BookingCard(
                 co.touchlab.kermit.Logger.d("KermitLogger $it")
             },
             model = booking.userImage.toDevomImage(),
-            modifier = Modifier.size(112.dp, 139.dp).clip(RoundedCornerShape(12.dp)),
+            modifier = Modifier.size(104.dp, 96.dp).clip(RoundedCornerShape(12.dp)),
         )
         Column(modifier = Modifier.weight(1f).padding(vertical = 12.dp)) {
             BookingUserDetail(booking, onBookingUpdate)
-            BookingUserContactDetail(booking = booking)
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = greyColor.copy(.24f), thickness = 1.dp)
+            BookingId(booking = booking)
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = greyColor.copy(.24f), thickness = 1.dp)
             BookingPoojaDetails(booking = booking)
         }
     }
@@ -144,33 +145,14 @@ private fun RowScope.ConfirmationIcon(
 }
 
 @Composable
-fun BookingUserContactDetail(booking: GetBookingsResponse) {
+fun BookingId(booking: GetBookingsResponse) {
     Text(
-        text = booking.mobileNo,
+        text = "#${booking.bookingId}",
         fontWeight = FontWeight.W500,
         fontSize = 12.sp,
         lineHeight = 18.sp,
         color = greyColor,
     )
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = booking.address.ifEmpty { "N/A" },
-            fontWeight = FontWeight.W500,
-            fontSize = 12.sp,
-            lineHeight = 18.sp,
-            color = greyColor,
-        )
-
-        if (booking.status == ApplicationStatus.COMPLETED.status) Text(
-            modifier = Modifier,
-            text = "₹1101",
-            fontSize = 14.sp,
-            style = text_style_h2,
-            color = primaryColor
-        )
-
-    }
 }
 
 @Composable
@@ -178,14 +160,14 @@ fun BookingPoojaDetails(booking: GetBookingsResponse) {
     Row {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                "POOJA TYPE",
+                "PANDIT NAME",
                 fontWeight = FontWeight.W600,
                 fontSize = 12.sp,
                 style = text_style_lead_text,
                 color = textBlackShade
             )
             Text(
-                booking.poojaName.ifEmpty { "N/A" },
+                booking.panditName.ifEmpty { "N/A" },
                 fontWeight = FontWeight.W500,
                 fontSize = 12.sp,
                 lineHeight = 18.sp,

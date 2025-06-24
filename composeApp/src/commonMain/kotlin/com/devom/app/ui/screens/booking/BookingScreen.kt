@@ -14,6 +14,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -25,15 +27,21 @@ import com.devom.app.ui.components.StatusTabRow
 import com.devom.app.ui.components.TabRowItem
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.ui.screens.booking.components.BookingCard
+import com.devom.utils.date.convertIsoToDate
+import com.devom.utils.date.toLocalDateTime
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_no_bookings
+import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookingScreen(navHostController: NavHostController , onNavigationIconClick: () -> Unit) {
+fun BookingScreen(navHostController: NavHostController, onNavigationIconClick: () -> Unit) {
     val viewModel: BookingViewModel = viewModel { BookingViewModel() }
     val bookings = viewModel.bookings.collectAsState()
-    val tabs = listOf(TabRowItem("Pending"), TabRowItem("Completed"), TabRowItem("Rejected"))
+    val tabs = listOf(
+        TabRowItem(ApplicationStatus.UPCOMING.status.capitalize(Locale.current)),
+        TabRowItem(ApplicationStatus.PAST.status.capitalize(Locale.current))
+    )
     var selectedTabIndex = remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
@@ -43,20 +51,36 @@ fun BookingScreen(navHostController: NavHostController , onNavigationIconClick: 
     Column(
         modifier = Modifier.fillMaxSize().background(backgroundColor)
     ) {
-        AppBar(title = "Bookings" , onNavigationIconClick = onNavigationIconClick)
+        AppBar(title = "Bookings", onNavigationIconClick = onNavigationIconClick)
         StatusTabRow(selectedTabIndex = selectedTabIndex, tabs = tabs)
 
+
+        val today = Clock.System.now().toLocalDateTime().date
+
         val filteredBookings = when (selectedTabIndex.value) {
-            0 -> bookings.value.filter { it.status.lowercase() != ApplicationStatus.COMPLETED.status && it.status.lowercase() != ApplicationStatus.REJECTED.status }
-            1 -> bookings.value.filter { it.status.lowercase() == ApplicationStatus.COMPLETED.status }
-            2 -> bookings.value.filter { it.status.lowercase() == ApplicationStatus.REJECTED.status }
+            0 -> bookings.value.filter {
+                val bookingDate = it.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date
+                bookingDate != null && (bookingDate >= today)
+            }
+
+            1 -> bookings.value.filter {
+                val bookingDate = it.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date
+                bookingDate != null && bookingDate < today
+            }
+
             else -> bookings.value
         }
+
 
         if (filteredBookings.isNotEmpty()) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp , bottom = 200.dp),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 16.dp,
+                    bottom = 200.dp
+                ),
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(filteredBookings) { booking ->
@@ -71,6 +95,10 @@ fun BookingScreen(navHostController: NavHostController , onNavigationIconClick: 
                     )
                 }
             }
-        } else NoContentView(message = "You haven’t made any bookings yet. Once you do, they’ll appear here.", title = "No Bookings Available", image = Res.drawable.ic_no_bookings)
+        } else NoContentView(
+            message = "You haven’t made any bookings yet. Once you do, they’ll appear here.",
+            title = "No Bookings Available",
+            image = Res.drawable.ic_no_bookings
+        )
     }
 }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -23,8 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.devom.app.theme.blackColor
 import com.devom.app.theme.primaryColor
 import com.devom.app.theme.text_style_lead_text
-import devom_app.composeapp.generated.resources.Res
-import devom_app.composeapp.generated.resources.ic_pray
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
