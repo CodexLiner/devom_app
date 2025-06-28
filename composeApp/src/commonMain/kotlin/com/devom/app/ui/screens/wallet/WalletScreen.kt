@@ -38,13 +38,11 @@ import com.devom.app.theme.text_style_lead_text
 import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.navigation.Screens
-import com.devom.app.utils.toColor
 import com.devom.models.payment.WalletBalance
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import devom_app.composeapp.generated.resources.Add_Account
 import devom_app.composeapp.generated.resources.Res
-import devom_app.composeapp.generated.resources.Withdraw
 import devom_app.composeapp.generated.resources.arrow_drop_down_right
 import devom_app.composeapp.generated.resources.bring_your_friends_on_devom_and_earn_rewards
 import devom_app.composeapp.generated.resources.current_balance
@@ -55,7 +53,6 @@ import devom_app.composeapp.generated.resources.invite_and_collect
 import devom_app.composeapp.generated.resources.my_transactions
 import devom_app.composeapp.generated.resources.my_wallet
 import devom_app.composeapp.generated.resources.view_and_track_your_payments_and_transactions
-import devom_app.composeapp.generated.resources.withdrawals
 
 @Composable
 fun WalletScreen(navHostController: NavHostController, onNavigationIconClick: () -> Unit) {
@@ -79,13 +76,11 @@ fun WalletScreenContent(navHostController: NavHostController, viewModel: WalletV
 @Composable
 fun WalletDetailsContent(navController: NavHostController, viewModel: WalletViewModel) {
     val balance = viewModel.walletBalances.collectAsState()
-    val bankDetails = viewModel.bankDetails.collectAsState()
     Box(modifier = Modifier.fillMaxWidth().background(primaryColor)) {
         WalletHeader(
-            balance.value.balance, if (bankDetails.value == null) stringResource(Res.string.Add_Account)
-            else stringResource(Res.string.Withdraw)
+            balance.value.balance,  "Add Money"
         ) {
-            navController.navigate(Screens.BankAccountScreen.path)
+            navController.navigate(Screens.AddWalletBalanceScreen.path)
         }
     }
     WalletBreakdownRow(balance.value.balance)
@@ -139,7 +134,7 @@ private fun WalletHeader(
 }
 
 @Composable
-private fun WalletIcon() {
+fun WalletIcon() {
     Image(
         painter = painterResource(Res.drawable.ic_nav_wallet),
         contentDescription = null,
@@ -150,7 +145,7 @@ private fun WalletIcon() {
 }
 
 @Composable
-private fun RowScope.WalletBalanceInfo(balance: WalletBalance) {
+fun RowScope.WalletBalanceInfo(balance: WalletBalance? = null) {
     Column(modifier = Modifier.weight(1f)) {
         Text(
             text = stringResource(Res.string.current_balance),
@@ -158,13 +153,15 @@ private fun RowScope.WalletBalanceInfo(balance: WalletBalance) {
             fontWeight = FontWeight.W400,
             fontSize = 14.sp
         )
-        val currentBalance =(balance.cashWallet.toFloatOrNull() ?: 0f) + (balance.bonusWallet.toFloatOrNull() ?: 0f)
+        balance?.let {
+            val currentBalance =(balance.cashWallet.toFloatOrNull() ?: 0f) + (balance.bonusWallet.toFloatOrNull() ?: 0f)
 
-        Text(
-            text = "₹${currentBalance}",
-            color = blackColor,
-            style = text_style_h4
-        )
+            Text(
+                text = "₹${currentBalance}",
+                color = blackColor,
+                style = text_style_h4
+            )
+        }
     }
 }
 

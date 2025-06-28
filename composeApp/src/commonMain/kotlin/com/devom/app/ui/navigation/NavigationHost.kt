@@ -15,7 +15,7 @@ import com.devom.app.ui.navigation.Screens.Biography
 import com.devom.app.ui.navigation.Screens.BookingDetails
 import com.devom.app.ui.navigation.Screens.Notifications
 import com.devom.app.ui.navigation.Screens.ReviewsAndRatings
-import com.devom.app.ui.screens.addbankaccount.BankAccountScreen
+import com.devom.app.ui.screens.addbalance.BankWalletBalanceScreen
 import com.devom.app.ui.screens.addslot.ChooseSlotScreen
 import com.devom.app.ui.screens.biography.BiographyScreen
 import com.devom.app.ui.screens.booking.details.BookingDetailScreen
@@ -142,8 +142,8 @@ fun NavigationHost(
                 navController = navController, ticketId = it.arguments?.getString("ticketId") ?: ""
             )
         }
-        composable(Screens.BankAccountScreen.path) {
-            BankAccountScreen(navController = navController)
+        composable(Screens.AddWalletBalanceScreen.path) {
+            BankWalletBalanceScreen(navController = navController)
         }
         composable(
             arguments = listOf(navArgument("id") { type = NavType.StringType }),

@@ -43,7 +43,6 @@ import com.devom.models.slots.GetBookingsResponse
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_arrow_left
 import devom_app.composeapp.generated.resources.pooja_samgri_list
-import kotlinx.datetime.Month
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

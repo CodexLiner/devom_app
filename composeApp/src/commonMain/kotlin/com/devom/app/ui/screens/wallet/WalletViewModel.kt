@@ -13,18 +13,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class WalletViewModel : ViewModel() {
-    private val _user = MutableStateFlow<UserRequestResponse?>(null)
-    val user = _user
-
-    private val _bankDetails = MutableStateFlow<UserBankDetails?>(null)
-    val bankDetails = _bankDetails.asStateFlow()
-
     private val _walletBalances = MutableStateFlow(GetWalletBalanceResponse())
     val walletBalances = _walletBalances
 
     init {
         getWalletBalance()
-        getBankDetails()
     }
 
     fun getWalletBalance() {
@@ -32,16 +25,6 @@ class WalletViewModel : ViewModel() {
             Project.payment.getWalletBalanceUseCase.invoke().collect {
                 it.onResult {
                     _walletBalances.value = it.data
-                }
-            }
-        }
-    }
-
-    fun getBankDetails() {
-        viewModelScope.launch {
-            Project.payment.getBankDetailsUseCase.invoke().collect {
-                it.onResult {
-                    _bankDetails.value = it.data
                 }
             }
         }
