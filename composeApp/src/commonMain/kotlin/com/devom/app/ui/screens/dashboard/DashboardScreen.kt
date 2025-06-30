@@ -103,7 +103,7 @@ fun DashboardScreen(appNavHostController: NavHostController) {
                     selectedIndex = selectedTab,
                     onNavigateTo = {
                         if (it == 2) {
-                            appNavHostController.navigate(Screens.SelectSlot.path)
+                          //  appNavHostController.navigate(Screens.SelectSlot.path)
                             return@BottomMenuBar
                         }
                         viewModel.onTabSelected(it)

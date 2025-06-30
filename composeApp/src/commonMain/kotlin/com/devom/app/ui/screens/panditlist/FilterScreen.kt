@@ -3,15 +3,15 @@ package com.devom.app.ui.screens.panditlist
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,10 +25,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.devom.app.theme.backgroundColor
-import com.devom.app.theme.primaryColor
+import com.devom.app.theme.greyColor
 import com.devom.app.theme.whiteColor
+import com.devom.app.ui.components.Checkbox
+import com.devom.app.utils.toColor
 import com.devom.models.slots.GetAllPanditByPoojaIdResponse
+import kotlin.collections.filter
 
 data class FilterOption(
     val label: String,
@@ -64,7 +66,6 @@ fun getPriceFilterOptions(): List<FilterOption> {
     )
     return filters
 }
-
 
 fun getRatingFilterOptions(): List<FilterOption> {
     return (5 downTo 1).map { rating ->
@@ -112,27 +113,29 @@ fun FilterScreen(
     val filteredPandits = remember(
         experienceOptions, ratingOptions, pricesOptions, languageOptions
     ) {
-        pandits.filter { pandit ->
-            val matchesExperience =
-                selectedExperience?.let { pandit.experienceYears >= it } != false
-            val matchesRating = selectedRating?.let {
-                val rating = pandit.averageRating.toFloatOrNull() ?: 0f
-                if (it == 5) rating == 5f else rating >= it
-            } != false
+        pandits.filter {
+            val matchesPrice = when (selectedPrice) {
+                in 100..999 -> (it.withoutItemPrice.toFloatOrNull() ?: 0f) <= (selectedPrice
+                    ?: Int.MAX_VALUE)
 
-            val matchesPrice = selectedPrice?.let {
-                val withItemPrice =
-                    pandit.withItemPrice.filter { it.isDigit() }.toIntOrNull() ?: Int.MAX_VALUE
-                withItemPrice <= it
-            } != false
+                in 1000..Int.MAX_VALUE -> (it.withItemPrice.toFloatOrNull() ?: 0f) >= (selectedPrice
+                    ?: 0)
+
+                else -> true
+            }
+
 
             val matchesLanguage = if (selectedLanguages.isNotEmpty()) {
                 selectedLanguages.any { lang ->
-                    pandit.languages.contains(lang, ignoreCase = true)
+                    it.languages.contains(lang, ignoreCase = true)
                 }
             } else true
+            val matchesExperience = if (selectedExperience != null) it.experienceYears >= (selectedExperience ?: 0) else true
+
+            val matchesRating = if (selectedRating != null) (it.averageRating.toIntOrNull() ?: 0) >= selectedRating else true
 
             matchesExperience && matchesRating && matchesPrice && matchesLanguage
+
         }
     }
 
@@ -148,14 +151,13 @@ fun FilterScreen(
     }
 
     Column(
-        Modifier.fillMaxWidth().background(Color.White).heightIn(max = 500.dp).animateContentSize()
+        Modifier.fillMaxWidth().background(Color.White).heightIn(max = 500.dp, min = 500.dp)
+            .animateContentSize()
     ) {
 
         Row(Modifier.fillMaxWidth()) {
             FilterCategoryTab(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .background(backgroundColor),
+                modifier = Modifier.fillMaxHeight().background("#F7F8F9".toColor()).weight(0.4f),
                 categories = categories,
                 selectedIndex = selectedCategoryIndex,
                 onCategorySelected = { selectedCategoryIndex = it },
@@ -163,7 +165,7 @@ fun FilterScreen(
 
             LazyColumn(
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(.55f)
                     .padding(start = 8.dp).background(whiteColor)
             ) {
                 items(selectedOptions.size) { index ->
@@ -195,18 +197,19 @@ fun FilterScreen(
 
 @Composable
 fun FilterOptionItem(option: FilterOption, onToggle: () -> Unit) {
-    Row(
-        modifier = Modifier.clickable { onToggle() },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Checkbox(
-            checked = option.isSelected,
-            onCheckedChange = { onToggle() },
-            colors = CheckboxDefaults.colors(
-                checkedColor = primaryColor
+    Column {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.clickable { onToggle() }.padding(vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = option.isSelected,
+                onCheckedChange = { onToggle() },
             )
-        )
-        Text(text = option.label)
+            Text(text = option.label)
+        }
+        HorizontalDivider(color = greyColor.copy(.24f))
     }
 }
 
@@ -220,15 +223,22 @@ fun FilterCategoryTab(
 ) {
     Column(modifier = modifier) {
         categories.forEachIndexed { index, title ->
-            Text(
-                text = title,
-                fontWeight = if (index == selectedIndex) FontWeight.W600 else FontWeight.W500,
-                color = if (index == selectedIndex) Color(0xFFFF6600) else Color.Black,
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .padding(start = 12.dp).padding(vertical = 12.dp)
-                    .clickable { onCategorySelected(index) }
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth()
+                    .background(if (selectedIndex != index) "#F7F8F9".toColor() else whiteColor)
+            ) {
+                Text(
+                    text = title,
+                    fontWeight = if (index == selectedIndex) FontWeight.W600 else FontWeight.W500,
+                    color = if (index == selectedIndex) Color(0xFFFF6600) else Color.Black,
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .padding(start = 12.dp).padding(vertical = 12.dp)
+                        .clickable { onCategorySelected(index) }
+                )
+                HorizontalDivider(color = greyColor.copy(.24f))
+            }
+
         }
     }
 }

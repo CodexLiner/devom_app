@@ -34,14 +34,14 @@ import com.devom.app.utils.dashedBorder
 import com.devom.app.utils.format
 import com.devom.app.utils.to12HourTime
 import com.devom.app.utils.toJsonString
-import com.devom.app.utils.urlDecode
 import com.devom.app.utils.urlEncode
+import com.devom.models.pooja.GetPoojaResponse
 import com.devom.models.slots.BookPanditSlotInput
+import com.devom.models.slots.GetAllPanditByPoojaIdResponse
 import com.devom.models.slots.Slot
 import com.devom.utils.date.addDays
 import com.devom.utils.date.formatIsoTo
 import com.devom.utils.date.yyyy_MM_DD
-import kotlinx.coroutines.launch
 import kotlinx.datetime.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -55,10 +55,13 @@ import devom_app.composeapp.generated.resources.set_availablity
 @Composable
 fun ChooseSlotScreen(
     navController: NavController,
-    initialSelectedDate: LocalDate = Clock.System.now().addDays(1).toLocalDateTime(TimeZone.currentSystemDefault()).date,
-    input: BookPanditSlotInput?,
+    initialSelectedDate: LocalDate = Clock.System.now().addDays(1)
+        .toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    pandit: GetAllPanditByPoojaIdResponse?,
+    pooja: GetPoojaResponse?,
 ) {
     val viewModel = viewModel { ChooseViewModel() }
+    var input by remember { mutableStateOf(BookPanditSlotInput()) }
 
     LaunchedEffect(Unit) {
         viewModel.getAvailableSlots()
@@ -79,21 +82,29 @@ fun ChooseSlotScreen(
                 initialSelectedDate = initialSelectedDate,
                 viewModel = viewModel
             ) {
-                input?.copy(
+                input = input.copy(
                     bookingStartTime = it.startTime,
                     bookingEndTime = it.endTime,
-                    slotId = it.id.toIntOrNull() ?: 0
+                    slotId = it.id.toIntOrNull() ?: 0,
+                    bookingDate = it.availableDate
                 )
             }
         }
 
         ButtonPrimary(
+            enabled = input.bookingDate.isNotEmpty(),
             buttonText = stringResource(Res.string.book_now),
             modifier = Modifier.fillMaxWidth().navigationBarsPadding()
                 .padding(horizontal = 16.dp, vertical = 16.dp).height(58.dp)
         ) {
             val jsonInput = input.toJsonString().urlEncode()
-            navController.navigate(Screens.BookingPaymentScreen.path.plus("/${jsonInput}"))
+            navController.navigate(
+                Screens.BookingPaymentScreen.path.plus(
+                    "/${jsonInput}/${
+                        pandit?.toJsonString()?.urlEncode()
+                    }/${pooja?.toJsonString()?.urlEncode()}"
+                )
+            )
         }
     }
 }
@@ -104,7 +115,7 @@ fun ChooseScreenContent(
     innerPadding: PaddingValues,
     initialSelectedDate: LocalDate,
     viewModel: ChooseViewModel,
-    onSlotSelected: (Slot) -> Unit = {}
+    onSlotSelected: (Slot) -> Unit = {},
 ) {
 
     val availableSlots = viewModel.slots.collectAsState()
@@ -141,7 +152,7 @@ fun ChooseScreenContent(
         }
 
         Spacer(Modifier.height(24.dp))
-        SlotsSections(availableSlots, selectedDate ,onSlotSelected)
+        SlotsSections(availableSlots, selectedDate, onSlotSelected)
     }
 }
 
@@ -149,8 +160,8 @@ fun ChooseScreenContent(
 fun ColumnScope.SlotsSections(
     availableSlots: State<List<Slot>>,
     selectedDate: LocalDate,
-    onSlotSelected: (Slot) -> Unit = {}
-    ) {
+    onSlotSelected: (Slot) -> Unit = {},
+) {
     Text(text = "Slots Available", fontSize = 18.sp, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(8.dp))
     var selectedSlot by remember { mutableStateOf<Slot?>(null) }

@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -34,11 +36,10 @@ import com.devom.app.ui.components.StatusTabRow
 import com.devom.app.ui.components.TabRowItem
 import com.devom.app.ui.components.TextInputField
 import com.devom.app.ui.navigation.Screens
-import com.devom.app.ui.screens.home.fragments.BhajansContent
 import com.devom.app.ui.screens.home.fragments.PoojaContent
+import com.devom.app.utils.toJsonString
 import com.devom.app.utils.urlEncode
 import com.devom.models.pooja.GetPoojaResponse
-import com.devom.network.NetworkClient
 import com.devom.network.getUser
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_grid_cells
@@ -47,7 +48,6 @@ import devom_app.composeapp.generated.resources.ic_notification
 import devom_app.composeapp.generated.resources.ic_pray
 import devom_app.composeapp.generated.resources.ic_search
 import devom_app.composeapp.generated.resources.search_for_pooja
-import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -61,7 +61,7 @@ fun HomeScreen(navHostController: NavHostController, onNavigationIconClick: () -
     }
     Column(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
         AppBar(
-            title = "Hii ${getUser().fullName}",
+            title = "Hi ${getUser().fullName}",
             onNavigationIconClick = onNavigationIconClick,
             actions = {
                 IconButton(onClick = {
@@ -81,26 +81,63 @@ fun HomeScreen(navHostController: NavHostController, onNavigationIconClick: () -
 
 @Composable
 fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHostController) {
-    val poojaList = viewModel.poojaList.collectAsState()
-    val tabs = listOf(
-        TabRowItem("All", Res.drawable.ic_grid_cells),
-        TabRowItem("Pooja", Res.drawable.ic_pray),
-        TabRowItem("Bhajan", Res.drawable.ic_music)
-    )
+    val poojaList by viewModel.poojaList.collectAsState()
+    val searchText = remember { mutableStateOf("") }
     val selectedTabIndex = remember { mutableStateOf(0) }
+
+    // Remember tabs to avoid recomputing
+    val tabs = remember(poojaList) {
+        buildList {
+            add(TabRowItem("All", Res.drawable.ic_grid_cells))
+            addAll(
+                poojaList.distinctBy { it.category.lowercase() }.map {
+                    TabRowItem(
+                        it.category,
+                        if (it.category.lowercase() == "pooja") Res.drawable.ic_pray else Res.drawable.ic_music
+                    )
+                }
+            )
+        }
+    }
+
+    val filteredList by remember(poojaList, searchText.value, selectedTabIndex.value) {
+        derivedStateOf {
+            val query = searchText.value.lowercase()
+            if (selectedTabIndex.value == 0) {
+                poojaList.filter { it.name.lowercase().contains(query) }
+            } else {
+                val selectedCategory = tabs.getOrNull(selectedTabIndex.value)?.title?.lowercase()
+                poojaList.filter {
+                    it.category.lowercase() == selectedCategory &&
+                            it.name.lowercase().contains(query)
+                }
+            }
+        }
+    }
+
     Column {
-        Column(modifier = Modifier.fillMaxWidth().background(primaryColor)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(primaryColor)
+        ) {
             TextInputField(
-                modifier = Modifier.padding(horizontal = 16.dp).padding(top = 4.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 4.dp),
                 placeholder = stringResource(Res.string.search_for_pooja),
-                backgroundColor = whiteColor, leadingIcon = {
+                backgroundColor = whiteColor,
+                leadingIcon = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_search),
                         contentDescription = null,
                         tint = primaryColor
                     )
                 }
-            )
+            ) {
+                searchText.value = it
+            }
+
             StatusTabRow(
                 modifier = Modifier.padding(top = 18.dp),
                 divider = {},
@@ -108,26 +145,38 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
                 selectedTabIndex = selectedTabIndex,
                 tabs = tabs,
                 selectedTextColor = whiteColor,
-                unselectedTextColor = whiteColor.copy(.8f),
+                unselectedTextColor = whiteColor.copy(alpha = 0.8f),
                 indicatorColor = whiteColor
             )
         }
-        when (selectedTabIndex.value) {
-            0 -> HomeScreenAllContent(poojaList , navHostController)
-            1 -> PoojaContent(poojaList.value)
-            2 -> BhajansContent()
+
+        if (selectedTabIndex.value == 0) {
+            HomeScreenAllContent(filteredList, navHostController)
+        } else {
+            val selectedTitle = tabs.getOrNull(selectedTabIndex.value)?.title.orEmpty()
+            val banner = poojaList.find {
+                it.category.equals(selectedTitle, ignoreCase = true)
+            }?.categoryImage.orEmpty()
+
+            PoojaContent(
+                poojaList = filteredList,
+                title = selectedTitle,
+                banner = banner
+            )
         }
     }
 }
 
+
 @Composable
 fun HomeScreenAllContent(
-    poojaList: State<List<GetPoojaResponse>>,
-    navHostController: NavHostController
+    poojaList: List<GetPoojaResponse>,
+    navHostController: NavHostController,
 ) {
     Row(
         verticalAlignment = Alignment.Bottom,
-        modifier = Modifier.fillMaxWidth().padding(16.dp).background(primaryColor, RoundedCornerShape(12.dp))
+        modifier = Modifier.fillMaxWidth().padding(16.dp)
+            .background(primaryColor, RoundedCornerShape(12.dp))
     ) {
         Column(
             modifier = Modifier.weight(1f).padding(vertical = 24.dp, horizontal = 16.dp),
@@ -145,16 +194,16 @@ fun HomeScreenAllContent(
         PatternDesign(modifier = Modifier)
     }
 
-    if (poojaList.value.isNotEmpty()) {
+    if (poojaList.isNotEmpty()) {
         Text(
             text = "Pooja Listing",
             style = text_style_h5,
             color = blackColor,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
-        PoojaList(poojaList.value) {
+        PoojaList(poojaList) {
             navHostController.navigate(
-                Screens.PanditListScreen.path + "/${it.id}"
+                Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}"
             )
         }
     }

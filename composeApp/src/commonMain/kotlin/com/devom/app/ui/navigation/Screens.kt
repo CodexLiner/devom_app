@@ -14,7 +14,7 @@ sealed class Screens(val path: String) {
     data object BookingDetails : Screens(path = "details")
     data object Register : Screens(path = "register")
     data object Document : Screens(path = "document")
-    data object SignUpSuccess : Screens(path = "signup_success")
+    data object BookingSuccess : Screens(path = "booking_success")
     data object Bookings : Screens(path = "bookings")
     data object OtpScreen : Screens(path = "otpScreen")
     data object Profile : Screens(path = "profile")

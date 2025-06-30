@@ -32,6 +32,7 @@ import com.devom.app.theme.secondaryColor
 import com.devom.app.theme.textBlackShade
 import com.devom.app.theme.text_style_h2
 import com.devom.app.theme.text_style_lead_text
+import com.devom.app.theme.warningColor
 import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AsyncImage
 import com.devom.app.utils.to12HourTime
@@ -48,13 +49,14 @@ import devom_app.composeapp.generated.resources.ic_close
 @Composable
 fun BookingCard(
     booking: GetBookingsResponse,
-    onBookingUpdate: (ApplicationStatus) -> Unit ={},
-    onClick: () -> Unit = {}
+    onBookingUpdate: (ApplicationStatus) -> Unit = {},
+    onClick: () -> Unit = {},
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.fillMaxWidth().background(whiteColor, shape = RoundedCornerShape(12.dp)).clickable { onClick() }
+        modifier = Modifier.fillMaxWidth().background(whiteColor, shape = RoundedCornerShape(12.dp))
+            .clickable { onClick() }
     ) {
 
         AsyncImage(
@@ -67,14 +69,18 @@ fun BookingCard(
         Column(modifier = Modifier.weight(1f).padding(vertical = 12.dp)) {
             BookingUserDetail(booking, onBookingUpdate)
             BookingId(booking = booking)
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = greyColor.copy(.24f), thickness = 1.dp)
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = greyColor.copy(.24f),
+                thickness = 1.dp
+            )
             BookingPoojaDetails(booking = booking)
         }
     }
 }
 
 @Composable
-fun BookingUserDetail(booking: GetBookingsResponse ,onBookingUpdate : (ApplicationStatus) -> Unit) {
+fun BookingUserDetail(booking: GetBookingsResponse, onBookingUpdate: (ApplicationStatus) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -85,40 +91,21 @@ fun BookingUserDetail(booking: GetBookingsResponse ,onBookingUpdate : (Applicati
             modifier = Modifier.weight(1f)
         )
 
-        if (booking.status == ApplicationStatus.PENDING.status) Row(modifier = Modifier.padding(end = 8.dp) , horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            BookingConfirmationButton(onBookingUpdate)
+        val contentColor =
+            if (booking.status == ApplicationStatus.CONFIRMED.status) greenColor else if (booking.status == ApplicationStatus.PENDING.status) warningColor else secondaryColor
+        Box(
+            modifier = Modifier.padding(end = 8.dp)
+                .background(contentColor.copy(0.08f), shape = RoundedCornerShape(50))
+        ) {
+            Text(
+                modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
+                text = booking.status.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
+                color = contentColor,
+                fontWeight = FontWeight.W600,
+                fontSize = 12.sp,
+                lineHeight = 18.sp,
+            )
         }
-        else {
-            val contentColor = if (booking.status == ApplicationStatus.CONFIRMED.status) greenColor else secondaryColor
-            Box(modifier = Modifier.padding(end = 8.dp).background(contentColor.copy(0.08f), shape = RoundedCornerShape(50))) {
-                Text(
-                    modifier = Modifier.padding(vertical = 4.dp , horizontal = 8.dp),
-                    text = booking.status.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
-                    color = contentColor,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 12.sp,
-                    lineHeight = 18.sp,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun RowScope.BookingConfirmationButton(onBookingUpdate : (ApplicationStatus) -> Unit) {
-    ConfirmationIcon(
-        iconRes = Res.drawable.ic_check,
-        tintColor = greenColor,
-        backgroundColor = greenColor.copy(alpha = 0.08f)
-    ) {
-        onBookingUpdate(ApplicationStatus.CONFIRMED)
-    }
-    ConfirmationIcon(
-        iconRes = Res.drawable.ic_close,
-        tintColor = secondaryColor,
-        backgroundColor = secondaryColor.copy(alpha = 0.08f)
-    ) {
-        onBookingUpdate(ApplicationStatus.REJECTED)
     }
 }
 
@@ -127,7 +114,7 @@ private fun RowScope.ConfirmationIcon(
     iconRes: DrawableResource,
     tintColor: Color,
     backgroundColor: Color,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     Box(
         modifier = Modifier
@@ -183,8 +170,9 @@ fun BookingPoojaDetails(booking: GetBookingsResponse) {
                 color = textBlackShade
             )
 
-            val date =  booking.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date.toString()
-            val time = booking.bookingDate.convertIsoToDate()?.toLocalDateTime()?.time?.to12HourTime()
+            val date = booking.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date.toString()
+            val time =
+                booking.bookingDate.convertIsoToDate()?.toLocalDateTime()?.time?.to12HourTime()
             Text(
                 text = date.plus(" $time"),
                 fontWeight = FontWeight.W500,

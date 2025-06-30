@@ -34,12 +34,14 @@ import com.devom.app.ui.screens.reviews.ReviewsAndRatingsScreen
 import com.devom.app.ui.screens.rituals.RitualsScreen
 import com.devom.app.ui.screens.signup.DocumentUploadScreen
 import com.devom.app.ui.screens.signup.RegisterMainScreen
-import com.devom.app.ui.screens.signup.SignupSuccessScreen
+import com.devom.app.ui.screens.bookingpayment.BookingSuccessScreen
 import com.devom.app.ui.screens.transactions.TransactionDetailsScreen
 import com.devom.app.ui.screens.transactions.TransactionsScreen
 import com.devom.app.utils.decodeFromString
 import com.devom.app.utils.urlDecode
+import com.devom.models.pooja.GetPoojaResponse
 import com.devom.models.slots.BookPanditSlotInput
+import com.devom.models.slots.GetAllPanditByPoojaIdResponse
 
 @Composable
 fun NavigationHost(
@@ -65,15 +67,20 @@ fun NavigationHost(
                 mobileNumber = it.arguments?.getString("mobileNumber")
             )
         }
-        composable(Screens.SignUpSuccess.path) {
-            SignupSuccessScreen(navHostController = navController)
+        composable(
+            arguments = listOf(navArgument("poojaName") { type = NavType.StringType }),
+            route = Screens.BookingSuccess.path.plus("/{poojaName}")
+        ) {
+            val poojaName = it.arguments?.getString("poojaName")
+            BookingSuccessScreen(navHostController = navController , poojaName.orEmpty())
         }
 
         composable(
             route = Screens.Register.path, deepLinks = listOf(
-            navDeepLink {
-                uriPattern = "${ASSET_LINK_BASE_URL}referral?phone={phone}&code={code}"
-            })) {
+                navDeepLink {
+                    uriPattern = "${ASSET_LINK_BASE_URL}referral?phone={phone}&code={code}"
+                })
+        ) {
             val phone = it.arguments?.getString("phone") ?: ""
             val code = it.arguments?.getString("code") ?: ""
             RegisterMainScreen(navController, phone, code = code)
@@ -99,11 +106,15 @@ fun NavigationHost(
         }
         composable(
             arguments = listOf(
-                navArgument("input") { type = NavType.StringType }
+                navArgument("pandit") { type = NavType.StringType },
+                navArgument("pooja") { type = NavType.StringType }
             ),
-            route = Screens.SelectSlot.path.plus("/{input}")) {
-            val input = it.arguments?.getString("input")?.urlDecode()?.decodeFromString<BookPanditSlotInput>()
-            ChooseSlotScreen(navController, input = input)
+            route = Screens.SelectSlot.path.plus("/{pooja}/{pandit}")) {
+            val pooja =
+                it.arguments?.getString("pooja")?.urlDecode()?.decodeFromString<GetPoojaResponse>()
+            val pandit = it.arguments?.getString("pandit")?.urlDecode()
+                ?.decodeFromString<GetAllPanditByPoojaIdResponse>()
+            ChooseSlotScreen(navController, pooja = pooja, pandit = pandit)
         }
         composable(Notifications.path) {
             NotificationScreen(navController)
@@ -146,19 +157,33 @@ fun NavigationHost(
             BankWalletBalanceScreen(navController = navController)
         }
         composable(
-            arguments = listOf(navArgument("id") { type = NavType.StringType }),
-            route = Screens.PanditListScreen.path.plus("/{id}")
+            arguments = listOf(navArgument("pooja") { type = NavType.StringType }),
+            route = Screens.PanditListScreen.path.plus("/{pooja}")
         ) {
-            val id = it.arguments?.getString("id") ?: ""
-            PanditListScreen(navController = navController, poojaId = id.toIntOrNull() ?: 0)
+            val pooja =
+                it.arguments?.getString("pooja")?.urlDecode()?.decodeFromString<GetPoojaResponse>()
+            PanditListScreen(navController = navController, pooja = pooja)
         }
 
         composable(
-            arguments = listOf(navArgument("input") { type = NavType.StringType }),
-            route = Screens.BookingPaymentScreen.path.plus("/{input}")
+            arguments = listOf(
+                navArgument("input") { type = NavType.StringType },
+                navArgument("pooja") { type = NavType.StringType },
+                navArgument("pandit") { type = NavType.StringType }),
+            route = Screens.BookingPaymentScreen.path.plus("/{input}/{pandit}/{pooja}")
         ) {
-            val input = it.arguments?.getString("input")?.urlDecode()?.decodeFromString<BookPanditSlotInput>()
-            BookingPaymentScreen(navHostController = navController, input = input)
+            val input = it.arguments?.getString("input")?.urlDecode()
+                ?.decodeFromString<BookPanditSlotInput>()
+            val pandit = it.arguments?.getString("pandit")?.urlDecode()
+                ?.decodeFromString<GetAllPanditByPoojaIdResponse>()
+            val pooja =
+                it.arguments?.getString("pooja")?.urlDecode()?.decodeFromString<GetPoojaResponse>()
+            BookingPaymentScreen(
+                navHostController = navController,
+                input = input,
+                pandit = pandit,
+                pooja = pooja
+            )
         }
     }
 }

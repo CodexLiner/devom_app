@@ -1,10 +1,13 @@
-package com.devom.app.ui.screens.signup
+package com.devom.app.ui.screens.bookingpayment
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.withStyle
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,10 +34,7 @@ import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_check
 
 @Composable
-fun SignupSuccessScreen(navHostController: NavHostController) {
-    val steps = listOf("General", "Skills", "Document")
-    val currentStep = 1
-
+fun BookingSuccessScreen(navHostController: NavHostController, poojaName: String = "Pooja") {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -66,7 +66,7 @@ fun SignupSuccessScreen(navHostController: NavHostController) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Signup Successful!",
+                text = "Booking Confirmed!",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
                 ),
@@ -77,11 +77,18 @@ fun SignupSuccessScreen(navHostController: NavHostController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Your account has been created successfully.\nStart exploring personalized puja services,\nastrology guidance, and more.",
+                text = buildAnnotatedString {
+                    append("Your ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold , color = Color.Black)) {
+                        append(poojaName)
+                    }
+                    append(" has been booked successfully. Panditji will contact you soon or You will receive a reminder before the event.")
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
                 textAlign = TextAlign.Center
             )
+
         }
 
         ButtonPrimary(
@@ -90,9 +97,9 @@ fun SignupSuccessScreen(navHostController: NavHostController) {
                 .fillMaxWidth()
                 .padding(bottom = 32.dp)
                 .height(48.dp),
-            buttonText = "Login Now",
+            buttonText = "Back To Home",
             onClick = {
-                navHostController.popBackStack(Screens.Login.path , false)
+                navHostController.popBackStack(Screens.Dashboard.path, false)
             },
             fontStyle = text_style_lead_text
         )

@@ -40,9 +40,12 @@ import com.devom.app.ui.screens.booking.BookingViewModel
 import com.devom.app.ui.screens.booking.components.BookingCard
 import com.devom.models.slots.BookingItem
 import com.devom.models.slots.GetBookingsResponse
+import com.devom.utils.date.convertIsoToDate
+import com.devom.utils.date.toLocalDateTime
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_arrow_left
 import devom_app.composeapp.generated.resources.pooja_samgri_list
+import kotlinx.datetime.Clock
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -81,35 +84,39 @@ fun ColumnScope.BookingDetailScreenContent(
             .fillMaxWidth()
             .weight(1f)
     ) {
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().background(
-                    color = primaryColor.copy(.0f),
-                    shape = RoundedCornerShape(12.dp)
-                ).border(
-                    width = 1.dp,
-                    color = primaryColor.copy(.24f),
-                    shape = RoundedCornerShape(12.dp)
-                ).padding(
-                    horizontal = 12.dp, vertical = 14.dp
-                )
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = "Your OTP to Start Pooja:",
-                    fontWeight = FontWeight.W500,
-                    style = text_style_lead_body_1,
-                    color = textBlackShade
-                )
-                Text(
-                    text = "4434",
-                    style = text_style_h4,
-                    color = blackColor
-                )
+        val today = Clock.System.now().toLocalDateTime().date
+        val bookingDate = booking.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date
+
+        if (bookingDate != null && (bookingDate >= today)) {
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().background(
+                        color = primaryColor.copy(.0f),
+                        shape = RoundedCornerShape(12.dp)
+                    ).border(
+                        width = 1.dp,
+                        color = primaryColor.copy(.24f),
+                        shape = RoundedCornerShape(12.dp)
+                    ).padding(
+                        horizontal = 12.dp, vertical = 14.dp
+                    )
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = "Your OTP to Start Pooja:",
+                        fontWeight = FontWeight.W500,
+                        style = text_style_lead_body_1,
+                        color = textBlackShade
+                    )
+                    Text(
+                        text = "4434",
+                        style = text_style_h4,
+                        color = blackColor
+                    )
+                }
             }
         }
-
         item {
             BookingCard(
                 booking = booking,

@@ -45,7 +45,7 @@ internal fun App() = AppTheme {
     val isLoggedIn by loginState.collectAsState()
     var initialized by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isLoggedIn){
+    LaunchedEffect(isLoggedIn) {
         if (isLoggedIn.not()) {
             settings.remove(ACCESS_TOKEN_KEY)
             settings.remove(ACCESS_TOKEN_KEY)
@@ -58,7 +58,8 @@ internal fun App() = AppTheme {
     }
 
     LaunchedEffect(isLoggedIn) {
-        val loggedIn = accessKey?.isNotEmpty() == true && refreshToken?.isNotEmpty() == true && uuid?.isNotEmpty() == true
+        val loggedIn =
+            accessKey?.isNotEmpty() == true && refreshToken?.isNotEmpty() == true && uuid?.isNotEmpty() == true
         isLoggedIn(loggedIn)
         NetworkClient.configure {
             setTokens(access = accessKey.orEmpty(), refresh = refreshToken.orEmpty())
@@ -88,7 +89,7 @@ fun MainScreen(isLoggedIn: Boolean) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     AnimatedContent(
                         targetState = isLoggedIn, transitionSpec = {
-                            fadeIn(animationSpec = tween(500)) togetherWith  fadeOut(
+                            fadeIn(animationSpec = tween(500)) togetherWith fadeOut(
                                 animationSpec = tween(
                                     500
                                 )

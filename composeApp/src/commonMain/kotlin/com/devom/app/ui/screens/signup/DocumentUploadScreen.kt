@@ -69,7 +69,7 @@ fun DocumentUploadScreen(navHostController: NavHostController) {
                         modifier = Modifier.padding(top = 48.dp).fillMaxWidth().height(58.dp),
                         buttonText = "Submit",
                         onClick = {
-                            navHostController.navigate(Screens.SignUpSuccess.path)
+                            navHostController.navigate(Screens.BookingSuccess.path)
                         },
                         fontStyle = text_style_lead_text
                     )

@@ -63,7 +63,7 @@ fun RegisterMainScreen(
 
     LaunchedEffect(createUserStatus) {
         if (createUserStatus == true) {
-            navController.navigate(Screens.SignUpSuccess.path) {
+            navController.navigate(Screens.BookingSuccess.path) {
                 popUpTo(Screens.Register.path) {
                     inclusive = true
                 }

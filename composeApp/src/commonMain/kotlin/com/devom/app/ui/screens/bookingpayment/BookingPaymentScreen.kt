@@ -6,9 +6,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -17,6 +20,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,16 +43,29 @@ import com.devom.app.theme.text_style_h5
 import com.devom.app.theme.text_style_lead_text
 import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AppBar
+import com.devom.app.ui.components.ButtonPrimary
 import com.devom.app.ui.components.TextInputField
+import com.devom.app.ui.navigation.Screens
+import com.devom.models.pooja.GetPoojaResponse
 import com.devom.models.slots.BookPanditSlotInput
+import com.devom.models.slots.GetAllPanditByPoojaIdResponse
+import com.devom.network.getUser
+import com.devom.utils.date.convertIsoToDate
+import com.devom.utils.date.toLocalDateTime
 import devom_app.composeapp.generated.resources.Res
+import devom_app.composeapp.generated.resources.book_now
 import devom_app.composeapp.generated.resources.booking_confirmation
 import devom_app.composeapp.generated.resources.ic_arrow_left
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun BookingPaymentScreen(navHostController: NavHostController, input: BookPanditSlotInput?) {
+fun BookingPaymentScreen(
+    navHostController: NavHostController,
+    input: BookPanditSlotInput?,
+    pandit: GetAllPanditByPoojaIdResponse?,
+    pooja: GetPoojaResponse?,
+) {
     val viewModel: BookingPaymentScreenViewModel = viewModel {
         BookingPaymentScreenViewModel()
     }
@@ -58,21 +78,46 @@ fun BookingPaymentScreen(navHostController: NavHostController, input: BookPandit
             title = stringResource(Res.string.booking_confirmation),
             onNavigationIconClick = { navHostController.popBackStack() },
         )
-        BookingPaymentScreenContent(viewModel, navHostController)
-
+        BookingPaymentScreenContent(viewModel, navHostController, pandit, input, pooja)
     }
 }
 
 @Composable
-fun BookingPaymentScreenContent(
+fun ColumnScope.BookingPaymentScreenContent(
     viewModel: BookingPaymentScreenViewModel,
     navHostController: NavHostController,
+    pandit: GetAllPanditByPoojaIdResponse?,
+    input: BookPanditSlotInput?,
+    pooja: GetPoojaResponse?,
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        AddressSection()
-        PoojaDetailsSection()
-        PaymentDetailsSection()
-        ApplyPromotionCode()
+    var selectedPaymentMode by remember { mutableStateOf("case") }
+    Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+//        AddressSection()
+        PoojaDetailsSection(pooja, pandit, input)
+        PaymentDetailsSection {
+            selectedPaymentMode = it.lowercase()
+        }
+//        ApplyPromotionCode()
+    }
+
+    ButtonPrimary(
+        buttonText = stringResource(Res.string.book_now),
+        modifier = Modifier.fillMaxWidth().navigationBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 16.dp).height(58.dp)
+    ) {
+        input?.let {
+            viewModel.bookPanditSlot(
+                input.copy(
+                    userId = getUser().userId,
+                    panditId = pandit?.userId ?: 0,
+                    itemIds = pooja?.items?.map { it.id }.orEmpty()
+                ),
+                selectedPaymentMode,
+                pandit?.withItemPrice?.toFloatOrNull() ?: 0f
+            ) {
+                navHostController.navigate(Screens.BookingSuccess.path.plus("/${pooja?.name}"))
+            }
+        }
     }
 }
 
@@ -89,19 +134,14 @@ fun ApplyPromotionCode() {
             modifier = Modifier.background(whiteColor, RoundedCornerShape(12.dp)),
         ) {
             TextInputField(
-                backgroundColor = whiteColor,
-                placeholder = "Enter Code",
-                inputColor = greyColor
+                backgroundColor = whiteColor, placeholder = "Enter Code", inputColor = greyColor
             )
 
             Text(
                 modifier = Modifier.padding(end = 8.dp)
                     .background(blackColor, RoundedCornerShape(12.dp)).padding(
-                    horizontal = 12.dp, vertical = 8.dp
-                ),
-                style = text_style_lead_text,
-                text = "Apply",
-                color = whiteColor
+                        horizontal = 12.dp, vertical = 8.dp
+                    ), style = text_style_lead_text, text = "Apply", color = whiteColor
             )
         }
     }
@@ -109,24 +149,25 @@ fun ApplyPromotionCode() {
 }
 
 @Composable
-fun PaymentDetailsSection() {
+fun PaymentDetailsSection(onClick: (String) -> Unit) {
     Column(
         modifier = Modifier.padding(top = 24.dp).padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        val list = listOf<String>(
-            "Online", "Cash", "Wallet"
+        val list = listOf(
+            "Cash", "Wallet"
         )
+        val selectedMethod = remember { mutableStateOf("Cash") }
         Text(text = "Payment Options", style = text_style_h5, color = blackColor)
         LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            columns = GridCells.Fixed(list.size), horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(list) {
                 PaymentOption(
-                    option = it,
-                    isSelected = it == "Online",
-                    onClick = {}
+                    option = it, isSelected = it == selectedMethod.value, onClick = {
+                        selectedMethod.value = it
+                        onClick(it)
+                    }
                 )
             }
         }
@@ -135,7 +176,11 @@ fun PaymentDetailsSection() {
 }
 
 @Composable
-fun PoojaDetailsSection() {
+fun PoojaDetailsSection(
+    pooja: GetPoojaResponse?,
+    pandit: GetAllPanditByPoojaIdResponse?,
+    input: BookPanditSlotInput?,
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.padding(top = 16.dp).background(whiteColor)
@@ -145,24 +190,25 @@ fun PoojaDetailsSection() {
             ItemPoojaDetail(
                 modifier = Modifier.weight(1f),
                 title = "Pooja Type",
-                description = "description"
+                description = pooja?.name.orEmpty()
             )
             ItemPoojaDetail(
                 modifier = Modifier.weight(1f),
-                title = "Chosen Panditji ",
-                description = "description"
+                title = "Chosen Panditji",
+                description = pandit?.fullName.orEmpty()
             )
         }
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
             ItemPoojaDetail(
                 modifier = Modifier.weight(1f),
                 title = "Date & Time ",
-                description = "description"
+                description = input?.bookingDate.orEmpty().convertIsoToDate()
+                    ?.toLocalDateTime()?.date.toString()
             )
             ItemPoojaDetail(
                 modifier = Modifier.weight(1f),
-                title = "Service Charges ",
-                description = "description"
+                title = "Service Charges",
+                description = "₹${pandit?.withItemPrice.orEmpty()}/hr"
             )
         }
     }
@@ -217,18 +263,14 @@ fun PaymentOption(
         textAlign = TextAlign.Center,
         style = text_style_h5,
         color = if (isSelected) primaryColor else greyColor,
-        modifier = Modifier
-            .border(
-                width = 1.dp,
-                color = if (isSelected) primaryColor.copy(0.5f) else greyColor.copy(0.5f),
-                shape = RoundedCornerShape(24.dp)
-            )
-            .background(
-                color = if (isSelected) primaryColor.copy(0.08f) else Color.Transparent,
-                shape = RoundedCornerShape(24.dp)
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = 6.dp, vertical = 20.dp)
+        modifier = Modifier.border(
+            width = 1.dp,
+            color = if (isSelected) primaryColor.copy(0.5f) else greyColor.copy(0.5f),
+            shape = RoundedCornerShape(24.dp)
+        ).background(
+            color = if (isSelected) primaryColor.copy(0.08f) else Color.Transparent,
+            shape = RoundedCornerShape(24.dp)
+        ).clickable(onClick = onClick).padding(horizontal = 6.dp, vertical = 20.dp)
     )
 }
 

@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -70,9 +71,8 @@ import com.devom.app.utils.toDevomImage
 import com.devom.app.utils.toJsonString
 import com.devom.app.utils.urlEncode
 import com.devom.models.pandit.Review
-import com.devom.models.slots.BookPanditSlotInput
+import com.devom.models.pooja.GetPoojaResponse
 import com.devom.models.slots.GetAllPanditByPoojaIdResponse
-import com.devom.network.NetworkClient
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.book_now
 import devom_app.composeapp.generated.resources.choose_pandit
@@ -83,18 +83,19 @@ import devom_app.composeapp.generated.resources.ic_filters
 import devom_app.composeapp.generated.resources.ic_search
 import devom_app.composeapp.generated.resources.search
 import kotlinx.coroutines.launch
+import kotlinx.datetime.format.Padding
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.round
 
 @Composable
 
-fun PanditListScreen(navController: NavController, poojaId: Int = 0) {
+fun PanditListScreen(navController: NavController, pooja: GetPoojaResponse?) {
     val viewModel: PanditListScreenViewModel = viewModel {
         PanditListScreenViewModel()
     }
     LaunchedEffect(Unit) {
-        viewModel.getAllPanditByPoojaId(poojaId)
+        viewModel.getAllPanditByPoojaId(pooja?.id ?: 0)
     }
     Column(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
         AppBar(
@@ -102,7 +103,7 @@ fun PanditListScreen(navController: NavController, poojaId: Int = 0) {
             title = stringResource(Res.string.choose_pandit),
             onNavigationIconClick = { navController.popBackStack() },
         )
-        PanditListScreenContent(viewModel, navController, poojaId)
+        PanditListScreenContent(viewModel, navController, pooja)
     }
 }
 
@@ -110,9 +111,10 @@ fun PanditListScreen(navController: NavController, poojaId: Int = 0) {
 fun ColumnScope.PanditListScreenContent(
     viewModel: PanditListScreenViewModel,
     navController: NavController,
-    poojaId: Int,
+    pooja: GetPoojaResponse?,
 ) {
     val panditList = viewModel.allPanditList.collectAsState()
+    val filteredPanditList = remember(panditList.value) { mutableStateOf(panditList.value) }
     var selectedPandit by remember { mutableStateOf<GetAllPanditByPoojaIdResponse?>(null) }
     val showSheet = remember { mutableStateOf(false) }
     val filterSheet = remember { mutableStateOf(false) }
@@ -146,7 +148,8 @@ fun ColumnScope.PanditListScreenContent(
             ).size(56.dp),
             onClick = {
                 filterSheet.value = true
-            }) {
+            }
+        ) {
             Icon(
                 painter = painterResource(Res.drawable.ic_filters),
                 contentDescription = null,
@@ -165,7 +168,7 @@ fun ColumnScope.PanditListScreenContent(
             bottom = 200.dp
         )
     ) {
-        items(panditList.value) { pandit ->
+        items(filteredPanditList.value) { pandit ->
             PanditDetailsCard(
                 pandit = pandit,
                 isSelected = pandit == selectedPandit,
@@ -187,30 +190,40 @@ fun ColumnScope.PanditListScreenContent(
                 .height(48.dp),
             buttonText = stringResource(Res.string.book_now),
             onClick = {
-                val input = BookPanditSlotInput(
-                    panditId = selectedPandit?.userId ?: 0,
-                    poojaId = poojaId
-                )
                 navController.navigate(
                     Screens.SelectSlot.path.plus(
-                        "/${
-                            input.toJsonString().urlEncode()
+                        "/${pooja.toJsonString().urlEncode()}/${
+                            selectedPandit.toJsonString().urlEncode()
                         }"
                     )
                 )
             }
         )
     }
+
     PanditListFilters(
+        title = "Filters",
         showSheet = filterSheet.value,
         onDismiss = { filterSheet.value = false },
-        pandits = panditList.value
+        pandits = panditList.value,
+        onClick = {
+            filteredPanditList.value = it.orEmpty()
+        }
     )
 
     PanditDetailsSheet(
         showSheet = showSheet.value,
         onDismiss = {
             showSheet.value = false
+        },
+        onClick = {
+            navController.navigate(
+                Screens.SelectSlot.path.plus(
+                    "/${
+                        pooja.toJsonString().urlEncode()
+                    }/${selectedPandit.toJsonString().urlEncode()}"
+                )
+            )
         },
         pandit = selectedPandit,
         title = "Panditji  Details"
@@ -219,6 +232,7 @@ fun ColumnScope.PanditListScreenContent(
 
 @Composable
 fun PanditDetailsCard(
+    padding: Dp = 8.dp,
     pandit: GetAllPanditByPoojaIdResponse,
     isSelected: Boolean = false,
     onLongClick: () -> Unit = {},
@@ -230,11 +244,11 @@ fun PanditDetailsCard(
     Row(
         modifier = Modifier
             .background(backgroundColor, RoundedCornerShape(12.dp))
-            .padding(8.dp)
+            .padding(padding)
             .fillMaxWidth()
             .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick
+                onClick = onLongClick,
+                onLongClick = onClick
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -370,6 +384,7 @@ fun PanditDetailsSheet(
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     pandit?.let {
                         PanditDetailsCard(
+                            padding = 0.dp,
                             pandit = pandit,
                             isSelected = false,
                         )
@@ -401,6 +416,7 @@ fun PanditDetailsSheet(
                             )
                         )
                     )
+
                     when {
                         selectedIndex.value == 0 -> {
                             LazyColumn {
@@ -451,11 +467,11 @@ fun PanditListFilters(
     title: String? = null,
     onDismiss: () -> Unit,
     pandits: List<GetAllPanditByPoojaIdResponse>?,
-    onClick: () -> Unit = {},
+    onClick: (List<GetAllPanditByPoojaIdResponse>?) -> Unit = {},
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    val selectedIndex = remember { mutableStateOf(0) }
+    val filteredList = remember { mutableStateOf(pandits) }
     if (showSheet) {
         ModalBottomSheet(
             containerColor = whiteColor,
@@ -464,36 +480,32 @@ fun PanditListFilters(
                     sheetState.hide()
                     onDismiss()
                 }
-            }, sheetState = sheetState
+            },
+            sheetState = sheetState
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(24.dp),
-                modifier = Modifier.padding(horizontal = 24.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 title?.let {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(text = it, style = text_style_h4, color = blackColor)
-                        IconButton(onDismiss) {
-                            Icon(
-                                painter = painterResource(Res.drawable.ic_close),
-                                contentDescription = null,
-                                tint = blackColor
-                            )
-                        }
                     }
                 }
-
-                FilterScreen(pandits = pandits.orEmpty())
-
+                FilterScreen(pandits = pandits.orEmpty()) {
+                    filteredList.value = it
+                }
                 ButtonPrimary(
-                    modifier = Modifier.navigationBarsPadding().padding(top = 26.dp).fillMaxWidth()
-                        .height(48.dp),
+                    modifier = Modifier.navigationBarsPadding().padding(horizontal = 24.dp)
+                        .fillMaxWidth().height(48.dp),
                     buttonText = "Apply",
-                    onClick = onClick
+                    onClick = {
+                        onDismiss()
+                        onClick(filteredList.value)
+                    }
                 )
             }
         }
@@ -505,7 +517,7 @@ private fun com.devom.models.slots.Review.toReview(): Review {
         userId = panditId.toString(),
         userName = reviewerName,
         userImage = reviewerImage,
-        rating = rating.toString(),
+        rating = rating,
         reviewText = reviewText,
         reviewId = "",
         bookingId = "",
