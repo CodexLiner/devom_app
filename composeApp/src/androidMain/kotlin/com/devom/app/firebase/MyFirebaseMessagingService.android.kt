@@ -28,7 +28,7 @@ class AndroidFirebaseMessagingService : FirebaseMessagingService() {
 
     private fun showNotification(title: String?, message: String?) {
         val builder =
-            NotificationCompat.Builder(this, "devom_app_channel").setSmallIcon(R.mipmap.ic_launcher)
+            NotificationCompat.Builder(this, "devom_app_channel").setSmallIcon(R.mipmap.ic_launcher_foreground)
                 .setContentTitle(title ?: "Title").setContentText(message ?: "Message")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
 
