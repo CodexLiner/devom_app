@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devom.Project
 import com.devom.app.models.ApplicationStatus
+import com.devom.models.other.BannersResponse
 import com.devom.models.payment.GetWalletTransactionsResponse
 import com.devom.models.pooja.GetPoojaResponse
 import com.devom.models.slots.GetBookingsResponse
@@ -21,24 +22,31 @@ class HomeScreenViewModel : ViewModel() {
     private val _poojaList = MutableStateFlow<List<GetPoojaResponse>>(listOf())
     val poojaList = _poojaList.asStateFlow()
 
-
-    private val _transactions = MutableStateFlow(GetWalletTransactionsResponse())
-    val transactions = _transactions
+    private val _banners = MutableStateFlow<List<BannersResponse>>(listOf())
+    val banners = _banners.asStateFlow()
 
     init {
         getPoojaList()
+        getBanners()
     }
 
     fun getPoojaList() {
         viewModelScope.launch {
-            Project.pooja.getPoojaUseCase.invoke()
-                .collect {
-                    it.onResult {
-                        _poojaList.value = it.data
-                    }
+            Project.pooja.getPoojaUseCase.invoke().collect {
+                it.onResult {
+                    _poojaList.value = it.data
                 }
+            }
         }
     }
 
-
+    fun getBanners() {
+        viewModelScope.launch {
+            Project.other.getBannersUseCase.invoke().collect {
+                it.onResult {
+                    _banners.value = it.data
+                }
+            }
+        }
+    }
 }

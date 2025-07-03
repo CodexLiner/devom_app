@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1084106475388",
+    "project_id": "devomapp",
+    "storage_bucket": "devomapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1084106475388:android:13c08b8ad50ddce9ae06f9",
+        "android_client_info": {
+          "package_name": "com.devom.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI1Od1Y6GN3D7Ced80JOWBffiLZ26huRU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

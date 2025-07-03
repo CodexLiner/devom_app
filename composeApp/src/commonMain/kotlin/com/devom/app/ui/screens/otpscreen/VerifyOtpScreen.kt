@@ -45,14 +45,15 @@ import org.jetbrains.compose.resources.stringResource
 fun VerifyOtpScreen(
     navController: NavController,
     mobileNumber: String?,
-    viewModel: RegisterViewModel = viewModel { RegisterViewModel() },
 ) {
-
+    val viewModel: RegisterViewModel = viewModel { RegisterViewModel() }
     var otpState: String by remember { mutableStateOf("") }
 
-    BackButton(onClick = {
-        navController.navigateUp()
-    }) {
+    BackButton(
+        onClick = {
+            navController.navigateUp()
+        }
+    ) {
         Column(
             modifier = Modifier.fillMaxSize().statusBarsPadding().padding(top = 42.dp)
                 .padding(horizontal = 24.dp),

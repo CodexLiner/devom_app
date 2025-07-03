@@ -7,14 +7,13 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlinx.serialization)
-
+    id("com.google.gms.google-services") version "4.4.3"
 
 }
 
 kotlin {
     jvmToolchain(11)
     androidTarget {
-        //https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
         instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
     }
 
@@ -78,6 +77,8 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.ktor.client.android)
             implementation(libs.androidx.appcompat)
+            implementation(project.dependencies.platform("com.google.firebase:firebase-bom:33.16.0"))
+            implementation("com.google.firebase:firebase-messaging:23.4.0")
         }
 
         iosMain.dependencies {
