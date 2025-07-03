@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devom.Project
 import com.devom.app.models.ApplicationStatus
+import com.devom.models.pandit.CreateReviewInput
 import com.devom.models.poojaitems.GetPoojaItemsResponse
 import com.devom.models.slots.GetBookingsResponse
 import com.devom.models.slots.RemoveAndUpdatePoojaItemRequest
 import com.devom.models.slots.UpdateBookingStatusInput
+import com.devom.network.getUser
 import com.devom.utils.Application
 import com.devom.utils.cachepolicy.CachePolicy
 import com.devom.utils.network.onResult
@@ -111,6 +113,25 @@ class BookingViewModel : ViewModel() {
                 it.onResult {
                     getBookingById(booking.bookingId.toString())
                     Application.showToast("Pooja removed successfully")
+                }
+            }
+        }
+    }
+
+    fun addBookingReview(booking: GetBookingsResponse, rating: Int, reviewText: String) {
+        viewModelScope.launch {
+            Project.pandit.createPanditReviewUseCase.invoke(
+                input = CreateReviewInput(
+                    bookingId = "1",
+                    poojaId = booking.poojaName,
+                    panditId = "1",
+                    rating = rating.toString(),
+                    userId = getUser().userId.toString(),
+                    reviewText = reviewText
+                )
+            ).collect {
+                it.onResult {
+                    Application.showToast("Review added successfully")
                 }
             }
         }
