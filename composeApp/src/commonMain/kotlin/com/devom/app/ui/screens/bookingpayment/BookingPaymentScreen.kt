@@ -152,7 +152,11 @@ fun ColumnScope.BookingPaymentScreenContent(
                     selectedPaymentMode,
                     price
                 ) {
-                    navHostController.navigate(Screens.BookingSuccess.path + "/$poojaName")
+                    navHostController.navigate(Screens.BookingSuccess.path + "/$poojaName") {
+                        popUpTo(Screens.Dashboard.path) {
+                            inclusive = true
+                        }
+                    }
                 }
             }
         }

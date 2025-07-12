@@ -39,6 +39,7 @@ import com.devom.app.theme.text_style_lead_text
 import com.devom.app.ui.components.BackButton
 import com.devom.app.ui.components.ButtonPrimary
 import com.devom.app.ui.components.OtpView
+import com.devom.utils.maskPhoneNumber
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -73,7 +74,7 @@ fun VerifyOtpScreen(
                 modifier = Modifier.padding(top = 8.dp),
                 text = stringResource(
                     Res.string.we_have_sent_the_verification_code,
-                    mobileNumber.toString()
+                    mobileNumber.toString().maskPhoneNumber()
                 ),
                 style = text_style_lead_text,
                 textAlign = TextAlign.Start,

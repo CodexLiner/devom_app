@@ -99,7 +99,7 @@ private fun DropDownContent(
 
     ExposedDropdownMenuBox(
         modifier = Modifier.focusRequester(focusRequester),
-        expanded = true,
+        expanded = expanded,
         onExpandedChange = { isExpanded ->
             expanded = isExpanded
         }
@@ -129,30 +129,33 @@ private fun DropDownContent(
             },
         )
 
-        ExposedDropdownMenu(
-            modifier = modifier,
-            expanded = expanded,
-            onDismissRequest = {
-                expanded = false
-                onDismiss()
+        if (filteredOptions.isNotEmpty()) {
+            ExposedDropdownMenu(
+                modifier = modifier,
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                    onDismiss()
+                }
+            ) {
+                filteredOptions.forEach { (option, id) ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(text = option)
+                        }, onClick = {
+                            val selected = DropDownItem(option, id)
+                            onSelect(selected)
+                            localSelectedOption.value = selected
+                            expanded = false
+                            focusManager.clearFocus()
+                        }
+                    )
+                }
             }
-        ) {
-            filteredOptions.forEach { (option, id) ->
-                DropdownMenuItem(
-                    text = {
-                        Text(text = option)
-                    }, onClick = {
-                        val option = DropDownItem(
-                            option = option,
-                            id = id
-                        )
-                        onSelect(option)
-                        localSelectedOption.value = option
-                        expanded = false
-                        focusManager.clearFocus()
-                    }
-                )
-            }
+        } else LaunchedEffect(searchQuery, options) {
+            expanded = false
         }
+
+
     }
 }
