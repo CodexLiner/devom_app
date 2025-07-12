@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.init
+import me.meenagopal24.sdk.PaymentSheet
 
 class AppActivity : ComponentActivity() {
 
@@ -20,6 +21,7 @@ class AppActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent { App() }
         requestMissingPermissions()
+        PaymentSheet.init(this)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         FileKit.init(this)
     }

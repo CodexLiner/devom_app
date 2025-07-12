@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.devom.app.theme.blackColor
 import com.devom.app.theme.primaryColor
@@ -67,6 +68,8 @@ fun StatusTabRow(
                             )
                         }
                         Text(
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             text = title,
                             textAlign = TextAlign.Center,
                             style = text_style_lead_text,

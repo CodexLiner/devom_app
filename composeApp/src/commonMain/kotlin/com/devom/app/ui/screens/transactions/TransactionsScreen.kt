@@ -81,12 +81,18 @@ fun TransactionsScreenContent(
     viewModel: TransactionsScreenViewModel,
 ) {
     val transactions = viewModel.transactions.collectAsState()
-    val tabs = listOf(TabRowItem(stringResource(Res.string.earnings)), TabRowItem(stringResource(Res.string.withdrawals)))
+    val tabs = listOf(
+        TabRowItem("All"),
+        TabRowItem("Top-ups"),
+        TabRowItem("Deductions"),
+        TabRowItem("Refunds")
+    )
     var selectedTabIndex = remember { mutableStateOf(0) }
 
-    val filteredTransaction = when(selectedTabIndex.value) {
-        0 -> transactions.value.transactions.filter { it.purpose != TransactionType.WITHDRAWAL.status }
-        1 -> transactions.value.transactions.filter { it.purpose == TransactionType.WITHDRAWAL.status }
+    val filteredTransaction = when (selectedTabIndex.value) {
+        1 -> transactions.value.transactions.filter { it.purpose == "Top-ups" }
+        2 -> transactions.value.transactions.filter { it.purpose == "Deductions" }
+        3 -> transactions.value.transactions.filter { it.purpose == "Refunds" }
         else -> transactions.value.transactions
     }
 

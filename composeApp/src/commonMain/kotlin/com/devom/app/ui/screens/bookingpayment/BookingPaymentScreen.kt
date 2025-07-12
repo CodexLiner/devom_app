@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import co.touchlab.kermit.Logger
 import com.devom.app.theme.backgroundColor
 import com.devom.app.theme.bgColor
 import com.devom.app.theme.blackColor
@@ -50,12 +52,20 @@ import com.devom.models.pooja.GetPoojaResponse
 import com.devom.models.slots.BookPanditSlotInput
 import com.devom.models.slots.GetAllPanditByPoojaIdResponse
 import com.devom.network.getUser
+import com.devom.utils.Application
 import com.devom.utils.date.convertIsoToDate
 import com.devom.utils.date.toLocalDateTime
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.book_now
 import devom_app.composeapp.generated.resources.booking_confirmation
 import devom_app.composeapp.generated.resources.ic_arrow_left
+import me.meenagopal24.sdk.PaymentSheet
+import me.meenagopal24.sdk.models.ConfigOptions
+import me.meenagopal24.sdk.models.DisplayOptions
+import me.meenagopal24.sdk.models.PreferencesOptions
+import me.meenagopal24.sdk.models.PrefillOptions
+import me.meenagopal24.sdk.models.RazorpayCheckoutOptions
+import me.meenagopal24.sdk.models.ThemeOptions
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -66,19 +76,26 @@ fun BookingPaymentScreen(
     pandit: GetAllPanditByPoojaIdResponse?,
     pooja: GetPoojaResponse?,
 ) {
-    val viewModel: BookingPaymentScreenViewModel = viewModel {
-        BookingPaymentScreenViewModel()
-    }
-    LaunchedEffect(Unit) {
+    val viewModel: BookingPaymentScreenViewModel = viewModel()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor)
+    ) {
 
-    }
-    Column(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
         AppBar(
             navigationIcon = painterResource(Res.drawable.ic_arrow_left),
             title = stringResource(Res.string.booking_confirmation),
             onNavigationIconClick = { navHostController.popBackStack() },
         )
-        BookingPaymentScreenContent(viewModel, navHostController, pandit, input, pooja)
+
+        BookingPaymentScreenContent(
+            viewModel = viewModel,
+            navHostController = navHostController,
+            pandit = pandit,
+            input = input,
+            pooja = pooja
+        )
     }
 }
 
@@ -90,84 +107,117 @@ fun ColumnScope.BookingPaymentScreenContent(
     input: BookPanditSlotInput?,
     pooja: GetPoojaResponse?,
 ) {
-    var selectedPaymentMode by remember { mutableStateOf("case") }
-    Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
-//        AddressSection()
+    var selectedPaymentMode by remember { mutableStateOf("cash") }
+    val balance by viewModel.walletBalance.collectAsState()
+
+    val user = getUser()
+    val amount = (pandit?.withItemPrice?.toFloatOrNull() ?: 1f).toInt() * 100
+    val price = pandit?.withItemPrice?.toFloatOrNull() ?: 0f
+    val poojaName = pooja?.name.orEmpty()
+    val itemIds = pooja?.items?.map { it.id }.orEmpty()
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f)
+    ) {
         PoojaDetailsSection(pooja, pandit, input)
-        PaymentDetailsSection {
-            selectedPaymentMode = it.lowercase()
-        }
-//        ApplyPromotionCode()
+        PaymentDetailsSection(
+            selectedMethod = selectedPaymentMode,
+            onSelectionChanged = { selectedPaymentMode = it.lowercase() }
+        )
     }
 
     ButtonPrimary(
-        buttonText = stringResource(Res.string.book_now),
-        modifier = Modifier.fillMaxWidth().navigationBarsPadding()
-            .padding(horizontal = 16.dp, vertical = 16.dp).height(58.dp)
+        buttonText = if (selectedPaymentMode == "cash") {
+            stringResource(Res.string.book_now)
+        } else {
+            "Pay ₹${amount / 100}"
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .height(58.dp)
     ) {
-        input?.let {
-            viewModel.bookPanditSlot(
-                input.copy(
-                    userId = getUser().userId,
-                    panditId = pandit?.userId ?: 0,
-                    itemIds = pooja?.items?.map { it.id }.orEmpty()
-                ),
-                selectedPaymentMode,
-                pandit?.withItemPrice?.toFloatOrNull() ?: 0f
-            ) {
-                navHostController.navigate(Screens.BookingSuccess.path.plus("/${pooja?.name}"))
+        val bookSlot: () -> Unit = {
+            input?.let {
+                viewModel.bookPanditSlot(
+                    it.copy(
+                        totalAmount = price,
+                        userId = user.userId,
+                        panditId = pandit?.userId ?: 0,
+                        itemIds = itemIds
+                    ),
+                    selectedPaymentMode,
+                    price
+                ) {
+                    navHostController.navigate(Screens.BookingSuccess.path + "/$poojaName")
+                }
             }
         }
-    }
-}
 
-@Composable
-fun ApplyPromotionCode() {
-    Column(
-        modifier = Modifier.padding(top = 24.dp).padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+        if (selectedPaymentMode.equals("wallet", true)) {
+            if ((balance?.cashWallet?.toFloatOrNull() ?: 0f) >= (amount / 100)) {
+                bookSlot()
+                return@ButtonPrimary
+            }
 
-        Text(text = "Promo Code", style = text_style_h5, color = blackColor)
-        Box(
-            contentAlignment = Alignment.CenterEnd,
-            modifier = Modifier.background(whiteColor, RoundedCornerShape(12.dp)),
-        ) {
-            TextInputField(
-                backgroundColor = whiteColor, placeholder = "Enter Code", inputColor = greyColor
-            )
+            viewModel.createTransaction(amount / 100, poojaName) { order ->
+                PaymentSheet.startPayment(
+                    RazorpayCheckoutOptions(
+                        orderId = order.id,
+                        currency = order.currency,
+                        description = "Payment for pooja $poojaName",
+                        prefill = PrefillOptions(
+                            email = user.email,
+                            contact = user.mobileNo,
+                            name = user.fullName,
+                        ),
+                        theme = ThemeOptions(color = "#FF762233"),
+                    )
+                )
+            }
 
-            Text(
-                modifier = Modifier.padding(end = 8.dp)
-                    .background(blackColor, RoundedCornerShape(12.dp)).padding(
-                        horizontal = 12.dp, vertical = 8.dp
-                    ), style = text_style_lead_text, text = "Apply", color = whiteColor
-            )
+            PaymentSheet.onSuccess = { id, data ->
+                Logger.d("RazorpayID $id")
+                Logger.d("RazorpayData $data")
+                Application.showToast("Payment Success ${data?.paymentId}")
+                viewModel.verifyTransaction(data) {
+                    bookSlot()
+                }
+            }
+
+            PaymentSheet.onError = { _, _, data ->
+                Application.showToast("Payment Failed ${data?.paymentId}")
+            }
+
+        } else {
+            bookSlot()
         }
     }
-
 }
 
 @Composable
-fun PaymentDetailsSection(onClick: (String) -> Unit) {
+fun PaymentDetailsSection(
+    selectedMethod: String,
+    onSelectionChanged: (String) -> Unit,
+) {
+    val paymentOptions = listOf("Cash", "Wallet")
     Column(
         modifier = Modifier.padding(top = 24.dp).padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        val list = listOf(
-            "Cash", "Wallet"
-        )
-        val selectedMethod = remember { mutableStateOf("Cash") }
         Text(text = "Payment Options", style = text_style_h5, color = blackColor)
         LazyVerticalGrid(
-            columns = GridCells.Fixed(list.size), horizontalArrangement = Arrangement.spacedBy(8.dp)
+            columns = GridCells.Fixed(paymentOptions.size),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(list) {
+            items(paymentOptions) { option ->
                 PaymentOption(
-                    option = it, isSelected = it == selectedMethod.value, onClick = {
-                        selectedMethod.value = it
-                        onClick(it)
-                    }
+                    option = option,
+                    isSelected = selectedMethod.equals(option, ignoreCase = true),
+                    onClick = { onSelectionChanged(option) }
                 )
             }
         }
@@ -188,35 +238,37 @@ fun PoojaDetailsSection(
     ) {
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
             ItemPoojaDetail(
-                modifier = Modifier.weight(1f),
                 title = "Pooja Type",
-                description = pooja?.name.orEmpty()
+                description = pooja?.name.orEmpty(),
+                modifier = Modifier.weight(1f)
             )
             ItemPoojaDetail(
-                modifier = Modifier.weight(1f),
                 title = "Chosen Panditji",
-                description = pandit?.fullName.orEmpty()
+                description = pandit?.fullName.orEmpty(),
+                modifier = Modifier.weight(1f)
             )
         }
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
             ItemPoojaDetail(
-                modifier = Modifier.weight(1f),
                 title = "Date & Time ",
-                description = input?.bookingDate.orEmpty().convertIsoToDate()
-                    ?.toLocalDateTime()?.date.toString()
+                description = input?.bookingDate
+                    ?.convertIsoToDate()
+                    ?.toLocalDateTime()
+                    ?.date.toString(),
+                modifier = Modifier.weight(1f)
             )
             ItemPoojaDetail(
-                modifier = Modifier.weight(1f),
                 title = "Service Charges",
-                description = "₹${pandit?.withItemPrice.orEmpty()}/hr"
+                description = "₹${pandit?.withItemPrice.orEmpty()}/hr",
+                modifier = Modifier.weight(1f)
             )
         }
     }
 }
 
 @Composable
-fun ItemPoojaDetail(title: String, description: String, modifier: Modifier) {
-    Column(modifier.fillMaxWidth()) {
+fun ItemPoojaDetail(title: String, description: String, modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = title.uppercase(),
             fontWeight = FontWeight.W500,
@@ -233,45 +285,26 @@ fun ItemPoojaDetail(title: String, description: String, modifier: Modifier) {
 }
 
 @Composable
-fun AddressSection() {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().background(
-            whiteColor
-        ).padding(horizontal = 16.dp, vertical = 12.dp)
-    ) {
-        Text(text = "3891 Tirupati palace, Indore M.P.")
-        Text(
-            text = "Change",
-            modifier = Modifier.background(bgColor, RoundedCornerShape(12.dp)).padding(
-                horizontal = 12.dp, vertical = 4.dp
+fun PaymentOption(option: String, isSelected: Boolean, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .border(
+                width = 1.dp,
+                color = if (isSelected) primaryColor else greyColor,
+                shape = RoundedCornerShape(12.dp)
             )
+            .background(
+                color = if (isSelected) primaryColor.copy(alpha = 0.1f) else whiteColor,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clickable { onClick() }
+            .padding(vertical = 12.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = option,
+            color = if (isSelected) primaryColor else textBlackShade,
+            textAlign = TextAlign.Center
         )
     }
 }
-
-
-@Composable
-fun PaymentOption(
-    option: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-) {
-    Text(
-        text = option,
-        textAlign = TextAlign.Center,
-        style = text_style_h5,
-        color = if (isSelected) primaryColor else greyColor,
-        modifier = Modifier.border(
-            width = 1.dp,
-            color = if (isSelected) primaryColor.copy(0.5f) else greyColor.copy(0.5f),
-            shape = RoundedCornerShape(24.dp)
-        ).background(
-            color = if (isSelected) primaryColor.copy(0.08f) else Color.Transparent,
-            shape = RoundedCornerShape(24.dp)
-        ).clickable(onClick = onClick).padding(horizontal = 6.dp, vertical = 20.dp)
-    )
-}
-
-

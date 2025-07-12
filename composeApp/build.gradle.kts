@@ -60,6 +60,7 @@ kotlin {
             implementation(libs.filekit.coil)
             implementation("network.chaintech:cmpcharts:1.0.0")
             implementation("com.devom:platform:alpha.1.0.0")
+            implementation("me.meenagopal24:razorpay:1.0.0")
 
         }
 

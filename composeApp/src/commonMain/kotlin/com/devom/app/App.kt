@@ -24,11 +24,13 @@ import com.devom.app.ui.navigation.NavigationHost
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.ui.providers.LoadingCompositionProvider
 import com.devom.network.NetworkClient
+import com.devom.utils.Application
 import com.devom.utils.Application.isLoggedIn
 import com.devom.utils.Application.loaderState
 import com.devom.utils.Application.loginState
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
+import me.meenagopal24.sdk.PaymentSheet
 
 val settings = Settings()
 
@@ -37,6 +39,7 @@ internal fun App() = AppTheme {
     var accessKey by remember { mutableStateOf(settings.get<String>(ACCESS_TOKEN_KEY)) }
     var refreshToken by remember { mutableStateOf(settings.get<String>(ACCESS_TOKEN_KEY)) }
     var uuid by remember { mutableStateOf(settings.get<String>(UUID_KEY)) }
+    PaymentSheet.setApiKey("rzp_test_Zj1CPzIAHZ4lwN")
 
     val isLoggedIn by loginState.collectAsState()
     var initialized by remember { mutableStateOf(false) }
@@ -58,6 +61,7 @@ internal fun App() = AppTheme {
             baseUrl = BASE_URL
             onLogOut = {
                 Logger.d("ON_LOGOUT") { "user has been logged out" }
+                Application.hideLoader()
                 isLoggedIn(false)
             }
             addHeaders { append(UUID_KEY, uuid.orEmpty()) }
