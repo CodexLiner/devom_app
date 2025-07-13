@@ -3,11 +3,13 @@ package com.devom.app.ui.screens.bookingpayment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devom.Project
+import com.devom.models.payment.Notes
 import com.devom.models.payment.RazorpayOrderRequest
 import com.devom.models.payment.RazorpayOrderResponse
 import com.devom.models.payment.VerifyTransactionRequest
 import com.devom.models.payment.WalletBalance
 import com.devom.models.slots.BookPanditSlotInput
+import com.devom.network.getUser
 import com.devom.utils.Application
 import com.devom.utils.network.onResult
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,13 +67,24 @@ class BookingPaymentScreenViewModel : ViewModel() {
         }
     }
 
-    fun createTransaction(amount : Int , poojaName : String , function: (RazorpayOrderResponse) -> Unit) {
+    fun createTransaction(
+        amount: Int,
+        poojaName: String,
+        function: (RazorpayOrderResponse) -> Unit,
+    ) {
         viewModelScope.launch {
-            Project.payment.createOrderUseCase.invoke(RazorpayOrderRequest(
-                amount = amount,
-                currency = "INR",
-                receipt = poojaName
-            )).collect { it ->
+            Project.payment.createOrderUseCase.invoke(
+                RazorpayOrderRequest(
+                    amount = amount,
+                    currency = "INR",
+                    notes = Notes(
+                        customer_name = getUser().fullName,
+                        user_id = getUser().userId.toString(),
+                        event = poojaName
+                    ),
+                    receipt = poojaName
+                )
+            ).collect { it ->
                 it.onResult {
                     function(it.data)
                 }
