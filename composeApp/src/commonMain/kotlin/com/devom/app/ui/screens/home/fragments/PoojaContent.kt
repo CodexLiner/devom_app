@@ -28,7 +28,8 @@ import com.devom.models.pooja.GetPoojaResponse
 fun PoojaContent(
     poojaList: List<GetPoojaResponse>,
     title: String = "",
-    banner: String = ""
+    banner: String = "",
+    onClick: (GetPoojaResponse) -> Unit = {}
 ) {
     Column {
         Row(
@@ -74,6 +75,6 @@ fun PoojaContent(
             }
         }
 
-        PoojaList(poojaList)
+        PoojaList(poojaList , onClick)
     }
 }

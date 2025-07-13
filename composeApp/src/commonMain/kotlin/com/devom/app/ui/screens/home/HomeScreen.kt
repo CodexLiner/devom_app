@@ -169,10 +169,13 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
                 poojaList = filteredList,
                 title = selectedTitle,
                 banner = banner
-            )
+            ) {
+                navHostController.navigate(
+                    Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}"
+                )
+            }
         }
-
-       // HomeScreenBanner(banners.value)
+        HomeScreenBanner(banners.value)
     }
 }
 
