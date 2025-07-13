@@ -59,6 +59,8 @@ import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.book_now
 import devom_app.composeapp.generated.resources.booking_confirmation
 import devom_app.composeapp.generated.resources.ic_arrow_left
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import me.meenagopal24.sdk.PaymentSheet
 import me.meenagopal24.sdk.models.ConfigOptions
 import me.meenagopal24.sdk.models.DisplayOptions
@@ -111,8 +113,16 @@ fun ColumnScope.BookingPaymentScreenContent(
     val balance by viewModel.walletBalance.collectAsState()
 
     val user = getUser()
-    val amount = (pandit?.withItemPrice?.toFloatOrNull() ?: 1f).toInt() * 100
-    val price = pandit?.withItemPrice?.toFloatOrNull() ?: 0f
+    val bookingDate = input?.bookingDate?.convertIsoToDate()?.toLocalDateTime()?.date
+    val today = Clock.System.now().toLocalDateTime().date
+
+    val baseAmount = (pandit?.withItemPrice?.toFloatOrNull() ?: 1f).toInt() * 100
+
+    val amount = if (bookingDate == today) {
+        (baseAmount * 1.1).toInt() // Add 10% if booking date is today
+    } else {
+        baseAmount
+    }
     val poojaName = pooja?.name.orEmpty()
     val itemIds = pooja?.items?.map { it.id }.orEmpty()
 
@@ -143,14 +153,13 @@ fun ColumnScope.BookingPaymentScreenContent(
         val bookSlot: () -> Unit = {
             input?.let {
                 viewModel.bookPanditSlot(
-                    it.copy(
-                        totalAmount = price,
+                    input = it.copy(
+                        totalAmount = amount / 100f,
                         userId = user.userId,
                         panditId = pandit?.userId ?: 0,
                         itemIds = itemIds
                     ),
-                    selectedPaymentMode,
-                    price
+                    selectedPaymentMode = selectedPaymentMode, poojaPrice = amount / 100f
                 ) {
                     navHostController.navigate(Screens.BookingSuccess.path + "/$poojaName") {
                         popUpTo(Screens.PanditListScreen.path) {
