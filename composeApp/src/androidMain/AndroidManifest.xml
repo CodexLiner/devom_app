@@ -28,7 +28,7 @@
 
                 <data android:scheme="https" />
                 <data android:host="devom.co.in" />
-                <data android:path="/referral" />
+                <data android:path="/app/referral" />
             </intent-filter>
         </activity>
         <service

@@ -153,8 +153,8 @@ fun ColumnScope.BookingPaymentScreenContent(
                     price
                 ) {
                     navHostController.navigate(Screens.BookingSuccess.path + "/$poojaName") {
-                        popUpTo(Screens.Dashboard.path) {
-                            inclusive = true
+                        popUpTo(Screens.PanditListScreen.path) {
+                            inclusive = false
                         }
                     }
                 }
@@ -186,7 +186,6 @@ fun ColumnScope.BookingPaymentScreenContent(
             PaymentSheet.onSuccess = { id, data ->
                 Logger.d("RazorpayID $id")
                 Logger.d("RazorpayData $data")
-                Application.showToast("Payment Success ${data?.paymentId}")
                 viewModel.verifyTransaction(data) {
                     bookSlot()
                 }

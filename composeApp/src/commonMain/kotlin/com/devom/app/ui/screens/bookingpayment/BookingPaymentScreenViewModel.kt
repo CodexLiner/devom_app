@@ -31,22 +31,17 @@ class BookingPaymentScreenViewModel : ViewModel() {
         onSuccess: () -> Unit,
     ) {
         viewModelScope.launch {
-            if (selectedPaymentMode == "case") {
+            if (selectedPaymentMode == "cash") {
                 bookSlot(input, onSuccess)
                 return@launch
             }
 
-            Project.payment.getWalletBalanceUseCase.invoke().collect { result ->
-                result.onResult { wallet ->
-                    val balance = wallet.data.balance.cashWallet.toFloatOrNull() ?: 0f
-                    if (balance > poojaPrice) {
-                        viewModelScope.launch {
-                            bookSlot(input, onSuccess)
-                        }
-                    } else {
-                        Application.showToast("Insufficient Balance")
-                    }
+            if ((_walletBalance.value?.cashWallet?.toFloatOrNull() ?: 0f) >= poojaPrice) {
+                viewModelScope.launch {
+                    bookSlot(input, onSuccess)
                 }
+            } else {
+                Application.showToast("Insufficient Balance")
             }
         }
     }
