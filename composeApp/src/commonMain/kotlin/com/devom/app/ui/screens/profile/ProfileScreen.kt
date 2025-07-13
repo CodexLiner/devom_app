@@ -110,7 +110,8 @@ fun ProfileScreen(
                         tint = Color.White
                     )
                 }
-            })
+            }
+        )
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),

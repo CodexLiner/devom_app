@@ -1,6 +1,7 @@
 package com.devom.app.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -171,7 +172,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
                 banner = banner
             ) {
                 navHostController.navigate(
-                    Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}"
+                    Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}/false"
                 )
             }
         }
@@ -216,8 +217,7 @@ fun HomeScreenAllContent(
 ) {
     Row(
         verticalAlignment = Alignment.Bottom,
-        modifier = Modifier.fillMaxWidth().padding(16.dp)
-            .background(primaryColor, RoundedCornerShape(12.dp))
+        modifier = Modifier.fillMaxWidth().padding(16.dp).background(primaryColor, RoundedCornerShape(12.dp))
     ) {
         Column(
             modifier = Modifier.weight(1f).padding(vertical = 24.dp, horizontal = 16.dp),
@@ -229,7 +229,11 @@ fun HomeScreenAllContent(
                 color = primaryColor,
                 modifier = Modifier.padding(top = 16.dp)
                     .background(whiteColor, RoundedCornerShape(12.dp))
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .padding(horizontal = 12.dp, vertical = 8.dp).clickable {
+                        navHostController.navigate(
+                            Screens.UrgentBooking.path + "/true"
+                        )
+                    }
             )
         }
         PatternDesign(modifier = Modifier)
@@ -244,7 +248,7 @@ fun HomeScreenAllContent(
         )
         PoojaList(poojaList) {
             navHostController.navigate(
-                Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}"
+                Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}/false"
             )
         }
     }

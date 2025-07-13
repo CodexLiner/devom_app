@@ -83,14 +83,13 @@ import devom_app.composeapp.generated.resources.ic_filters
 import devom_app.composeapp.generated.resources.ic_search
 import devom_app.composeapp.generated.resources.search
 import kotlinx.coroutines.launch
-import kotlinx.datetime.format.Padding
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.round
 
 @Composable
 
-fun PanditListScreen(navController: NavController, pooja: GetPoojaResponse?) {
+fun PanditListScreen(navController: NavController, pooja: GetPoojaResponse?, isUrgent: Boolean) {
     val viewModel: PanditListScreenViewModel = viewModel {
         PanditListScreenViewModel()
     }
@@ -103,7 +102,7 @@ fun PanditListScreen(navController: NavController, pooja: GetPoojaResponse?) {
             title = stringResource(Res.string.choose_pandit),
             onNavigationIconClick = { navController.popBackStack() },
         )
-        PanditListScreenContent(viewModel, navController, pooja)
+        PanditListScreenContent(viewModel, navController, pooja , isUrgent)
     }
 }
 
@@ -112,6 +111,7 @@ fun ColumnScope.PanditListScreenContent(
     viewModel: PanditListScreenViewModel,
     navController: NavController,
     pooja: GetPoojaResponse?,
+    isUrgent: Boolean,
 ) {
     val panditList = viewModel.allPanditList.collectAsState()
     val filteredPanditList = remember(panditList.value) { mutableStateOf(panditList.value) }
@@ -194,7 +194,7 @@ fun ColumnScope.PanditListScreenContent(
                     Screens.SelectSlot.path.plus(
                         "/${pooja.toJsonString().urlEncode()}/${
                             selectedPandit.toJsonString().urlEncode()
-                        }"
+                        }/$isUrgent"
                     )
                 )
             }
@@ -221,7 +221,7 @@ fun ColumnScope.PanditListScreenContent(
                 Screens.SelectSlot.path.plus(
                     "/${
                         pooja.toJsonString().urlEncode()
-                    }/${selectedPandit.toJsonString().urlEncode()}"
+                    }/${selectedPandit.toJsonString().urlEncode()}/$isUrgent"
                 )
             )
         },

@@ -19,6 +19,7 @@ import com.devom.app.ui.screens.addbalance.BankWalletBalanceScreen
 import com.devom.app.ui.screens.addslot.ChooseSlotScreen
 import com.devom.app.ui.screens.biography.BiographyScreen
 import com.devom.app.ui.screens.booking.details.BookingDetailScreen
+import com.devom.app.ui.screens.booking.urgent.UrgentBookingScreen
 import com.devom.app.ui.screens.bookingpayment.BookingPaymentScreen
 import com.devom.app.ui.screens.dashboard.DashboardScreen
 import com.devom.app.ui.screens.document.UploadDocumentScreen
@@ -42,6 +43,11 @@ import com.devom.app.utils.urlDecode
 import com.devom.models.pooja.GetPoojaResponse
 import com.devom.models.slots.BookPanditSlotInput
 import com.devom.models.slots.GetAllPanditByPoojaIdResponse
+import com.devom.utils.date.addDays
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun NavigationHost(
@@ -72,7 +78,7 @@ fun NavigationHost(
             route = Screens.BookingSuccess.path.plus("/{poojaName}")
         ) {
             val poojaName = it.arguments?.getString("poojaName")
-            BookingSuccessScreen(navHostController = navController , poojaName.orEmpty())
+            BookingSuccessScreen(navHostController = navController, poojaName.orEmpty())
         }
 
         composable(
@@ -107,14 +113,23 @@ fun NavigationHost(
         composable(
             arguments = listOf(
                 navArgument("pandit") { type = NavType.StringType },
-                navArgument("pooja") { type = NavType.StringType }
+                navArgument("pooja") { type = NavType.StringType },
+                navArgument("isUrgent") { type = NavType.BoolType }
             ),
-            route = Screens.SelectSlot.path.plus("/{pooja}/{pandit}")) {
+            route = Screens.SelectSlot.path.plus("/{pooja}/{pandit}/{isUrgent}")) {
             val pooja =
                 it.arguments?.getString("pooja")?.urlDecode()?.decodeFromString<GetPoojaResponse>()
             val pandit = it.arguments?.getString("pandit")?.urlDecode()
                 ?.decodeFromString<GetAllPanditByPoojaIdResponse>()
-            ChooseSlotScreen(navController, pooja = pooja, pandit = pandit)
+            val isUrgent = it.arguments?.getBoolean("isUrgent") ?: false
+            val initialSelectedDate: LocalDate = Clock.System.now().addDays(if (isUrgent) 0 else 1)
+                .toLocalDateTime(TimeZone.currentSystemDefault()).date
+            ChooseSlotScreen(
+                navController,
+                pooja = pooja,
+                pandit = pandit,
+                initialSelectedDate = initialSelectedDate
+            )
         }
         composable(Notifications.path) {
             NotificationScreen(navController)
@@ -146,6 +161,12 @@ fun NavigationHost(
             )
         }
         composable(
+            arguments = listOf(navArgument("isUrgent") { type = NavType.BoolType }),
+            route = Screens.UrgentBooking.path.plus("/{isUrgent}")) {
+            val isUrgent = it.arguments?.getBoolean("isUrgent") ?: false
+            UrgentBookingScreen(navController , isUrgent)
+        }
+        composable(
             route = Screens.HelpAndSupportDetailScreen.path.plus("/{ticketId}"),
             arguments = listOf(navArgument("ticketId") { type = NavType.StringType })
         ) {
@@ -157,12 +178,14 @@ fun NavigationHost(
             BankWalletBalanceScreen(navController = navController)
         }
         composable(
-            arguments = listOf(navArgument("pooja") { type = NavType.StringType }),
-            route = Screens.PanditListScreen.path.plus("/{pooja}")
+            arguments = listOf(navArgument("pooja") { type = NavType.StringType },
+                navArgument("isUrgent") { type = NavType.BoolType }),
+            route = Screens.PanditListScreen.path.plus("/{pooja}/{isUrgent}")
         ) {
             val pooja =
                 it.arguments?.getString("pooja")?.urlDecode()?.decodeFromString<GetPoojaResponse>()
-            PanditListScreen(navController = navController, pooja = pooja)
+            val isUrgent = it.arguments?.getBoolean("isUrgent") ?: false
+            PanditListScreen(navController = navController, pooja = pooja, isUrgent)
         }
 
         composable(
