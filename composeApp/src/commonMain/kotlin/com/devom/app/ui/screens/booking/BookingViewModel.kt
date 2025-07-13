@@ -100,31 +100,13 @@ class BookingViewModel : ViewModel() {
         }
     }
 
-    fun removePoojaItem(string: String, booking: GetBookingsResponse) {
-        val input = RemoveAndUpdatePoojaItemRequest(
-            removeItems = listOf(string.toInt()),
-            addItems = booking.bookingItems.toMutableList().map { it.id }
-        )
-        viewModelScope.launch {
-            Project.pandit.removeAndUpdateItemsInBookingUseCase.invoke(
-                input = input,
-                bookingId = booking.bookingId.toString()
-            ).collect {
-                it.onResult {
-                    getBookingById(booking.bookingId.toString())
-                    Application.showToast("Pooja removed successfully")
-                }
-            }
-        }
-    }
-
     fun addBookingReview(booking: GetBookingsResponse, rating: Int, reviewText: String) {
         viewModelScope.launch {
             Project.pandit.createPanditReviewUseCase.invoke(
                 input = CreateReviewInput(
-                    bookingId = "1",
+                    bookingId = booking.bookingId.toString(),
                     poojaId = booking.poojaName,
-                    panditId = "1",
+                    panditId = booking.panditId,
                     rating = rating.toString(),
                     userId = getUser().userId.toString(),
                     reviewText = reviewText
