@@ -9,7 +9,7 @@
     <string name="text_login_description">Please sign in to your existing account.</string>
     <string name="text_phone_number">Phone number</string>
     <string name="text_dont_have_account">Don’t have an account? </string>
-    <string name="set_availablity">Set Availability</string>
+    <string name="set_availablity">Choose Date &amp; Time</string>
     <string name="add_time_slot"> Add Time Slot</string>
     <string name="text_sign_up">Sign up</string>
     <string name="text_select_time_slot">Select a time slots</string>
