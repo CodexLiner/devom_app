@@ -110,7 +110,7 @@ fun ColumnScope.BookingDetailScreenContent(
                         color = textBlackShade
                     )
                     Text(
-                        text = "4434",
+                        text = booking.startPin,
                         style = text_style_h4,
                         color = blackColor
                     )
