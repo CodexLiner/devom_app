@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.devom.app.models.ApplicationStatus
+import com.devom.app.models.getColor
 import com.devom.app.theme.greenColor
 import com.devom.app.theme.greyColor
 import com.devom.app.theme.primaryColor
@@ -63,7 +64,7 @@ fun BookingCard(
             onError = {
                 co.touchlab.kermit.Logger.d("KermitLogger $it")
             },
-            model = booking.userImage.toDevomImage(),
+            model = booking.poojaImage.toDevomImage(),
             modifier = Modifier.size(104.dp, 96.dp).clip(RoundedCornerShape(12.dp)),
         )
         Column(modifier = Modifier.weight(1f).padding(vertical = 12.dp)) {
@@ -86,13 +87,13 @@ fun BookingUserDetail(booking: GetBookingsResponse, onBookingUpdate: (Applicatio
     ) {
         Text(
             color = Color.Black,
-            text = booking.userName,
+            text = booking.poojaName.ifEmpty { "N/A" },
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.weight(1f)
         )
 
-        val contentColor =
-            if (booking.status == ApplicationStatus.CONFIRMED.status) greenColor else if (booking.status == ApplicationStatus.PENDING.status) warningColor else secondaryColor
+        val contentColor = booking.status.getColor()
+
         Box(
             modifier = Modifier.padding(end = 8.dp)
                 .background(contentColor.copy(0.08f), shape = RoundedCornerShape(50))
@@ -134,7 +135,7 @@ private fun RowScope.ConfirmationIcon(
 @Composable
 fun BookingId(booking: GetBookingsResponse) {
     Text(
-        text = "#${booking.bookingId}",
+        text = "#${booking.bookingCode}",
         fontWeight = FontWeight.W500,
         fontSize = 12.sp,
         lineHeight = 18.sp,

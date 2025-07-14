@@ -89,16 +89,17 @@ fun BookingScreen(navHostController: NavHostController, onNavigationIconClick: (
         val filteredBookings = when (selectedTabIndex.value) {
             0 -> bookings.value.filter {
                 val bookingDate = it.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date
-                bookingDate != null && (bookingDate >= today)
+                bookingDate != null && ((it.status == ApplicationStatus.PENDING.status && bookingDate == today) || (bookingDate > today && it.status != ApplicationStatus.COMPLETED.status && it.status != ApplicationStatus.CANCELLED.status && it.status != ApplicationStatus.REJECTED.status))
             }
 
             1 -> bookings.value.filter {
                 val bookingDate = it.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date
-                bookingDate != null && bookingDate < today
+                bookingDate != null && (bookingDate < today || it.status == ApplicationStatus.COMPLETED.status || it.status == ApplicationStatus.CANCELLED.status || it.status == ApplicationStatus.REJECTED.status)
             }
 
             else -> bookings.value
         }
+
 
 
         if (filteredBookings.isNotEmpty()) {

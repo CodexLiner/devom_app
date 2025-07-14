@@ -119,7 +119,7 @@ fun ColumnScope.BookingPaymentScreenContent(
     val baseAmount = (pandit?.withItemPrice?.toFloatOrNull() ?: 1f).toInt() * 100
 
     val amount = if (bookingDate == today) {
-        (baseAmount * 1.1).toInt() // Add 10% if booking date is today
+        (baseAmount * 1.1).toInt()
     } else {
         baseAmount
     }
@@ -131,7 +131,7 @@ fun ColumnScope.BookingPaymentScreenContent(
             .fillMaxWidth()
             .weight(1f)
     ) {
-        PoojaDetailsSection(pooja, pandit, input)
+        PoojaDetailsSection(pooja, pandit, input , (amount / 100f).toString())
         PaymentDetailsSection(
             selectedMethod = selectedPaymentMode,
             onSelectionChanged = { selectedPaymentMode = it.lowercase() }
@@ -156,6 +156,7 @@ fun ColumnScope.BookingPaymentScreenContent(
                     input = it.copy(
                         totalAmount = amount / 100f,
                         userId = user.userId,
+                        poojaId = pooja?.id ?: 0,
                         panditId = pandit?.userId ?: 0,
                         itemIds = itemIds
                     ),
@@ -242,6 +243,7 @@ fun PoojaDetailsSection(
     pooja: GetPoojaResponse?,
     pandit: GetAllPanditByPoojaIdResponse?,
     input: BookPanditSlotInput?,
+    amount : String = ""
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -271,7 +273,7 @@ fun PoojaDetailsSection(
             )
             ItemPoojaDetail(
                 title = "Service Charges",
-                description = "₹${pandit?.withItemPrice.orEmpty()}/hr",
+                description = "₹${amount}/hr",
                 modifier = Modifier.weight(1f)
             )
         }

@@ -12,6 +12,7 @@ import com.devom.models.slots.BookPanditSlotInput
 import com.devom.network.getUser
 import com.devom.utils.Application
 import com.devom.utils.network.onResult
+import com.devom.utils.network.onResultNothing
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -101,7 +102,7 @@ class BookingPaymentScreenViewModel : ViewModel() {
                     razorpaySignature = data?.signature.orEmpty()
                 )
             ).collect {
-                it.onResult {
+                it.onResultNothing {
                     function()
                 }
             }

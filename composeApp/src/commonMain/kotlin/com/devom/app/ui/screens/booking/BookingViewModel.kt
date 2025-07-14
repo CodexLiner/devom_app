@@ -105,7 +105,7 @@ class BookingViewModel : ViewModel() {
             Project.pandit.createPanditReviewUseCase.invoke(
                 input = CreateReviewInput(
                     bookingId = booking.bookingId.toString(),
-                    poojaId = booking.poojaName,
+                    poojaId = booking.poojaId,
                     panditId = booking.panditId,
                     rating = rating.toString(),
                     userId = getUser().userId.toString(),
