@@ -1,4 +1,5 @@
 package com.devom.app.ui.components
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,7 +24,8 @@ import devom_app.composeapp.generated.resources.ic_edit
 
 @Composable
 fun UserProfilePicture(
-    mainModifier : Modifier = Modifier.fillMaxWidth(),
+    shouldShowEditButton: Boolean = true,
+    mainModifier: Modifier = Modifier.fillMaxWidth(),
     modifier: Modifier = Modifier
         .size(100.dp)
         .clip(CircleShape)
@@ -31,7 +33,7 @@ fun UserProfilePicture(
     userResponse: UserRequestResponse, onImageClick: () -> Unit = {},
 ) {
     Box(
-        modifier =mainModifier,
+        modifier = mainModifier,
         contentAlignment = Alignment.Center
     ) {
         Box(contentAlignment = Alignment.BottomEnd) {
@@ -39,23 +41,24 @@ fun UserProfilePicture(
                 model = userResponse.profilePictureUrl.toDevomImage(),
                 modifier = modifier.clickable(onClick = onImageClick)
             )
-
-            Box(
-                modifier = Modifier
-                    .offset(x = (-4).dp, y = (-4).dp)
-                    .size(24.dp)
-                    .clip(CircleShape)
-                    .background(
-                        Color(0xFFFFC107)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_edit),
-                    contentDescription = "Edit",
-                    modifier = Modifier.size(14.dp),
-                    tint = Color.White
-                )
+            if (shouldShowEditButton) {
+                Box(
+                    modifier = Modifier
+                        .offset(x = (-4).dp, y = (-4).dp)
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Color(0xFFFFC107)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_edit),
+                        contentDescription = "Edit",
+                        modifier = Modifier.size(14.dp),
+                        tint = Color.White
+                    )
+                }
             }
         }
     }

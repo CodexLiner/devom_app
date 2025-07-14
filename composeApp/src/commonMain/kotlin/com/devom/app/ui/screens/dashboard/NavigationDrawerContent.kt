@@ -41,21 +41,18 @@ import com.devom.app.ui.navigation.Screens
 import com.devom.app.utils.toColor
 import com.devom.models.auth.UserRequestResponse
 import com.devom.models.payment.GetWalletBalanceResponse
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
-import devom_app.composeapp.generated.resources.Biography
 import devom_app.composeapp.generated.resources.Res
-import devom_app.composeapp.generated.resources.Review_and_Ratings
 import devom_app.composeapp.generated.resources.arrow_drop_down_right
 import devom_app.composeapp.generated.resources.help_support
 import devom_app.composeapp.generated.resources.ic_help_support
 import devom_app.composeapp.generated.resources.ic_nav_bookings
 import devom_app.composeapp.generated.resources.ic_nav_wallet
 import devom_app.composeapp.generated.resources.ic_refer
-import devom_app.composeapp.generated.resources.ic_review
 import devom_app.composeapp.generated.resources.my_booking
 import devom_app.composeapp.generated.resources.my_wallet
 import devom_app.composeapp.generated.resources.refer_earn
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun NavigationDrawerContent(
@@ -128,6 +125,7 @@ fun UserDetailsContent(
 
         user?.let {
             UserProfilePicture(
+                shouldShowEditButton = false,
                 mainModifier = Modifier.wrapContentWidth(),
                 modifier = Modifier.size(66.dp).clip(CircleShape),
                 userResponse = user
