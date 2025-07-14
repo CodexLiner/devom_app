@@ -93,7 +93,7 @@ fun ColumnScope.BookingDetailScreenContent(
             item {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().background(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp).background(
                         color = primaryColor.copy(.0f),
                         shape = RoundedCornerShape(12.dp)
                     ).border(
