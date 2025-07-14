@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.devom.app.models.ApplicationStatus
 import com.devom.app.theme.backgroundColor
 import com.devom.app.theme.blackColor
 import com.devom.app.theme.greyColor
@@ -86,6 +87,7 @@ fun ColumnScope.BookingDetailScreenContent(
     ) {
         val today = Clock.System.now().toLocalDateTime().date
         val bookingDate = booking.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date
+        val isPoojaStarted = booking.status == ApplicationStatus.STARTED.status
 
         if (bookingDate != null && (bookingDate >= today)) {
             item {
@@ -104,13 +106,13 @@ fun ColumnScope.BookingDetailScreenContent(
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = "Your OTP to Start Pooja:",
+                        text = "Your OTP to ${if (isPoojaStarted) "start" else "complete"} Pooja:",
                         fontWeight = FontWeight.W500,
                         style = text_style_lead_body_1,
                         color = textBlackShade
                     )
                     Text(
-                        text = booking.startPin,
+                        text = if (isPoojaStarted) booking.endPin else booking.startPin,
                         style = text_style_h4,
                         color = blackColor
                     )
