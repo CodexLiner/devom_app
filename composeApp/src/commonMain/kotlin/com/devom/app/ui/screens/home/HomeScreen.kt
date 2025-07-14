@@ -1,5 +1,6 @@
 package com.devom.app.ui.screens.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -146,16 +147,18 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
                 searchText.value = it
             }
 
-            StatusTabRow(
-                modifier = Modifier.padding(top = 18.dp),
-                divider = {},
-                containerColor = primaryColor,
-                selectedTabIndex = selectedTabIndex,
-                tabs = tabs,
-                selectedTextColor = whiteColor,
-                unselectedTextColor = whiteColor.copy(alpha = 0.8f),
-                indicatorColor = whiteColor
-            )
+           AnimatedVisibility(tabs.isNotEmpty() , modifier = Modifier.fillMaxWidth()) {
+               StatusTabRow(
+                   modifier = Modifier.padding(top = 18.dp),
+                   divider = {},
+                   containerColor = primaryColor,
+                   selectedTabIndex = selectedTabIndex,
+                   tabs = tabs,
+                   selectedTextColor = whiteColor,
+                   unselectedTextColor = whiteColor.copy(alpha = 0.8f),
+                   indicatorColor = whiteColor
+               )
+           }
         }
 
         if (selectedTabIndex.value == 0) {
