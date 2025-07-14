@@ -26,12 +26,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import co.touchlab.kermit.Logger
 import com.devom.app.models.OptionsBottomSheetItem
 import com.devom.app.models.SupportedFiles
 import com.devom.app.theme.textBlackShade
@@ -57,6 +60,7 @@ import com.devom.app.ui.navigation.Screens
 import com.devom.app.utils.toDevomDocument
 import com.devom.models.pandit.Media
 import com.devom.models.pandit.UpdateBiographyInput
+import com.devom.utils.getThumbnail
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import devom_app.composeapp.generated.resources.Res
@@ -66,6 +70,7 @@ import devom_app.composeapp.generated.resources.ic_arrow_left
 import devom_app.composeapp.generated.resources.ic_video_camera
 import devom_app.composeapp.generated.resources.languages_spoken
 import devom_app.composeapp.generated.resources.media_galley
+import devom_app.composeapp.generated.resources.placeholder
 import devom_app.composeapp.generated.resources.placeholder_video
 import devom_app.composeapp.generated.resources.preferred_rituals
 import devom_app.composeapp.generated.resources.years_of_experience
@@ -185,23 +190,53 @@ fun MediaItem(model: String, type: String, onClick: () -> Unit = {}) {
         if (type.lowercase() == SupportedFiles.VIDEO.type)
             Res.drawable.placeholder_video
         else
-            Res.drawable.placeholder_video
+            Res.drawable.placeholder
     )
+
+    val thumbnail = remember { mutableStateOf<ImageBitmap?>(null) }
+    LaunchedEffect(model) {
+        thumbnail.value = model.getThumbnail()
+    }
+
+    LaunchedEffect(thumbnail.value) {
+        Logger.d("thumbnail ${thumbnail.value.toString()}")
+    }
+
     Box(
         modifier = Modifier.height(124.dp).clip(RoundedCornerShape(8.dp))
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        AsyncImage(
-            onSuccess = {
-                videoIcon.value = type.lowercase() == SupportedFiles.VIDEO.type
-            },
-            placeholder = placeholder,
-            error = placeholder,
-            model = model.toDevomDocument(),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+
+        key(thumbnail.value) {
+            val modifier = Modifier.fillMaxSize()
+            val contentScale = ContentScale.Crop
+
+            if (videoIcon.value && thumbnail.value != null) {
+                thumbnail.value?.let {
+                    Image(
+                        bitmap = it,
+                        contentDescription = "",
+                        modifier = modifier,
+                        contentScale = contentScale
+                    )
+                }
+            } else AsyncImage(
+                model = model.toDevomDocument(),
+                contentDescription = "",
+                modifier = modifier,
+                contentScale = contentScale,
+                placeholder = placeholder,
+                error = placeholder,
+                onSuccess = {
+                    videoIcon.value = type.lowercase() == SupportedFiles.VIDEO.type
+                },
+                onError = {
+                    Logger.d("KermitError $it")
+                }
+            )
+        }
+
         if (videoIcon.value) Image(
             painter = painterResource(Res.drawable.ic_video_camera),
             contentDescription = null,
