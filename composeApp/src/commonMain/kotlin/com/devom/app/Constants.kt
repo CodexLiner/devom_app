@@ -8,6 +8,7 @@ import com.devom.app.theme.yellowColor
 
 const val EMPTY = ""
 const val ACCESS_TOKEN_KEY = "locallySavedAccessTokenKey"
+const val NOTIFICATION_PERMISSION_GRANTED = "notificationPermissionGranted"
 const val REFRESH_TOKEN_KEY = "locallySavedRefreshTokenKey"
 const val UUID_KEY = "uuid"
 const val IMAGE_BASE_URL = "https://imageserver.devom.co.in/uploads/"

@@ -6,7 +6,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import co.touchlab.kermit.Logger
+import com.devom.app.NOTIFICATION_PERMISSION_GRANTED
 import com.devom.app.R
+import com.devom.app.settings
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -22,7 +24,7 @@ class AndroidFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         message.notification?.let {
-            showNotification(it.title, it.body)
+           if (settings.getBoolean(NOTIFICATION_PERMISSION_GRANTED , false)) showNotification(it.title, it.body)
         }
     }
 
