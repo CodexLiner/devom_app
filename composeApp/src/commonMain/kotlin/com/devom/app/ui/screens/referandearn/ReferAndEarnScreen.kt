@@ -44,6 +44,7 @@ import com.devom.models.auth.UserRequestResponse
 import com.devom.utils.Contact
 import com.devom.utils.share.ShareServiceProvider
 import com.devom.utils.share.shareContent
+import com.devom.utils.toClipBoard
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import devom_app.composeapp.generated.resources.Res
@@ -229,12 +230,11 @@ fun ReferHeaderContent(user: State<UserRequestResponse?>) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = user.value?.referralCode.orEmpty(),
-                    color = greyColor
-                )
-                Text(
                     text = stringResource(Res.string.copy),
-                    color = greyColor
+                    color = greyColor,
+                    modifier = Modifier.clickable {
+                        user.value?.referralCode?.let { toClipBoard(it) }
+                    }
                 )
             }
 
