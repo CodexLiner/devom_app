@@ -28,12 +28,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import co.touchlab.kermit.Logger
 import com.devom.app.theme.backgroundColor
 import com.devom.app.theme.bgColor
 import com.devom.app.theme.blackColor
@@ -45,9 +47,14 @@ import com.devom.app.ui.components.ButtonPrimary
 import com.devom.app.ui.components.TextInputField
 import com.devom.app.ui.screens.wallet.WalletBalanceInfo
 import com.devom.app.ui.screens.wallet.WalletIcon
+import com.devom.network.getUser
 import com.devom.utils.Application
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_arrow_left
+import me.meenagopal24.sdk.PaymentSheet
+import me.meenagopal24.sdk.models.PrefillOptions
+import me.meenagopal24.sdk.models.RazorpayCheckoutOptions
+import me.meenagopal24.sdk.models.ThemeOptions
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -77,6 +84,7 @@ fun ColumnScope.BankWalletScreenContent(
 ) {
     val walletBalance by viewModel.walletBalance.collectAsState()
     var amount by remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
 
     val cornerShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
     val balance = (walletBalance?.cashWallet?.toFloatOrNull() ?: 0f) +
@@ -170,7 +178,36 @@ fun ColumnScope.BankWalletScreenContent(
         onClick = {
             val enteredAmount = amount.toIntOrNull()
             if (enteredAmount != null && enteredAmount > 0) {
-                viewModel.addWalletBalance(enteredAmount)
+                viewModel.createTransaction(enteredAmount, "wallet deposit") { order ->
+                    PaymentSheet.startPayment(
+                        RazorpayCheckoutOptions(
+                            orderId = order.id,
+                            currency = order.currency,
+                            description = "wallet deposit",
+                            prefill = PrefillOptions(
+                                email = getUser().email,
+                                contact = getUser().mobileNo,
+                                name = getUser().fullName,
+                            ),
+                            theme = ThemeOptions(color = "#FF762233"),
+                        )
+                    )
+                }
+
+                PaymentSheet.onSuccess = { id, data ->
+                    Logger.d("RazorpayID $id")
+                    Logger.d("RazorpayData $data")
+                    viewModel.verifyTransaction(data) {
+                        viewModel.getWalletBalance()
+                        amount = ""
+                        focusManager.clearFocus()
+                    }
+                }
+
+                PaymentSheet.onError = { _, _, data ->
+                    Application.showToast("Payment Failed ${data?.paymentId}")
+                }
+
             } else {
                 Application.showToast("please enter valid amount")
             }
