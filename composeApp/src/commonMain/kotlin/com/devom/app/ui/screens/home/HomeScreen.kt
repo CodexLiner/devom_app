@@ -169,8 +169,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
 
             PoojaContent(
                 poojaList = filteredList,
-                title = selectedTitle,
-                banner = banner
+                title = selectedTitle
             ) {
                 navHostController.navigate(
                     Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}/false"
