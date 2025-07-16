@@ -129,11 +129,6 @@ fun ChooseScreenContent(
     val dates = remember(startOfList) {
         List(7) { index -> startOfList.plus(index, DateTimeUnit.DAY) }
     }
-    LaunchedEffect(selectedDate) {
-        val isSlotsAvailable = availableSlots.value.any {
-            it.availableDate.formatIsoTo(yyyy_MM_DD) == selectedDate.format(yyyy_MM_DD)
-        }
-    }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 16.dp)

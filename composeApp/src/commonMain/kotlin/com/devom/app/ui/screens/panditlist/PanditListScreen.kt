@@ -63,6 +63,7 @@ import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.AsyncImage
 import com.devom.app.ui.components.ButtonPrimary
+import com.devom.app.ui.components.NoContentView
 import com.devom.app.ui.components.RatingStars
 import com.devom.app.ui.components.StatusTabRow
 import com.devom.app.ui.components.TabRowItem
@@ -161,30 +162,33 @@ fun ColumnScope.PanditListScreenContent(
         }
     }
 
-    LazyColumn(
-        modifier = Modifier.weight(1f),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(
-            top = 12.dp,
-            start = 16.dp,
-            end = 12.dp,
-            bottom = 200.dp
-        )
-    ) {
-        items(filteredPanditList.value) { pandit ->
-            PanditDetailsCard(
-                pandit = pandit,
-                isSelected = pandit == selectedPandit,
-                onLongClick = {
-                    selectedPandit = pandit
-                    showSheet.value = true
-                },
-                onClick = {
-                    selectedPandit = pandit
-                }
+    if (filteredPanditList.value.isNotEmpty()) {
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(
+                top = 12.dp,
+                start = 16.dp,
+                end = 12.dp,
+                bottom = 200.dp
             )
+        ) {
+            items(filteredPanditList.value) { pandit ->
+                PanditDetailsCard(
+                    pandit = pandit,
+                    isSelected = pandit == selectedPandit,
+                    onLongClick = {
+                        selectedPandit = pandit
+                        showSheet.value = true
+                    },
+                    onClick = {
+                        selectedPandit = pandit
+                    }
+                )
+            }
         }
-    }
+    } else NoContentView(title = null, image = null, message = "No pandits found")
+
 
     if (selectedPandit != null) {
         ButtonPrimary(

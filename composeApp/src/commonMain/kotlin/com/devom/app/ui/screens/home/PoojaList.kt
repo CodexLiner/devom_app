@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -33,10 +34,11 @@ import com.devom.models.pooja.GetPoojaResponse
 @Composable
 fun PoojaList(poojaList: List<GetPoojaResponse>, onClick: (GetPoojaResponse) -> Unit = {}) {
     LazyVerticalGrid(
+        modifier = Modifier.fillMaxWidth().heightIn(max =  9000.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         columns = GridCells.Fixed(3),
-        contentPadding = PaddingValues(start = 16.dp , end = 16.dp , top = 16.dp , bottom = 200.dp)
+        contentPadding = PaddingValues(start = 16.dp , end = 16.dp , top = 16.dp , bottom = 16.dp)
     ) {
         items(poojaList) {
             PoojaCard(it) {

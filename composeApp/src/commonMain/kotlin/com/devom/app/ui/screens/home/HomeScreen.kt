@@ -3,13 +3,20 @@ package com.devom.app.ui.screens.home
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -26,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.devom.app.theme.backgroundColor
@@ -42,6 +50,7 @@ import com.devom.app.ui.components.TabRowItem
 import com.devom.app.ui.components.TextInputField
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.ui.screens.home.fragments.PoojaContent
+import com.devom.app.utils.toDevomDocument
 import com.devom.app.utils.toDevomImage
 import com.devom.app.utils.toJsonString
 import com.devom.app.utils.urlEncode
@@ -131,7 +140,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
             TextInputField(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .padding(top = 4.dp , bottom = 18.dp),
+                    .padding(top = 4.dp, bottom = 18.dp),
                 placeholder = stringResource(Res.string.search_for_pooja),
                 backgroundColor = whiteColor,
                 leadingIcon = {
@@ -145,69 +154,78 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
                 searchText.value = it
             }
 
-           AnimatedVisibility(tabs.size > 1 , modifier = Modifier.fillMaxWidth()) {
-               StatusTabRow(
-                   modifier = Modifier,
-                   divider = {},
-                   containerColor = primaryColor,
-                   selectedTabIndex = selectedTabIndex,
-                   tabs = tabs,
-                   selectedTextColor = whiteColor,
-                   unselectedTextColor = whiteColor.copy(alpha = 0.8f),
-                   indicatorColor = whiteColor
-               )
-           }
-        }
-
-        if (selectedTabIndex.value == 0) {
-            HomeScreenAllContent(filteredList, navHostController)
-        } else {
-            val selectedTitle = tabs.getOrNull(selectedTabIndex.value)?.title.orEmpty()
-            val banner = poojaList.find {
-                it.category.equals(selectedTitle, ignoreCase = true)
-            }?.categoryImage.orEmpty()
-
-            PoojaContent(
-                poojaList = filteredList,
-                title = selectedTitle
-            ) {
-                navHostController.navigate(
-                    Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}/false"
+            AnimatedVisibility(tabs.size > 1, modifier = Modifier.fillMaxWidth()) {
+                StatusTabRow(
+                    modifier = Modifier,
+                    divider = {},
+                    containerColor = primaryColor,
+                    selectedTabIndex = selectedTabIndex,
+                    tabs = tabs,
+                    selectedTextColor = whiteColor,
+                    unselectedTextColor = whiteColor.copy(alpha = 0.8f),
+                    indicatorColor = whiteColor
                 )
             }
         }
-        HomeScreenBanner(banners.value)
+
+        LazyColumn(contentPadding = PaddingValues(bottom = 200.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            item {
+                if (selectedTabIndex.value == 0) {
+                    HomeScreenAllContent(filteredList, navHostController)
+                } else {
+                    val selectedTitle = tabs.getOrNull(selectedTabIndex.value)?.title.orEmpty()
+                    PoojaContent(
+                        poojaList = filteredList,
+                        title = selectedTitle
+                    ) {
+                        navHostController.navigate(
+                            Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}/false"
+                        )
+                    }
+                }
+            }
+        }
+
     }
 }
 
 @Composable
 fun HomeScreenBanner(banners: List<BannersResponse>) {
-    LazyRow {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
         items(banners.size) {
             BannerItem(banners[it])
         }
     }
 }
-
 @Composable
 fun BannerItem(banner: BannersResponse) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(113.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        AsyncImage(
-            modifier = Modifier.matchParentSize(),
-            model = banner.imageUrl.toDevomImage()
-        )
+    BoxWithConstraints {
+        val screenWidth = maxWidth
+
         Box(
             modifier = Modifier
-                .matchParentSize()
-                .background(Color.Red)
-        )
+                .padding(horizontal = 16.dp)
+                .width(400.dp)
+                .height(113.dp)
+                .background(Color.Red),
+            contentAlignment = Alignment.Center
+        ) {
+            AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = "https://plus.unsplash.com/premium_photo-1701590725747-ac131d4dcffd?fm=jpg",
+            )
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Red.copy(alpha = 0.3f))
+            )
+        }
     }
 }
+
 
 
 @Composable
@@ -217,7 +235,8 @@ fun HomeScreenAllContent(
 ) {
     Row(
         verticalAlignment = Alignment.Bottom,
-        modifier = Modifier.fillMaxWidth().padding(16.dp).background(primaryColor, RoundedCornerShape(12.dp))
+        modifier = Modifier.fillMaxWidth().padding(16.dp)
+            .background(primaryColor, RoundedCornerShape(12.dp))
     ) {
         Column(
             modifier = Modifier.weight(1f).padding(vertical = 24.dp, horizontal = 16.dp),

@@ -265,6 +265,10 @@ fun ReferHeaderContent(user: State<UserRequestResponse?>) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    text = user.value?.referralCode.orEmpty(),
+                    color = greyColor
+                )
+                Text(
                     text = stringResource(Res.string.copy),
                     color = greyColor,
                     modifier = Modifier.clickable {
