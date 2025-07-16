@@ -99,20 +99,7 @@ val videoExtensions = listOf("mp4", "mov", "avi", "mkv", "webm", "flv", "wmv", "
  * Safe characters: ALPHA / DIGIT / "-" / "." / "_" / "~"
  */
 fun String.urlEncode(): String {
-    return buildString {
-        val bytes = this@urlEncode.encodeToByteArray() // UTF‑8
-        for (b in bytes) {
-            val ch = b.toInt() and 0xFF
-            when {
-                ch in 'a'.code..'z'.code ||
-                        ch in 'A'.code..'Z'.code ||
-                        ch in '0'.code..'9'.code ||
-                        ch == '-'.code || ch == '.'.code ||
-                        ch == '_'.code || ch == '~'.code -> append(ch.toChar())
-                else -> append("%" + ch.toString(16).uppercase().padStart(2, '0'))
-            }
-        }
-    }
+    return this
 }
 
 /**
@@ -120,23 +107,7 @@ fun String.urlEncode(): String {
  * Converts '%HH' to corresponding byte and then to characters.
  */
 fun String.urlDecode(): String {
-    val bytes = mutableListOf<Byte>()
-    var i = 0
-    while (i < length) {
-        when (val c = this[i]) {
-            '%' -> {
-                val hex = substring(i + 1, i + 3)
-                val b = hex.toInt(16).toByte()
-                bytes.add(b)
-                i += 3
-            }
-            else -> {
-                bytes.add(c.code.toByte())
-                i++
-            }
-        }
-    }
-    return bytes.toByteArray().decodeToString()
+    return this
 }
 
 

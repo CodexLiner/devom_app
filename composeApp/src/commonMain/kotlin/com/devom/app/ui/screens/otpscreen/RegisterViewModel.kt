@@ -18,6 +18,7 @@ import com.devom.models.auth.SaveUserDeviceTokenRequest
 import com.devom.network.NetworkClient
 import com.devom.network.USER
 import com.devom.utils.Application.showToast
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
@@ -46,7 +47,7 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun saveDeviceToken(token: String = "", device: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             Project.user.saveDeviceTokenUseCase.invoke(
                 SaveUserDeviceTokenRequest(
                     deviceToken = token,

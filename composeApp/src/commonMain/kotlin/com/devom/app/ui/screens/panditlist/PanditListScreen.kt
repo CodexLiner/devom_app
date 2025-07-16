@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,7 +23,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -102,7 +105,7 @@ fun PanditListScreen(navController: NavController, pooja: GetPoojaResponse?, isU
             title = stringResource(Res.string.choose_pandit),
             onNavigationIconClick = { navController.popBackStack() },
         )
-        PanditListScreenContent(viewModel, navController, pooja , isUrgent)
+        PanditListScreenContent(viewModel, navController, pooja, isUrgent)
     }
 }
 
@@ -351,6 +354,7 @@ fun PanditDetailsSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val selectedIndex = remember { mutableStateOf(0) }
+
     if (showSheet) {
         ModalBottomSheet(
             containerColor = whiteColor,
@@ -359,98 +363,104 @@ fun PanditDetailsSheet(
                     sheetState.hide()
                     onDismiss()
                 }
-            }, sheetState = sheetState
+            },
+            sheetState = sheetState
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(24.dp),
-                modifier = Modifier.padding(horizontal = 24.dp)
-            ) {
-                title?.let {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = it, style = text_style_h4, color = blackColor)
-                        IconButton(onDismiss) {
-                            Icon(
-                                painter = painterResource(Res.drawable.ic_close),
-                                contentDescription = null,
-                                tint = blackColor
-                            )
-                        }
-                    }
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    pandit?.let {
-                        PanditDetailsCard(
-                            padding = 0.dp,
-                            pandit = pandit,
-                            isSelected = false,
-                        )
-                    }
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(
-                            text = "About ${pandit?.fullName}",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W600,
-                            color = textBlackShade
-                        )
-                        Text(
-                            text = "About to be shown here after added",
-                            style = text_style_lead_body_1,
-                            color = greyColor
-                        )
-                    }
-
-                    StatusTabRow(
-                        modifier = Modifier.wrapContentWidth(),
-                        selectedTabIndex = selectedIndex, tabs = listOf(
-                            TabRowItem(
-                                title = "Reviews",
-                                icon = null
-                            ),
-                            TabRowItem(
-                                title = "Videos",
-                                icon = null
-                            )
-                        )
-                    )
-
-                    when {
-                        selectedIndex.value == 0 -> {
-                            LazyColumn {
-                                items(pandit?.reviews.orEmpty()) {
-                                    ReviewItem(review = it.toReview())
-                                }
+            Box {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 80.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    title?.let {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(text = it, style = text_style_h4, color = blackColor)
+                            IconButton(onDismiss) {
+                                Icon(
+                                    painter = painterResource(Res.drawable.ic_close),
+                                    contentDescription = null,
+                                    tint = blackColor
+                                )
                             }
                         }
+                    }
 
-                        selectedIndex.value == 1 -> {
-                            LazyVerticalGrid(
-                                modifier = Modifier.heightIn(max = 3000.dp),
-                                contentPadding = PaddingValues(
-                                    start = 16.dp,
-                                    end = 16.dp,
-                                    bottom = 100.dp
-                                ),
-                                columns = GridCells.Fixed(3),
-                                verticalArrangement = Arrangement.spacedBy(4.dp),
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                items(pandit?.videoUrls.orEmpty()) {
-                                    MediaItem(model = it.url, SupportedFiles.VIDEO.type) {
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        pandit?.let {
+                            PanditDetailsCard(
+                                padding = 0.dp,
+                                pandit = pandit,
+                                isSelected = false,
+                            )
+                        }
 
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(
+                                text = "About ${pandit?.fullName}",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W600,
+                                color = textBlackShade
+                            )
+                            Text(
+                                text = "About to be shown here after added",
+                                style = text_style_lead_body_1,
+                                color = greyColor
+                            )
+                        }
+
+                        StatusTabRow(
+                            modifier = Modifier.wrapContentWidth(),
+                            selectedTabIndex = selectedIndex,
+                            tabs = listOf(
+                                TabRowItem(title = "Reviews", icon = null),
+                                TabRowItem(title = "Videos", icon = null)
+                            )
+                        )
+
+                        when (selectedIndex.value) {
+                            0 -> {
+                                Column {
+                                    pandit?.reviews.orEmpty().forEach {
+                                        ReviewItem(review = it.toReview())
+                                    }
+                                }
+                            }
+
+                            1 -> {
+                                LazyVerticalGrid(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .heightIn(max = 300.dp),
+                                    columns = GridCells.Fixed(3),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    items(pandit?.videoUrls.orEmpty()) {
+                                        MediaItem(model = it.url, SupportedFiles.VIDEO.type) {
+
+                                        }
                                     }
                                 }
                             }
                         }
-
                     }
+
                 }
 
                 ButtonPrimary(
-                    modifier = Modifier.navigationBarsPadding().padding(top = 26.dp).fillMaxWidth()
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 16.dp)
                         .height(48.dp),
                     buttonText = stringResource(Res.string.book_now),
                     onClick = onClick
@@ -459,6 +469,7 @@ fun PanditDetailsSheet(
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

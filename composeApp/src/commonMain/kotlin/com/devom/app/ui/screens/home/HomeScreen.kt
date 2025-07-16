@@ -25,14 +25,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.devom.app.theme.backgroundColor
 import com.devom.app.theme.blackColor
 import com.devom.app.theme.primaryColor
-import com.devom.app.theme.textBlackShade
 import com.devom.app.theme.text_style_h4
 import com.devom.app.theme.text_style_h5
 import com.devom.app.theme.text_style_lead_text
@@ -133,7 +131,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
             TextInputField(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .padding(top = 4.dp),
+                    .padding(top = 4.dp , bottom = 18.dp),
                 placeholder = stringResource(Res.string.search_for_pooja),
                 backgroundColor = whiteColor,
                 leadingIcon = {
@@ -147,9 +145,9 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
                 searchText.value = it
             }
 
-           AnimatedVisibility(tabs.isNotEmpty() , modifier = Modifier.fillMaxWidth()) {
+           AnimatedVisibility(tabs.size > 1 , modifier = Modifier.fillMaxWidth()) {
                StatusTabRow(
-                   modifier = Modifier.padding(top = 18.dp),
+                   modifier = Modifier,
                    divider = {},
                    containerColor = primaryColor,
                    selectedTabIndex = selectedTabIndex,

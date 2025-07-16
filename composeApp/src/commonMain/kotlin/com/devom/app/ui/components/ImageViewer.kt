@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -22,11 +23,14 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.devom.app.models.SupportedFiles
 import com.devom.app.theme.backgroundColor
 import com.devom.app.theme.primaryColor
 import com.devom.app.theme.whiteColor
 import com.devom.app.utils.toDevomDocument
 import com.devom.models.pandit.Media
+import com.devom.utils.StreamVideo
 import org.jetbrains.compose.resources.painterResource
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_close
@@ -34,14 +38,12 @@ import devom_app.composeapp.generated.resources.ic_close
 @Composable
 fun ImageViewer(viewImage: MutableState<Boolean>, selectedMedia: MutableState<Media?>) {
     if (viewImage.value) {
-        Dialog(onDismissRequest = { viewImage.value = false }) {
+        Dialog(onDismissRequest = { viewImage.value = false } , properties = DialogProperties(usePlatformDefaultWidth = false)) {
             Box(
-                modifier = Modifier.size(400.dp)
-                    .background(backgroundColor, shape = RoundedCornerShape(12.dp))
+                modifier = Modifier.padding(horizontal = 16.dp).size(400.dp).background(backgroundColor, shape = RoundedCornerShape(12.dp))
 
             ) {
                 Column(horizontalAlignment = Alignment.End) {
-                    // Close button (aligned to top-right)
                     Box(
                         modifier = Modifier.wrapContentSize().background(primaryColor, CircleShape),
                         contentAlignment = Alignment.TopEnd
@@ -56,11 +58,12 @@ fun ImageViewer(viewImage: MutableState<Boolean>, selectedMedia: MutableState<Me
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
+                    if (selectedMedia.value?.documentType == SupportedFiles.VIDEO.type) {
+                        selectedMedia.value?.documentUrl.toDevomDocument().StreamVideo()
 
-                    // Image display
-                    selectedMedia.value?.let { media ->
+                    } else selectedMedia.value?.let { media ->
                         AsyncImage(
-                            model =  media.documentUrl.toDevomDocument(),
+                            model = media.documentUrl.toDevomDocument(),
                             modifier = Modifier.fillMaxWidth().wrapContentHeight()
                                 .clip(RoundedCornerShape(8.dp)),
                             contentScale = ContentScale.FillWidth

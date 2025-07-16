@@ -20,13 +20,9 @@ class ChooseViewModel : ViewModel() {
     private val _slots = MutableStateFlow(listOf<Slot>())
     val slots = _slots
 
-    init {
-        getAvailableSlots()
-    }
-
-    fun getAvailableSlots() {
+    fun getAvailableSlots(user : String) {
         viewModelScope.launch {
-            Project.pandit.getAvailableSlotsUseCase.invoke("139").collect {
+            Project.pandit.getAvailableSlotsUseCase.invoke(user).collect {
                 it.onResult {
                     this@ChooseViewModel.viewModelScope.launch {
                         _slots.emit(
@@ -44,53 +40,6 @@ class ChooseViewModel : ViewModel() {
                             }
                         )
                     }
-                }
-            }
-        }
-    }
-
-    fun setAvailableSlots(slots: List<Slot>) {
-        _slots.value = slots
-    }
-
-    fun createPanditSlot(slots: List<Slot>) {
-        viewModelScope.launch {
-            Project.pandit.createPanditSlotUseCase.invoke(
-                CreatePanditSlotInput(
-                    panditId = getUser().userId,
-                    slots = slots
-                )
-            ).collect {
-                it.withLoading {
-                    Application.showLoader()
-                }
-                it.withError {
-                    Application.showToast(it.message)
-                    Application.hideLoader()
-                }
-                it.withSuccessWithoutData {
-                    Application.hideLoader()
-                    setAvailableSlots(slots)
-                    getAvailableSlots()
-                }
-            }
-        }
-    }
-
-    fun removePanditSlot(slot: Slot) {
-        viewModelScope.launch {
-            Project.pandit.removePanditSlotUseCase.invoke(slot.id).collect {
-                it.withLoading {
-                    Application.showLoader()
-                }
-                it.withError {
-                    Application.showToast(it.message)
-                    Application.hideLoader()
-                }
-                it.withSuccessWithoutData {
-                    Application.hideLoader()
-                    _slots.value = _slots.value.filter { it.id != slot.id }
-                    getAvailableSlots()
                 }
             }
         }

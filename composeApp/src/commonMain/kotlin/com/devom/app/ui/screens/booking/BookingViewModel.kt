@@ -13,6 +13,7 @@ import com.devom.network.getUser
 import com.devom.utils.Application
 import com.devom.utils.cachepolicy.CachePolicy
 import com.devom.utils.network.onResult
+import com.devom.utils.network.onResultNothing
 import com.devom.utils.network.withSuccess
 import com.devom.utils.network.withSuccessWithoutData
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -112,7 +113,7 @@ class BookingViewModel : ViewModel() {
                     reviewText = reviewText
                 )
             ).collect {
-                it.onResult {
+                it.onResultNothing {
                     Application.showToast("Review added successfully")
                 }
             }

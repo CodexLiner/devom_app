@@ -195,7 +195,7 @@ fun MediaItem(model: String, type: String, onClick: () -> Unit = {}) {
 
     val thumbnail = remember { mutableStateOf<ImageBitmap?>(null) }
     LaunchedEffect(model) {
-        thumbnail.value = model.getThumbnail()
+        thumbnail.value = model.toDevomDocument().getThumbnail()
     }
 
     LaunchedEffect(thumbnail.value) {
@@ -212,7 +212,7 @@ fun MediaItem(model: String, type: String, onClick: () -> Unit = {}) {
             val modifier = Modifier.fillMaxSize()
             val contentScale = ContentScale.Crop
 
-            if (videoIcon.value && thumbnail.value != null) {
+            if (type.lowercase() == SupportedFiles.VIDEO.type && thumbnail.value != null) {
                 thumbnail.value?.let {
                     Image(
                         bitmap = it,
@@ -220,6 +220,7 @@ fun MediaItem(model: String, type: String, onClick: () -> Unit = {}) {
                         modifier = modifier,
                         contentScale = contentScale
                     )
+                    videoIcon.value = true
                 }
             } else AsyncImage(
                 model = model.toDevomDocument(),

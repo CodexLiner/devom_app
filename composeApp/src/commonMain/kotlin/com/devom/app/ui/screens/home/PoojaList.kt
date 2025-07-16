@@ -36,7 +36,7 @@ fun PoojaList(poojaList: List<GetPoojaResponse>, onClick: (GetPoojaResponse) -> 
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         columns = GridCells.Fixed(3),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(start = 16.dp , end = 16.dp , top = 16.dp , bottom = 200.dp)
     ) {
         items(poojaList) {
             PoojaCard(it) {

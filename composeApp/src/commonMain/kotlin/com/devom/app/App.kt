@@ -64,7 +64,11 @@ internal fun App() = AppTheme {
                 Application.hideLoader()
                 isLoggedIn(false)
             }
-            addHeaders { append(UUID_KEY, uuid.orEmpty()) }
+            addHeaders {
+                append(UUID_KEY, uuid.orEmpty())
+                append(APPLICATION_ID , "com.devom.app")
+
+            }
         }
 
         initialized = true
@@ -84,6 +88,7 @@ fun MainScreen(isLoggedIn: Boolean) {
     LoadingCompositionProvider(state = loader) {
         AppContainer {
             Scaffold(
+                modifier = Modifier.fillMaxSize(),
                 snackbarHost = { ShowSnackBar() }
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {

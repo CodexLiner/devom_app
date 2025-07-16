@@ -64,7 +64,7 @@ fun ChooseSlotScreen(
     var input by remember { mutableStateOf(BookPanditSlotInput()) }
 
     LaunchedEffect(Unit) {
-        viewModel.getAvailableSlots()
+        viewModel.getAvailableSlots(pandit?.userId.toString())
     }
 
     Column(
