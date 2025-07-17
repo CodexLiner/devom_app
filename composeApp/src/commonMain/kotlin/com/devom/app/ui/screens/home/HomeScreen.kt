@@ -77,6 +77,7 @@ fun HomeScreen(navHostController: NavHostController, onNavigationIconClick: () -
     }
     LaunchedEffect(Unit) {
         viewModel.getPoojaList()
+        viewModel.getBanners()
     }
     Column(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
         AppBar(
