@@ -2,22 +2,21 @@ package com.devom.app.ui.screens.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,9 +30,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.devom.app.theme.backgroundColor
@@ -50,7 +54,6 @@ import com.devom.app.ui.components.TabRowItem
 import com.devom.app.ui.components.TextInputField
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.ui.screens.home.fragments.PoojaContent
-import com.devom.app.utils.toDevomDocument
 import com.devom.app.utils.toDevomImage
 import com.devom.app.utils.toJsonString
 import com.devom.app.utils.urlEncode
@@ -168,7 +171,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
             }
         }
 
-        LazyColumn(contentPadding = PaddingValues(bottom = 200.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        LazyColumn(contentPadding = PaddingValues(bottom = 200.dp)) {
             item {
                 if (selectedTabIndex.value == 0) {
                     HomeScreenAllContent(filteredList, navHostController)
@@ -179,9 +182,16 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
                         title = selectedTitle
                     ) {
                         navHostController.navigate(
-                            Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}/false"
+                            Screens.PanditListScreen.path + "/${
+                                it.toJsonString().urlEncode()
+                            }/false"
                         )
                     }
+                }
+            }
+            if (selectedTabIndex.value == 0) {
+                items(banners.value) {
+                    BannerItem(it)
                 }
             }
         }
@@ -190,43 +200,55 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
 }
 
 @Composable
-fun HomeScreenBanner(banners: List<BannersResponse>) {
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        items(banners.size) {
-            BannerItem(banners[it])
-        }
-    }
-}
-@Composable
 fun BannerItem(banner: BannersResponse) {
-    BoxWithConstraints {
-        val screenWidth = maxWidth
+    Box(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+            .height(135.dp)
+            .clip(RoundedCornerShape(12.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        AsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            model = banner.imageUrl.toDevomImage(),
+            contentScale = ContentScale.Crop
+        )
 
-        Box(
+        Row(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .width(400.dp)
-                .height(113.dp)
-                .background(Color.Red),
-            contentAlignment = Alignment.Center
+                .matchParentSize().padding(horizontal = 35.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                modifier = Modifier.fillMaxSize(),
-                model = "https://plus.unsplash.com/premium_photo-1701590725747-ac131d4dcffd?fm=jpg",
-            )
-            Box(
+            Spacer(modifier = Modifier.weight(1.2f))
+            Column(
                 modifier = Modifier
-                    .matchParentSize()
-                    .background(Color.Red.copy(alpha = 0.3f))
-            )
+                    .weight(1f)
+                    .fillMaxHeight(),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = banner.title.capitalize(Locale.current),
+                    style = text_style_h5,
+                    color = whiteColor,
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    modifier = Modifier.border(
+                        width = 1.dp,
+                        color = whiteColor,
+                        shape = RoundedCornerShape(12.dp)
+                    ).padding(horizontal = 12.dp, vertical = 4.dp),
+                    text = banner.buttonText,
+                    color = whiteColor,
+                    fontWeight = FontWeight.W500,
+                    fontSize = 12.sp
+                )
+            }
         }
     }
 }
-
-
 
 @Composable
 fun HomeScreenAllContent(
