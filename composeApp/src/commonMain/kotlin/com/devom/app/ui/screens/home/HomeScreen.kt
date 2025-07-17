@@ -203,7 +203,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
 fun BannerItem(banner: BannersResponse) {
     Box(
         modifier = Modifier
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp).padding(top = 16.dp)
             .fillMaxWidth()
             .height(135.dp)
             .clip(RoundedCornerShape(12.dp)),
@@ -242,7 +242,7 @@ fun BannerItem(banner: BannersResponse) {
                     ).padding(horizontal = 12.dp, vertical = 4.dp),
                     text = banner.buttonText,
                     color = whiteColor,
-                    fontWeight = FontWeight.W500,
+                    fontWeight = FontWeight.W600,
                     fontSize = 12.sp
                 )
             }
