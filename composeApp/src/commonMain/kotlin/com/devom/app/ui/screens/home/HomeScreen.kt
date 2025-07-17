@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,7 +17,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -37,6 +40,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -44,6 +48,7 @@ import androidx.navigation.NavHostController
 import com.devom.app.theme.backgroundColor
 import com.devom.app.theme.blackColor
 import com.devom.app.theme.primaryColor
+import com.devom.app.theme.textBlackShade
 import com.devom.app.theme.text_style_h4
 import com.devom.app.theme.text_style_h5
 import com.devom.app.theme.text_style_lead_text
@@ -173,7 +178,10 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
             }
         }
 
-        LazyColumn(contentPadding = PaddingValues(bottom = 200.dp) , modifier = Modifier.animateContentSize()) {
+        LazyColumn(
+            contentPadding = PaddingValues(bottom = 200.dp),
+            modifier = Modifier.animateContentSize()
+        ) {
             item {
                 if (selectedTabIndex.value == 0) {
                     HomeScreenAllContent(filteredList, navHostController)
@@ -192,8 +200,8 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
                 }
             }
             if (selectedTabIndex.value == 0) {
-                items(banners.value) {
-                    BannerItem(it)
+                item {
+                    HomeScreenBanner(banners.value)
                 }
             }
         }
@@ -202,11 +210,31 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
 }
 
 @Composable
-fun BannerItem(banner: BannersResponse) {
+fun HomeScreenBanner(banners: List<BannersResponse>) {
+    Text(
+        text = "Bhajan Listing",
+        style = text_style_h5,
+        color = blackColor,
+        modifier = Modifier.padding(horizontal = 16.dp)
+    )
+    BoxWithConstraints {
+        val width = maxWidth
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(banners) {
+                BannerItem(it, width = width)
+            }
+        }
+    }
+}
+
+@Composable
+fun BannerItem(banner: BannersResponse, width: Dp) {
     Box(
-        modifier = Modifier
-            .padding(horizontal = 16.dp).padding(top = 16.dp)
-            .fillMaxWidth()
+        modifier = Modifier.padding(top = 16.dp)
+            .width(width * .7f)
             .height(135.dp)
             .clip(RoundedCornerShape(12.dp)),
         contentAlignment = Alignment.Center
@@ -219,10 +247,11 @@ fun BannerItem(banner: BannersResponse) {
 
         Row(
             modifier = Modifier
-                .matchParentSize().padding(horizontal = 35.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .matchParentSize().background(textBlackShade.copy(.3f)).padding(horizontal = 35.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
         ) {
-            Spacer(modifier = Modifier.weight(1.2f))
+            Spacer(modifier = Modifier)
             Column(
                 modifier = Modifier
                     .weight(1f)
