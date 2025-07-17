@@ -1,6 +1,7 @@
 package com.devom.app.ui.screens.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -172,7 +173,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
             }
         }
 
-        LazyColumn(contentPadding = PaddingValues(bottom = 200.dp)) {
+        LazyColumn(contentPadding = PaddingValues(bottom = 200.dp) , modifier = Modifier.animateContentSize()) {
             item {
                 if (selectedTabIndex.value == 0) {
                     HomeScreenAllContent(filteredList, navHostController)
