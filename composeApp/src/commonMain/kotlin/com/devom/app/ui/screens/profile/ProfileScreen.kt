@@ -229,42 +229,8 @@ fun ProfileUserImageAndRatingsContent(user: UserRequestResponse, rating: Float, 
         }
 
         Spacer(modifier = Modifier.height(4.dp))
-
-        RatingsBar(rating = rating)
     }
 }
-
-@Composable
-private fun RatingsBar(rating: Float) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        val fullStars = rating.toInt()
-        val emptyStars = 5 - fullStars
-
-        repeat(fullStars) {
-            Image(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.ic_star),
-                contentDescription = null,
-            )
-        }
-
-        repeat(emptyStars) {
-            Image(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.ic_star),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint("#DDDDDD".toColor())
-            )
-        }
-
-        Spacer(modifier = Modifier.width(4.dp))
-
-        Text(
-            text = "(${rating}/5)", color = blackColor, style = text_style_lead_text
-        )
-    }
-}
-
 @Composable
 fun ProfileOption(title: String, onClick: () -> Unit = {}) {
     Row(
