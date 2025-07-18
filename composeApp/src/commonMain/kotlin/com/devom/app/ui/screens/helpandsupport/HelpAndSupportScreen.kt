@@ -46,6 +46,7 @@ import com.devom.app.theme.warningColor
 import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.ButtonPrimary
+import com.devom.app.ui.components.NoContentView
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.utils.formatStatus
 import com.devom.app.utils.to12HourTime
@@ -82,17 +83,24 @@ fun ColumnScope.HelpAndSupportScreenContent(
     val tickets = viewModel.tickets.collectAsState()
     val showSheet = remember { mutableStateOf(false) }
 
-    LazyColumn(
-        modifier = Modifier.weight(1f),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = (PaddingValues(horizontal = 16.dp, vertical = 24.dp))
-    ) {
-        items(tickets.value) {
-            HelpAndSupportTicketItem(it) {
-                navController.navigate(Screens.HelpAndSupportDetailScreen.path.plus("/${it.ticketId}"))
+    if (tickets.value.isNotEmpty()) {
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = (PaddingValues(horizontal = 16.dp, vertical = 24.dp))
+        ) {
+            items(tickets.value) {
+                HelpAndSupportTicketItem(it) {
+                    navController.navigate(Screens.HelpAndSupportDetailScreen.path.plus("/${it.ticketId}"))
+                }
             }
         }
-    }
+    } else NoContentView(
+        image = null,
+        title = null,
+        message = "No tickets found"
+    )
+
     ButtonPrimary(
         buttonText = stringResource(Res.string.create_request),
         fontStyle = text_style_lead_text,
@@ -118,7 +126,7 @@ fun ColumnScope.HelpAndSupportScreenContent(
 }
 
 @Composable
-fun HelpAndSupportTicketItem(ticketRequest: GetAllTicketsResponse , onClick : () -> Unit) {
+fun HelpAndSupportTicketItem(ticketRequest: GetAllTicketsResponse, onClick: () -> Unit) {
     val chipColor = when (ticketRequest.status.lowercase()) {
         "in_progress" -> greenColor
         "open", "pending" -> warningColor
