@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class ProfileViewModel : ViewModel() {
-    private val _user = MutableStateFlow<UserRequestResponse>(UserRequestResponse())
+    private val _user = MutableStateFlow(UserRequestResponse())
     val user = _user
 
     init {

@@ -40,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,31 +53,29 @@ import com.devom.app.theme.blackColor
 import com.devom.app.theme.greyColor
 import com.devom.app.theme.primaryColor
 import com.devom.app.theme.text_style_h5
-import com.devom.app.theme.text_style_lead_text
 import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.AsyncImage
 import com.devom.app.ui.navigation.Screens
-import com.devom.app.utils.toColor
 import com.devom.app.utils.toDevomImage
 import com.devom.models.auth.UserRequestResponse
 import com.devom.utils.Application
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import devom_app.composeapp.generated.resources.Notifications
 import devom_app.composeapp.generated.resources.Preferences
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.arrow_drop_down_right
 import devom_app.composeapp.generated.resources.ic_edit
 import devom_app.composeapp.generated.resources.ic_logout
-import devom_app.composeapp.generated.resources.ic_star
 import devom_app.composeapp.generated.resources.ic_verified
 import devom_app.composeapp.generated.resources.update_profile
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navHostController: NavHostController,
+    onUpdate : () -> Unit = {},
     onNavigationIconClick: () -> Unit = {},
 ) {
     val viewModel = viewModel<ProfileViewModel> {
@@ -86,12 +83,16 @@ fun ProfileScreen(
     }
     val user by viewModel.user.collectAsStateWithLifecycle()
 
-
     var notificationsEnabled by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.getUserProfile()
+        onUpdate()
         notificationsEnabled = settings.getBoolean(NOTIFICATION_PERMISSION_GRANTED , false)
+    }
+
+    LaunchedEffect(user) {
+        onUpdate()
     }
 
     LaunchedEffect(notificationsEnabled) {

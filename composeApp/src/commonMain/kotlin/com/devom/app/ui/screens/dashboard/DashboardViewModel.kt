@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.devom.Project
 import com.devom.models.auth.UserRequestResponse
 import com.devom.models.payment.GetWalletBalanceResponse
+import com.devom.utils.network.onResult
 import com.devom.utils.network.withSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -12,6 +13,9 @@ import kotlinx.coroutines.launch
 class DashboardViewModel : ViewModel() {
     private val _walletBalances = MutableStateFlow(GetWalletBalanceResponse())
     val walletBalances = _walletBalances
+
+    private val _user = MutableStateFlow<UserRequestResponse>(UserRequestResponse())
+    val user = _user
 
     private var _selectedTab = MutableStateFlow(0)
     var selectedTab = _selectedTab
@@ -28,6 +32,16 @@ class DashboardViewModel : ViewModel() {
             Project.payment.getWalletBalanceUseCase.invoke().collect {
                 it.withSuccess {
                     _walletBalances.value = it.data
+                }
+            }
+        }
+    }
+
+    fun getUserProfile() {
+        viewModelScope.launch {
+            Project.user.getUserProfileUseCase.invoke().collect {
+                it.onResult {
+                    _user.value = it.data
                 }
             }
         }

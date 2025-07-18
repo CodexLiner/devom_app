@@ -56,7 +56,11 @@ import devom_app.composeapp.generated.resources.my_wallet
 import devom_app.composeapp.generated.resources.view_and_track_your_payments_and_transactions
 
 @Composable
-fun WalletScreen(navHostController: NavHostController, onNavigationIconClick: () -> Unit) {
+fun WalletScreen(
+    navHostController: NavHostController,
+    onUpdate: () -> Unit = {},
+    onNavigationIconClick: () -> Unit,
+) {
     val viewModel: WalletViewModel = viewModel {
         WalletViewModel()
     }
@@ -70,7 +74,12 @@ fun WalletScreen(navHostController: NavHostController, onNavigationIconClick: ()
 
     LaunchedEffect(Unit) {
         viewModel.getWalletBalance()
+        onUpdate()
     }
+    LaunchedEffect(viewModel.walletBalances.collectAsState().value) {
+        onUpdate()
+    }
+
 }
 
 @Composable

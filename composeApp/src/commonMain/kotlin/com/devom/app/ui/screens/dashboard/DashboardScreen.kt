@@ -22,20 +22,20 @@ import com.devom.app.theme.backgroundColor
 import com.devom.app.ui.components.BottomMenuBar
 import com.devom.app.ui.components.BottomNavigationScreen
 import com.devom.app.ui.navigation.Screens
-import com.devom.app.ui.screens.home.HomeScreen
 import com.devom.app.ui.screens.booking.BookingScreen
+import com.devom.app.ui.screens.home.HomeScreen
 import com.devom.app.ui.screens.profile.ProfileScreen
 import com.devom.app.ui.screens.wallet.WalletScreen
+import com.devom.models.auth.UserRequestResponse
 import com.devom.models.payment.GetWalletBalanceResponse
-import com.devom.network.getUser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_nav_add
 import devom_app.composeapp.generated.resources.ic_nav_bookings
 import devom_app.composeapp.generated.resources.ic_nav_home
 import devom_app.composeapp.generated.resources.ic_nav_profile
 import devom_app.composeapp.generated.resources.ic_nav_wallet
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun DashboardScreen(appNavHostController: NavHostController) {
@@ -44,6 +44,7 @@ fun DashboardScreen(appNavHostController: NavHostController) {
     val balance = viewModel.walletBalances.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val user = viewModel.user.collectAsState()
 
     val screens = listOf(
         BottomNavigationScreen("home", "Home", Res.drawable.ic_nav_home, false),
@@ -55,12 +56,22 @@ fun DashboardScreen(appNavHostController: NavHostController) {
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        drawerContent = { DrawerContent(appNavHostController = appNavHostController, scope = scope, drawerState = drawerState, viewModel = viewModel, balance = balance) }
+        drawerContent = {
+            DrawerContent(
+                appNavHostController = appNavHostController,
+                scope = scope,
+                drawerState = drawerState,
+                viewModel = viewModel,
+                balance = balance,
+                user = user.value
+            )
+        }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Crossfade(
                 targetState = selectedTab,
-                modifier = Modifier.fillMaxSize().navigationBarsPadding().background(backgroundColor)
+                modifier = Modifier.fillMaxSize().navigationBarsPadding()
+                    .background(backgroundColor)
             ) { tab ->
                 when (tab) {
                     0 -> HomeScreen(navHostController = appNavHostController) {
@@ -75,13 +86,17 @@ fun DashboardScreen(appNavHostController: NavHostController) {
                         }
                     }
 
-                    3 -> WalletScreen(navHostController = appNavHostController) {
+                    3 -> WalletScreen(navHostController = appNavHostController, onUpdate = {
+                        viewModel.getWalletBalance()
+                    }) {
                         scope.launch {
                             drawerState.open()
                         }
                     }
 
-                    4 -> ProfileScreen(navHostController = appNavHostController , onNavigationIconClick = {
+                    4 -> ProfileScreen(navHostController = appNavHostController, onUpdate = {
+                        viewModel.getUserProfile()
+                    }, onNavigationIconClick = {
                         scope.launch {
                             drawerState.open()
                         }
@@ -119,12 +134,13 @@ fun DrawerContent(
     appNavHostController: NavHostController,
     scope: CoroutineScope,
     drawerState: DrawerState,
+    user: UserRequestResponse,
     viewModel: DashboardViewModel,
-    balance: State<GetWalletBalanceResponse>
+    balance: State<GetWalletBalanceResponse>,
 ) {
     NavigationDrawerContent(
         balance = balance,
-        user = getUser(),
+        user = user,
         appNavHostController = appNavHostController,
         onWalletClick = {
             viewModel.onTabSelected(3)
