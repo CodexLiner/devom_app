@@ -24,7 +24,7 @@ class AndroidFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         message.notification?.let {
-           if (settings.getBoolean(NOTIFICATION_PERMISSION_GRANTED , false)) showNotification(it.title, it.body)
+           if (settings.getBoolean(NOTIFICATION_PERMISSION_GRANTED , true)) showNotification(it.title, it.body)
         }
     }
 
