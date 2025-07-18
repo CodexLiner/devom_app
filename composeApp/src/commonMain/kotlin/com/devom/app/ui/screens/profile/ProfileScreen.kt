@@ -88,7 +88,7 @@ fun ProfileScreen(
     LaunchedEffect(Unit) {
         viewModel.getUserProfile()
         onUpdate()
-        notificationsEnabled = settings.getBoolean(NOTIFICATION_PERMISSION_GRANTED , true)
+        notificationsEnabled = settings.getBoolean(NOTIFICATION_PERMISSION_GRANTED , false)
     }
 
     LaunchedEffect(user) {
