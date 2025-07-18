@@ -10,6 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
+import com.devom.app.firebase.FirebaseAuthenticationManager
 import com.russhwolf.settings.set
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.init
@@ -33,6 +34,7 @@ class AppActivity : ComponentActivity() {
         requestMissingPermissions()
 
         PaymentSheet.init(this)
+        FirebaseAuthenticationManager.init(this)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         FileKit.init(this)
     }

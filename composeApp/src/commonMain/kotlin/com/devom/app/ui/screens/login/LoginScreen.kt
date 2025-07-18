@@ -34,6 +34,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import co.touchlab.kermit.Logger
 import com.devom.utils.Application
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.devom_logo
@@ -46,6 +47,7 @@ import devom_app.composeapp.generated.resources.text_login_description
 import devom_app.composeapp.generated.resources.text_phone_number
 import devom_app.composeapp.generated.resources.text_sign_up
 import com.devom.app.EMPTY
+import com.devom.app.firebase.initiateGoogleSignIn
 import com.devom.app.theme.greyColor
 import com.devom.app.theme.orangeShadow
 import com.devom.app.theme.text_style_h2
@@ -184,7 +186,12 @@ fun LoginMainContent(navController: NavController , viewModel: LoginViewModel) {
                 .fillMaxWidth()
                 .height(52.dp) // ➔ Consistent button height
                 .border(1.dp, color = greyColor.copy(0.2f), shape = RoundedCornerShape(12.dp))
-        ) {}
+        ) {
+            initiateGoogleSignIn {
+                viewModel.onGoogleSignIn(it)
+                Logger.d("GoogleSignIn $it")
+            }
+        }
 
         // --- Sign Up link ---
         Box(
