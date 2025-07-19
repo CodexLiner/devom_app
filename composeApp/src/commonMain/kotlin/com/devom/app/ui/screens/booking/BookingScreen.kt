@@ -116,17 +116,13 @@ fun BookingScreen(navHostController: NavHostController, onNavigationIconClick: (
                 items(filteredBookings) { booking ->
                     BookingCard(
                         booking = booking,
-                        onBookingUpdate = {
-                            viewModel.updateBookingStatus(booking.bookingId, it)
+                        onReviewClick = {
+                            sheetState.value = true
+                            selectedBooking.value = booking
                         },
                         onClick = {
-                            if (selectedTabIndex.value == 1) {
-                                sheetState.value = true
-                                selectedBooking.value = booking
-                            } else {
-                                navHostController.navigate(Screens.BookingDetails.path + "/${booking.bookingId}")
-                                selectedBooking.value = null
-                            }
+                            navHostController.navigate(Screens.BookingDetails.path + "/${booking.bookingId}")
+                            selectedBooking.value = null
                         }
                     )
                 }
