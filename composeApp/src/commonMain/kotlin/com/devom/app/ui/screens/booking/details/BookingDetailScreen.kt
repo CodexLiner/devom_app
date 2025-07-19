@@ -151,6 +151,18 @@ fun ColumnScope.BookingDetailScreenContent(
             )
         }
 
+        if (booking.isUrgent == 1) {
+            item {
+                MetaInfo("Urgent Booking")
+            }
+        }
+
+        if (booking.isPaid == 1) {
+            item {
+                MetaInfo("Prepaid Booking")
+            }
+        }
+
         item {
             BookingSamagriHeader(booking)
         }
@@ -177,6 +189,23 @@ fun ColumnScope.BookingDetailScreenContent(
                 thickness = 1.dp
             )
         }
+    }
+}
+
+@Composable
+fun MetaInfo(title : String) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(top = 28.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            color = textBlackShade,
+            fontWeight = FontWeight.W600,
+            fontSize = 14.sp,
+        )
+        Checkbox()
     }
 }
 
