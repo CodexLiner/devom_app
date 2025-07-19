@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -110,6 +111,7 @@ fun ColumnScope.BookingPaymentScreenContent(
     pooja: GetPoojaResponse?,
 ) {
     var selectedPaymentMode by remember { mutableStateOf("cash") }
+    var selectedSamagriType by remember { mutableStateOf("With Samagri")}
     val balance by viewModel.walletBalance.collectAsState()
 
     val user = getUser()
@@ -132,9 +134,12 @@ fun ColumnScope.BookingPaymentScreenContent(
             .weight(1f)
     ) {
         PoojaDetailsSection(pooja, pandit, input , (amount / 100f).toString())
+
         PaymentDetailsSection(
             selectedMethod = selectedPaymentMode,
-            onSelectionChanged = { selectedPaymentMode = it.lowercase() }
+            onPaymentMethodChanged = { selectedPaymentMode = it.lowercase() },
+            onSamagriChanged = { selectedSamagriType = it },
+            selectedSamagri = selectedSamagriType
         )
     }
 
@@ -158,6 +163,9 @@ fun ColumnScope.BookingPaymentScreenContent(
                         userId = user.userId,
                         poojaId = pooja?.id ?: 0,
                         panditId = pandit?.userId ?: 0,
+                        isUrgent = if (bookingDate == today) 1 else 0,
+                        isPaid = if (selectedPaymentMode.equals("wallet", true)) 1 else 0,
+                        isWithItem = if (selectedSamagriType.equals("With Samagri", true)) 1 else 0,
                         itemIds = itemIds
                     ),
                     selectedPaymentMode = selectedPaymentMode, poojaPrice = amount / 100f
@@ -214,29 +222,50 @@ fun ColumnScope.BookingPaymentScreenContent(
 @Composable
 fun PaymentDetailsSection(
     selectedMethod: String,
-    onSelectionChanged: (String) -> Unit,
+    selectedSamagri: String,
+    onPaymentMethodChanged: (String) -> Unit,
+    onSamagriChanged: (String) -> Unit,
 ) {
     val paymentOptions = listOf("Cash", "Wallet")
+    val samagriOptions = listOf("With Samagri", "Without Samagri")
+
     Column(
-        modifier = Modifier.padding(top = 24.dp).padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+
+        Text(text = "Samagri Options", style = text_style_h5, color = blackColor)
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(samagriOptions.size),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp)
+        ) {
+            items(samagriOptions) { option ->
+                PaymentOption(
+                    option = option,
+                    isSelected = selectedSamagri.equals(option, ignoreCase = true),
+                    onClick = { onSamagriChanged(option) }
+                )
+            }
+        }
+
         Text(text = "Payment Options", style = text_style_h5, color = blackColor)
         LazyVerticalGrid(
             columns = GridCells.Fixed(paymentOptions.size),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp)
         ) {
             items(paymentOptions) { option ->
                 PaymentOption(
                     option = option,
                     isSelected = selectedMethod.equals(option, ignoreCase = true),
-                    onClick = { onSelectionChanged(option) }
+                    onClick = { onPaymentMethodChanged(option) }
                 )
             }
         }
-
     }
 }
+
 
 @Composable
 fun PoojaDetailsSection(
@@ -305,11 +334,11 @@ fun PaymentOption(option: String, isSelected: Boolean, onClick: () -> Unit) {
             .border(
                 width = 1.dp,
                 color = if (isSelected) primaryColor else greyColor,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(24.dp)
             )
             .background(
                 color = if (isSelected) primaryColor.copy(alpha = 0.1f) else whiteColor,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(24.dp)
             )
             .clickable { onClick() }
             .padding(vertical = 12.dp),
