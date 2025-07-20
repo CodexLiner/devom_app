@@ -194,7 +194,7 @@ fun ProfileUserImageAndRatingsContent(user: UserRequestResponse, rating: Float, 
     ) {
         Box(contentAlignment = Alignment.BottomEnd) {
             AsyncImage(
-                model = user.profilePictureUrl.toDevomImage(),
+                model = if (user.passwordHash.isNullOrEmpty()) user.profilePictureUrl.toDevomImage() else user.profilePictureUrl,
                 modifier = Modifier.padding(top = 32.dp).size(115.dp).clip(CircleShape)
             )
 
