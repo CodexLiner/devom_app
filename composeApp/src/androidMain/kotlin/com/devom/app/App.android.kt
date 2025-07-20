@@ -18,43 +18,36 @@ import me.meenagopal24.sdk.PaymentSheet
 
 class AppActivity : ComponentActivity() {
 
-    private val notificationPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            settings[NOTIFICATION_PERMISSION_GRANTED] =  isGranted
-        }
-
-    private val contactsPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted -> }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent { App() }
-
-        requestMissingPermissions()
-
+        requestNotificationPermission()
         PaymentSheet.init(this)
         FirebaseAuthenticationManager.init(this)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         FileKit.init(this)
     }
 
-    private fun requestMissingPermissions() {
+    private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
+                    this, Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             } else {
                 println("Notification permission already granted")
+                requestContactsPermission()
             }
+        } else {
+            requestContactsPermission()
         }
+    }
 
+    private fun requestContactsPermission() {
         if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_CONTACTS
+                this, Manifest.permission.READ_CONTACTS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             contactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
@@ -62,4 +55,14 @@ class AppActivity : ComponentActivity() {
             println("Contacts permission already granted")
         }
     }
+
+    private val notificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            settings[NOTIFICATION_PERMISSION_GRANTED] = isGranted
+            requestContactsPermission()
+        }
+
+    private val contactsPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        }
 }
