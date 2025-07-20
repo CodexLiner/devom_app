@@ -12,7 +12,12 @@
           "package_name": "com.devom.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1084106475388-q05rpt3a8s78nqdubjorbiref5b5mv29.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCI1Od1Y6GN3D7Ced80JOWBffiLZ26huRU"
@@ -20,7 +25,41 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1084106475388-q05rpt3a8s78nqdubjorbiref5b5mv29.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1084106475388:android:b069007f452570ebae06f9",
+        "android_client_info": {
+          "package_name": "com.devom.pandit.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1084106475388-q05rpt3a8s78nqdubjorbiref5b5mv29.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI1Od1Y6GN3D7Ced80JOWBffiLZ26huRU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1084106475388-q05rpt3a8s78nqdubjorbiref5b5mv29.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
