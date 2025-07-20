@@ -3,11 +3,14 @@ package com.devom.app.ui.screens.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devom.Project
+import com.devom.app.firebase.MyFirebaseMessagingService
+import com.devom.models.auth.SaveUserDeviceTokenRequest
 import com.devom.models.auth.UserRequestResponse
 import com.devom.models.payment.GetWalletBalanceResponse
 import com.devom.utils.network.onResult
 import com.devom.utils.network.withSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class DashboardViewModel : ViewModel() {
@@ -25,6 +28,10 @@ class DashboardViewModel : ViewModel() {
 
     init {
         getWalletBalance()
+        getUserProfile()
+        MyFirebaseMessagingService.getToken { token, device ->
+            saveDeviceToken(token, device)
+        }
     }
 
     fun getWalletBalance() {
@@ -45,5 +52,16 @@ class DashboardViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    fun saveDeviceToken(token: String = "", device: String) {
+       viewModelScope.launch {
+           Project.user.saveDeviceTokenUseCase.invoke(
+               SaveUserDeviceTokenRequest(
+                   deviceToken = token,
+                   deviceType = device
+               )
+           ).collect()
+       }
     }
 }

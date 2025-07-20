@@ -3,11 +3,15 @@ package com.devom.app.ui.screens.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devom.Project
+import com.devom.app.settings
 import com.devom.models.auth.UserRequestResponse
+import com.devom.network.NetworkClient
+import com.devom.network.USER
 import com.devom.utils.Application
 import com.devom.utils.date.convertIsoToDate
 import com.devom.utils.date.toLocalDateTime
 import com.devom.utils.network.onResult
+import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -40,6 +44,7 @@ class ProfileViewModel : ViewModel() {
             ).collect {
                 it.onResult {
                     _user.value = it.data
+                    settings[USER] = NetworkClient.config.jsonConfig.encodeToString(it.data)
                     Application.showToast(message)
                 }
             }
