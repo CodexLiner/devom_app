@@ -20,10 +20,12 @@ fun String.toColor(): Color {
 }
 
 fun String?.toDevomImage(): String? {
-    val encodedPath = this?.encodeURLPath()
+    if (this.isNullOrBlank()) return null
+    if (this.contains("https://", ignoreCase = true)) return this
+
+    val encodedPath = this.encodeURLPath()
     return IMAGE_BASE_URL + encodedPath
 }
-
 fun String?.toDevomDocument(): String? {
     val encodedPath = this?.encodeURLPath()
     return DOCUMENT_BASE_URL + encodedPath
@@ -92,23 +94,6 @@ fun String.formatStatus(): String =
         .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
 val videoExtensions = listOf("mp4", "mov", "avi", "mkv", "webm", "flv", "wmv", "3gp", "mpeg")
-
-
-/**
- * Percent-encodes a string according to RFC 3986 for use in URLs.
- * Safe characters: ALPHA / DIGIT / "-" / "." / "_" / "~"
- */
-fun String.urlEncode(): String {
-    return this
-}
-
-/**
- * Decodes percent-encoded UTF‑8 strings.
- * Converts '%HH' to corresponding byte and then to characters.
- */
-fun String.urlDecode(): String {
-    return this
-}
 
 
 inline fun <reified T> T.toJsonString(): String {

@@ -201,7 +201,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
             }
             if (selectedTabIndex.value == 0) {
                 item {
-                    HomeScreenBanner(banners.value)
+                    HomeScreenBanner(banners.value.filter { it.bannerType == "app" })
                 }
             }
         }

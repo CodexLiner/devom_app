@@ -48,9 +48,9 @@ internal fun App() = AppTheme {
         if (!isLoggedIn) {
             listOf(ACCESS_TOKEN_KEY, UUID_KEY).forEach { settings.remove(it) }
         } else {
-            accessKey = settings.get(ACCESS_TOKEN_KEY)
-            refreshToken = settings.get(ACCESS_TOKEN_KEY)
-            uuid = settings.get(UUID_KEY)
+            accessKey = settings[ACCESS_TOKEN_KEY]
+            refreshToken = settings[ACCESS_TOKEN_KEY]
+            uuid = settings[UUID_KEY]
         }
 
         val loggedIn = listOf(accessKey, refreshToken, uuid).all { !it.isNullOrEmpty() }
@@ -67,7 +67,6 @@ internal fun App() = AppTheme {
             addHeaders {
                 append(UUID_KEY, uuid.orEmpty())
                 append(APPLICATION_ID , "com.devom.app")
-
             }
         }
 

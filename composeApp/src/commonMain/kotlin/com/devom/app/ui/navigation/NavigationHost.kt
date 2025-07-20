@@ -183,7 +183,7 @@ fun NavigationHost(
             route = Screens.PanditListScreen.path.plus("/{pooja}/{isUrgent}")
         ) {
             val pooja =
-                it.arguments?.getString("pooja")?.decodeFromString<GetPoojaResponse>()
+                it.arguments?.getString("pooja")?.urlDecode()?.decodeFromString<GetPoojaResponse>()
             val isUrgent = it.arguments?.getBoolean("isUrgent") ?: false
             PanditListScreen(navController = navController, pooja = pooja, isUrgent)
         }

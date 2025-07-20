@@ -38,7 +38,7 @@ fun UserProfilePicture(
     ) {
         Box(contentAlignment = Alignment.BottomEnd) {
             AsyncImage(
-                model = if (userResponse.passwordHash.isNullOrEmpty()) userResponse.profilePictureUrl.toDevomImage() else userResponse.profilePictureUrl,
+                model = userResponse.profilePictureUrl.toDevomImage(),
                 modifier = modifier.clickable(onClick = onImageClick)
             )
             if (shouldShowEditButton) {

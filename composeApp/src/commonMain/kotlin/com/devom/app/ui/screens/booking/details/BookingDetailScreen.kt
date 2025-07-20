@@ -114,7 +114,7 @@ fun ColumnScope.BookingDetailScreenContent(
         val bookingDate = booking.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date
         val isPoojaStarted = booking.status == ApplicationStatus.STARTED.status
 
-        if (bookingDate != null && (bookingDate >= today)) {
+        if (bookingDate != null && (bookingDate >= today) && booking.status != ApplicationStatus.COMPLETED.status) {
             item {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -144,6 +144,7 @@ fun ColumnScope.BookingDetailScreenContent(
                 }
             }
         }
+
         item {
             BookingCard(
                 showStatus = false,
@@ -151,16 +152,12 @@ fun ColumnScope.BookingDetailScreenContent(
             )
         }
 
-        if (booking.isUrgent == 1) {
-            item {
-                MetaInfo("Urgent Booking")
-            }
+        item {
+            MetaInfo("Urgent Booking" , booking.isUrgent == 1)
         }
 
-        if (booking.isPaid == 1) {
-            item {
-                MetaInfo("Prepaid Booking")
-            }
+        item {
+            MetaInfo("Prepaid Booking" , booking.isPaid == 1)
         }
 
         item {
@@ -193,7 +190,7 @@ fun ColumnScope.BookingDetailScreenContent(
 }
 
 @Composable
-fun MetaInfo(title : String) {
+fun MetaInfo(title : String , isChecked: Boolean = false) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(top = 28.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -205,7 +202,7 @@ fun MetaInfo(title : String) {
             fontWeight = FontWeight.W600,
             fontSize = 14.sp,
         )
-        Checkbox()
+        Checkbox(isChecked = isChecked)
     }
 }
 
@@ -223,20 +220,18 @@ fun BookingSamagriHeader(booking: GetBookingsResponse) {
             modifier = Modifier.padding(top = 28.dp, bottom = 16.dp)
         )
 
-        if (booking.isWithItem == 1) {
-            Row(
-                modifier = Modifier.padding(top = 28.dp, bottom = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Checkbox()
-                Text(
-                    text = "With Samagri",
-                    color = textBlackShade,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 14.sp,
-                )
-            }
+        Row(
+            modifier = Modifier.padding(top = 28.dp, bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Checkbox(isChecked = booking.isWithItem == 1)
+            Text(
+                text = "With Samagri",
+                color = textBlackShade,
+                fontWeight = FontWeight.W600,
+                fontSize = 14.sp,
+            )
         }
     }
 }
@@ -272,6 +267,7 @@ fun Checkbox(
     checkmarkColor: Color = primaryColor,
     size: Dp = 20.dp,
     cornerRadius: Dp = 4.dp,
+    isChecked: Boolean = true,
     onClick: () -> Unit = {},
 ) {
     Box(
@@ -281,12 +277,14 @@ fun Checkbox(
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            painter = painterResource(Res.drawable.ic_check),
-            contentDescription = null,
-            tint = checkmarkColor,
-            modifier = Modifier.size(size * 0.6f)
-        )
+        if (isChecked) {
+            Icon(
+                painter = painterResource(Res.drawable.ic_check),
+                contentDescription = null,
+                tint = checkmarkColor,
+                modifier = Modifier.size(size * 0.6f)
+            )
+        }
     }
 }
 

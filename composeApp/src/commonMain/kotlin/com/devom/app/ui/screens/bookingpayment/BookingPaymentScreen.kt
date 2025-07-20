@@ -118,7 +118,12 @@ fun ColumnScope.BookingPaymentScreenContent(
     val bookingDate = input?.bookingDate?.convertIsoToDate()?.toLocalDateTime()?.date
     val today = Clock.System.now().toLocalDateTime().date
 
-    val baseAmount = (pandit?.withItemPrice?.toFloatOrNull() ?: 1f).toInt() * 100
+    val baseAmount = if (selectedSamagriType.equals(
+            "With Samagri",
+            true
+        )
+    ) (pandit?.withItemPrice?.toFloatOrNull()
+        ?: 1f).toInt() * 100 else (pandit?.withoutItemPrice?.toFloatOrNull() ?: 1f).toInt() * 100
 
     val amount = if (bookingDate == today) {
         (baseAmount * 1.1).toInt()

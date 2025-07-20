@@ -100,6 +100,7 @@ fun PanditListScreen(navController: NavController, pooja: GetPoojaResponse?, isU
     LaunchedEffect(Unit) {
         viewModel.getAllPanditByPoojaId(pooja?.id ?: 0)
     }
+
     Column(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
         AppBar(
             navigationIcon = painterResource(Res.drawable.ic_arrow_left),
@@ -122,6 +123,7 @@ fun ColumnScope.PanditListScreenContent(
     var selectedPandit by remember { mutableStateOf<GetAllPanditByPoojaIdResponse?>(null) }
     val showSheet = remember { mutableStateOf(false) }
     val filterSheet = remember { mutableStateOf(false) }
+    val searchText = remember { mutableStateOf("") }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -142,7 +144,9 @@ fun ColumnScope.PanditListScreenContent(
                     tint = greyColor.copy(.8f)
                 )
             }
-        )
+        ) {
+            searchText.value = it
+        }
 
         IconButton(
             modifier = Modifier.background(whiteColor, RoundedCornerShape(12.dp)).border(
@@ -173,7 +177,7 @@ fun ColumnScope.PanditListScreenContent(
                 bottom = 200.dp
             )
         ) {
-            items(filteredPanditList.value) { pandit ->
+            items(filteredPanditList.value.filter { it.fullName.contains(searchText.value, true) }) { pandit ->
                 PanditDetailsCard(
                     pandit = pandit,
                     isSelected = pandit == selectedPandit,
