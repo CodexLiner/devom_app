@@ -96,6 +96,7 @@ fun ColumnScope.HelpAndSupportScreenContent(
             }
         }
     } else NoContentView(
+        modifier = Modifier.weight(1f),
         image = null,
         title = null,
         message = "No tickets found"

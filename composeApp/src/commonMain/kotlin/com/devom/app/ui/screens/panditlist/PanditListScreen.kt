@@ -73,6 +73,7 @@ import com.devom.app.ui.screens.biography.MediaItem
 import com.devom.app.ui.screens.reviews.ReviewItem
 import com.devom.app.utils.toDevomImage
 import com.devom.app.utils.toJsonString
+import com.devom.app.utils.toRupay
 import com.devom.app.utils.urlEncode
 import com.devom.models.pandit.Review
 import com.devom.models.pooja.GetPoojaResponse
@@ -342,7 +343,7 @@ fun PanditRatingsAndPricing(pandit: GetAllPanditByPoojaIdResponse) {
             )
         }
         Text(
-            text = "₹${pandit.withoutItemPrice}/hr",
+            text = pandit.withoutItemPrice.toRupay(),
             fontSize = 18.sp,
             fontWeight = FontWeight.W600,
             color = textBlackShade

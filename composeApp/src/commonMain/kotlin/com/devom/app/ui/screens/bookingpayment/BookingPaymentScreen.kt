@@ -49,6 +49,7 @@ import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.ButtonPrimary
 import com.devom.app.ui.components.TextInputField
 import com.devom.app.ui.navigation.Screens
+import com.devom.app.utils.toRupay
 import com.devom.models.pooja.GetPoojaResponse
 import com.devom.models.slots.BookPanditSlotInput
 import com.devom.models.slots.GetAllPanditByPoojaIdResponse
@@ -307,7 +308,7 @@ fun PoojaDetailsSection(
             )
             ItemPoojaDetail(
                 title = "Service Charges",
-                description = "₹${amount}/hr",
+                description = amount.toRupay(),
                 modifier = Modifier.weight(1f)
             )
         }

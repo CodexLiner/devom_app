@@ -294,7 +294,7 @@ fun HomeScreenAllContent(
         Column(
             modifier = Modifier.weight(1f).padding(vertical = 24.dp, horizontal = 16.dp),
         ) {
-            Text(style = text_style_h4, text = "Urgent Today’s Booking", color = whiteColor)
+            Text(style = text_style_h4, text = "Urgent Booking", color = whiteColor)
             Text(
                 style = text_style_lead_text,
                 text = "Book Now",
