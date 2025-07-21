@@ -164,7 +164,7 @@ private fun RowScope.TransactionInfoCard(transaction: WalletTransaction) {
 
     Column(modifier = Modifier.weight(1f)) {
         Text(
-            text = stringResource(title),
+            text = transaction.purpose,
             color = textBlackShade,
             fontWeight = FontWeight.W600,
             fontSize = 14.sp
@@ -188,8 +188,8 @@ private fun TransactionTypeIcon(
 
     val (icon, cardColor) = when {
         isCredit && isBonus -> Res.drawable.ic_wallet_bonus to greenColor
-        isCredit -> Res.drawable.ic_wallet_credit to primaryColor
-        isCredit.not() && isBonus.not() -> Res.drawable.ic_wallet_debit to greenColor
+        isCredit -> Res.drawable.ic_wallet_credit to greenColor
+        isCredit.not() && isBonus.not() -> Res.drawable.ic_wallet_debit to primaryColor
         else -> Res.drawable.ic_wallet_debit to greenColor
     }
 
