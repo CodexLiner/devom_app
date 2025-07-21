@@ -75,7 +75,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ProfileScreen(
     navHostController: NavHostController,
-    onUpdate : () -> Unit = {},
+    onUpdate: () -> Unit = {},
     onNavigationIconClick: () -> Unit = {},
 ) {
     val viewModel = viewModel<ProfileViewModel> {
@@ -88,7 +88,7 @@ fun ProfileScreen(
     LaunchedEffect(Unit) {
         viewModel.getUserProfile()
         onUpdate()
-        notificationsEnabled = settings.getBoolean(NOTIFICATION_PERMISSION_GRANTED , false)
+        notificationsEnabled = settings.getBoolean(NOTIFICATION_PERMISSION_GRANTED, false)
     }
 
     LaunchedEffect(user) {
@@ -96,7 +96,7 @@ fun ProfileScreen(
     }
 
     LaunchedEffect(notificationsEnabled) {
-        settings.putBoolean(NOTIFICATION_PERMISSION_GRANTED , notificationsEnabled)
+        settings.putBoolean(NOTIFICATION_PERMISSION_GRANTED, notificationsEnabled)
     }
 
     Column(
@@ -188,7 +188,11 @@ fun ProfileActionOptionsCard(navHostController: NavHostController) {
 }
 
 @Composable
-fun ProfileUserImageAndRatingsContent(user: UserRequestResponse, rating: Float, onClick: () -> Unit) {
+fun ProfileUserImageAndRatingsContent(
+    user: UserRequestResponse,
+    rating: Float,
+    onClick: () -> Unit,
+) {
     Column(
         modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -232,6 +236,7 @@ fun ProfileUserImageAndRatingsContent(user: UserRequestResponse, rating: Float, 
         Spacer(modifier = Modifier.height(4.dp))
     }
 }
+
 @Composable
 fun ProfileOption(title: String, onClick: () -> Unit = {}) {
     Row(

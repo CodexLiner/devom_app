@@ -69,7 +69,7 @@ fun ShowSnackBar() {
         }
 
         LaunchedEffect(snackBarState.value) {
-            if (showSnackbar) {
+            if (showSnackbar && snackBarState.value.isNullOrEmpty().not()) {
                 scope.launch {
                     snackBarHostState.showSnackbar(
                         message = snackBarState.value.orEmpty()
