@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -30,6 +31,7 @@ fun DateItem(
     dateTextStyle: androidx.compose.ui.text.TextStyle = text_style_lead_body_1,
     weekDayTextStyle: androidx.compose.ui.text.TextStyle = text_style_lead_body_1,
     isSelected: Boolean,
+    enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
     val backgroundColor =
@@ -41,17 +43,25 @@ fun DateItem(
     val dayTextColor = remember(isSelected) { if (isSelected) Color.White else Color.Gray }
     val weekDayTextColor = remember(isSelected) { if (isSelected) Color.White else Color.Gray }
 
+    val finalModifier = Modifier
+        .then(
+            if (enabled) Modifier.clickable(onClick = onClick)
+            else Modifier
+        )
+        .border(1.dp, borderColor, shape = shape)
+        .background(backgroundColor, shape = shape)
+        .alpha(if (enabled) 1f else 0.4f)
+        .then(modifier)
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .border(1.dp, borderColor, shape = shape)
-            .background(backgroundColor, shape = shape)
-            .then(modifier)
+        modifier = finalModifier
     ) {
         Box(
-            modifier = Modifier.clip(CircleShape).background(dayCircleColor),
+            modifier = Modifier
+                .clip(CircleShape)
+                .background(dayCircleColor),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -61,7 +71,7 @@ fun DateItem(
                 color = dayTextColor,
             )
         }
-        val day = if (dayLength > 0) date.dayOfWeek.name.take(3)
+        val day = if (dayLength > 0) date.dayOfWeek.name.take(dayLength)
             .lowercase() else date.dayOfWeek.name.lowercase()
 
         Text(

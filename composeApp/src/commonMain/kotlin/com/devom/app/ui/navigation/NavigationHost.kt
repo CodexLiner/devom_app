@@ -128,7 +128,8 @@ fun NavigationHost(
                 navController,
                 pooja = pooja,
                 pandit = pandit,
-                initialSelectedDate = initialSelectedDate
+                initialSelectedDate = initialSelectedDate,
+                isUrgent = isUrgent
             )
         }
         composable(Notifications.path) {

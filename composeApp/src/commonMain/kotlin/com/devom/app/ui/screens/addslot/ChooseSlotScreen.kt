@@ -1,17 +1,36 @@
 package com.devom.app.ui.screens.addslot
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -42,14 +61,19 @@ import com.devom.models.slots.Slot
 import com.devom.utils.date.addDays
 import com.devom.utils.date.formatIsoTo
 import com.devom.utils.date.yyyy_MM_DD
-import kotlinx.datetime.*
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.book_now
 import devom_app.composeapp.generated.resources.ic_arrow_left
 import devom_app.composeapp.generated.resources.ic_no_slots
 import devom_app.composeapp.generated.resources.set_availablity
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +83,7 @@ fun ChooseSlotScreen(
         .toLocalDateTime(TimeZone.currentSystemDefault()).date,
     pandit: GetAllPanditByPoojaIdResponse?,
     pooja: GetPoojaResponse?,
+    isUrgent: Boolean,
 ) {
     val viewModel = viewModel { ChooseViewModel() }
     var input by remember { mutableStateOf(BookPanditSlotInput()) }
@@ -80,7 +105,8 @@ fun ChooseSlotScreen(
             ChooseScreenContent(
                 innerPadding = PaddingValues(0.dp),
                 initialSelectedDate = initialSelectedDate,
-                viewModel = viewModel
+                viewModel = viewModel,
+                isUrgent =isUrgent
             ) {
                 input = input.copy(
                     bookingStartTime = it.startTime,
@@ -114,6 +140,7 @@ fun ChooseSlotScreen(
 fun ChooseScreenContent(
     innerPadding: PaddingValues,
     initialSelectedDate: LocalDate,
+    isUrgent: Boolean,
     viewModel: ChooseViewModel,
     onSlotSelected: (Slot) -> Unit = {},
 ) {
@@ -138,8 +165,9 @@ fun ChooseScreenContent(
             contentPadding = PaddingValues(horizontal = 0.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(dates) { date ->
+            itemsIndexed(dates) { index , date ->
                 DateItem(
+                    enabled = if (index == 0) true else isUrgent.not(),
                     date = date,
                     isSelected = date == selectedDate,
                     onClick = { selectedDate = date })
