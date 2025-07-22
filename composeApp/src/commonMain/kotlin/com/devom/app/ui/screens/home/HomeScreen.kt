@@ -64,7 +64,6 @@ import com.devom.app.utils.toDevomImage
 import com.devom.app.utils.toJsonString
 import com.devom.app.utils.urlEncode
 import com.devom.models.other.BannersResponse
-import com.devom.models.pooja.GetPoojaResponse
 import com.devom.network.getUser
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_grid_cells
@@ -110,7 +109,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
     val poojaList by viewModel.poojaList.collectAsState()
     val searchText = remember { mutableStateOf("") }
     val selectedTabIndex = remember { mutableStateOf(0) }
-    val banners = viewModel.banners.collectAsState()
+    val banners by viewModel.banners.collectAsState()
 
     val tabs = remember(poojaList) {
         buildList {
@@ -129,16 +128,21 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
     val filteredList by remember(poojaList, searchText.value, selectedTabIndex.value) {
         derivedStateOf {
             val query = searchText.value.lowercase()
-            if (selectedTabIndex.value == 0) {
-                poojaList.filter { it.name.lowercase().contains(query) }
-            } else {
-                val selectedCategory = tabs.getOrNull(selectedTabIndex.value)?.title?.lowercase()
-                poojaList.filter {
-                    it.category.lowercase() == selectedCategory &&
-                            it.name.lowercase().contains(query)
-                }
+            val selectedCategory = tabs.getOrNull(selectedTabIndex.value)?.title?.lowercase()
+
+            poojaList.filter {
+                (selectedTabIndex.value == 0 || it.category.lowercase() == selectedCategory) &&
+                        it.name.lowercase().contains(query)
             }
         }
+    }
+
+    val navigateToPanditList: (Any) -> Unit = {
+        navHostController.navigate(
+            Screens.PanditListScreen.path + "/${
+                it.toJsonString().urlEncode()
+            }/false"
+        )
     }
 
     Column {
@@ -160,13 +164,11 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
                         tint = primaryColor
                     )
                 }
-            ) {
-                searchText.value = it
-            }
+            ) { searchText.value = it }
 
-            AnimatedVisibility(tabs.size > 1, modifier = Modifier.fillMaxWidth()) {
+            AnimatedVisibility(tabs.size > 1) {
                 StatusTabRow(
-                    modifier = Modifier,
+                    modifier = Modifier.fillMaxWidth(),
                     divider = {},
                     containerColor = primaryColor,
                     selectedTabIndex = selectedTabIndex,
@@ -184,39 +186,51 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
         ) {
             item {
                 if (selectedTabIndex.value == 0) {
-                    HomeScreenAllContent(filteredList, navHostController)
+                    HomeScreenAllContent(navHostController)
                 } else {
-                    val selectedTitle = tabs.getOrNull(selectedTabIndex.value)?.title.orEmpty()
                     PoojaContent(
                         poojaList = filteredList,
-                        title = selectedTitle
-                    ) {
-                        navHostController.navigate(
-                            Screens.PanditListScreen.path + "/${
-                                it.toJsonString().urlEncode()
-                            }/false"
+                        title = tabs.getOrNull(selectedTabIndex.value)?.title.orEmpty(),
+                        onClick = navigateToPanditList
+                    )
+                }
+            }
+
+            if (selectedTabIndex.value == 0) {
+                val appBanners = banners.filter { it.bannerType == "app" }
+
+                if (poojaList.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "Pooja Listing",
+                            style = text_style_h5,
+                            color = blackColor,
+                            modifier = Modifier.padding(horizontal = 16.dp)
                         )
+                        PoojaList(poojaList.take(6), onClick = navigateToPanditList)
+                    }
+                }
+
+                if (appBanners.isNotEmpty()) {
+                    item {
+                        HomeScreenBanner(appBanners)
+                    }
+                }
+
+                if (poojaList.size > 6) {
+                    item {
+                        Box(modifier = Modifier.padding(top = 16.dp)) {
+                            PoojaList(poojaList.drop(6), onClick = navigateToPanditList)
+                        }
                     }
                 }
             }
-            if (selectedTabIndex.value == 0) {
-                item {
-                    HomeScreenBanner(banners.value.filter { it.bannerType == "app" })
-                }
-            }
         }
-
     }
 }
 
 @Composable
 fun HomeScreenBanner(banners: List<BannersResponse>) {
-    Text(
-        text = "Bhajan Listing",
-        style = text_style_h5,
-        color = blackColor,
-        modifier = Modifier.padding(horizontal = 16.dp)
-    )
     BoxWithConstraints {
         val width = maxWidth
         LazyRow(
@@ -283,7 +297,6 @@ fun BannerItem(banner: BannersResponse, width: Dp) {
 
 @Composable
 fun HomeScreenAllContent(
-    poojaList: List<GetPoojaResponse>,
     navHostController: NavHostController,
 ) {
     Row(
@@ -309,19 +322,5 @@ fun HomeScreenAllContent(
             )
         }
         PatternDesign(modifier = Modifier)
-    }
-
-    if (poojaList.isNotEmpty()) {
-        Text(
-            text = "Pooja Listing",
-            style = text_style_h5,
-            color = blackColor,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        PoojaList(poojaList) {
-            navHostController.navigate(
-                Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}/false"
-            )
-        }
     }
 }

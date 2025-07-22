@@ -130,28 +130,6 @@ fun BookingUserDetail(
 }
 
 @Composable
-private fun RowScope.ConfirmationIcon(
-    iconRes: DrawableResource,
-    tintColor: Color,
-    backgroundColor: Color,
-    onClick: () -> Unit = {},
-) {
-    Box(
-        modifier = Modifier
-            .padding(start = 6.dp).clickable(onClick = onClick)
-            .background(backgroundColor, shape = RoundedCornerShape(8.dp))
-            .padding(6.dp)
-    ) {
-        Image(
-            painter = painterResource(iconRes),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(tintColor),
-            modifier = Modifier.size(14.dp)
-        )
-    }
-}
-
-@Composable
 fun BookingId(booking: GetBookingsResponse) {
     Text(
         text = "#${booking.bookingCode}",

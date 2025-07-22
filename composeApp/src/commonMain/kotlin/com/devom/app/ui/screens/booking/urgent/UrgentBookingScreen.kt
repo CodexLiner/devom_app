@@ -49,7 +49,7 @@ fun UrgentBookingScreen(navController: NavHostController, isUrgent: Boolean) {
             )
             PoojaList(poojaList) {
                 navController.navigate(
-                    Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}/true"
+                    Screens.PanditListScreen.path + "/${it.toJsonString().urlEncode()}/$isUrgent"
                 )
             }
         }
