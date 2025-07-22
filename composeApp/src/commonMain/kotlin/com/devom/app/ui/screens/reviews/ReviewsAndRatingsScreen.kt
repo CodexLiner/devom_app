@@ -188,12 +188,14 @@ fun RatingProgress(
 fun ReviewItem(review: Review) {
     Column(modifier = Modifier.padding(top = 24.dp)) {
         ReviewerDetailRow(review)
-        Text(
-            style = text_style_lead_body_1,
-            text = review.reviewText,
-            color = greyColor,
-            modifier = Modifier.padding(top = 12.dp, end = 24.dp)
-        )
+        if (review.reviewText.isNotEmpty()) {
+            Text(
+                style = text_style_lead_body_1,
+                text = review.reviewText,
+                color = greyColor,
+                modifier = Modifier.padding(top = 12.dp, end = 24.dp)
+            )
+        }
         HorizontalDivider(
             modifier = Modifier.padding(top = 24.dp),
             color = greyColor.copy(alpha = 0.24f),
