@@ -31,9 +31,11 @@ import com.devom.app.theme.blackColor
 import com.devom.app.theme.greenColor
 import com.devom.app.theme.greyColor
 import com.devom.app.theme.primaryColor
+import com.devom.app.theme.secondaryColor
 import com.devom.app.theme.textBlackShade
 import com.devom.app.theme.text_style_lead_text
 import com.devom.app.theme.whiteColor
+import com.devom.app.theme.yellowColor
 import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.NoContentView
 import com.devom.app.ui.components.StatusTabRow
@@ -45,20 +47,17 @@ import com.devom.models.payment.TransactionType
 import com.devom.models.payment.WalletTransaction
 import com.devom.utils.date.convertIsoToDate
 import com.devom.utils.date.toLocalDateTime
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import devom_app.composeapp.generated.resources.Res
-import devom_app.composeapp.generated.resources.bonus_added
-import devom_app.composeapp.generated.resources.earnings
 import devom_app.composeapp.generated.resources.ic_arrow_left
+import devom_app.composeapp.generated.resources.ic_refund
+import devom_app.composeapp.generated.resources.ic_rupay
 import devom_app.composeapp.generated.resources.ic_wallet_bonus
 import devom_app.composeapp.generated.resources.ic_wallet_credit
 import devom_app.composeapp.generated.resources.ic_wallet_debit
 import devom_app.composeapp.generated.resources.my_transactions
 import devom_app.composeapp.generated.resources.no_transactions_found
-import devom_app.composeapp.generated.resources.payment_received
-import devom_app.composeapp.generated.resources.successful
-import devom_app.composeapp.generated.resources.withdrawals
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TransactionsScreen(navController: NavController) {
@@ -90,9 +89,9 @@ fun TransactionsScreenContent(
     var selectedTabIndex = remember { mutableStateOf(0) }
 
     val filteredTransaction = when (selectedTabIndex.value) {
-        1 -> transactions.value.transactions.filter { it.purpose == "Top-ups" }
-        2 -> transactions.value.transactions.filter { it.purpose == "Deductions" }
-        3 -> transactions.value.transactions.filter { it.purpose == "Refunds" }
+        1 -> transactions.value.transactions.filter { it.type == "credit" }
+        2 -> transactions.value.transactions.filter { it.type == "debit" }
+        3 -> transactions.value.transactions.filter { it.type == "refund" }
         else -> transactions.value.transactions
     }
 
@@ -106,7 +105,7 @@ fun TransactionsScreenContent(
 
 @Composable
 fun TransactionDetailContent(transactions: List<WalletTransaction>) {
-    val groupedTransactions = transactions.groupBy { it.createdAt }
+    val groupedTransactions = transactions.groupBy { it.createdAt.convertIsoToDate()?.toLocalDateTime()?.date.toString() }
     LazyColumn(
         contentPadding = PaddingValues(bottom = 200.dp)
     ) {
@@ -117,14 +116,15 @@ fun TransactionDetailContent(transactions: List<WalletTransaction>) {
             items(transactions) { transaction ->
                 TransactionItem(transaction)
             }
-
         }
-
     }
 }
 
 @Composable
 fun TransactionItem(transaction: WalletTransaction) {
+    val isCredit = transaction.type == TransactionType.CREDIT.status
+
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -133,7 +133,11 @@ fun TransactionItem(transaction: WalletTransaction) {
     ) {
         TransactionTypeIcon(transaction)
         TransactionInfoCard(transaction)
-        Text(text = transaction.amount.toRupay(), color = blackColor, style = text_style_lead_text)
+        Text(
+            text = "${if (isCredit) "+" else "-"}${transaction.amount.toRupay()}",
+            color = blackColor,
+            style = text_style_lead_text
+        )
     }
 }
 
@@ -141,7 +145,7 @@ fun TransactionItem(transaction: WalletTransaction) {
 fun TransactionDateHeader(title: String) {
     Text(
         modifier = Modifier.padding(top = 16.dp, start = 16.dp),
-        text = title.convertIsoToDate()?.toLocalDateTime()?.date.toString(),
+        text = title,
         color = greyColor,
         fontSize = 14.sp,
         fontWeight = FontWeight.W500
@@ -152,15 +156,6 @@ fun TransactionDateHeader(title: String) {
 private fun RowScope.TransactionInfoCard(transaction: WalletTransaction) {
     val transactionTime =
         transaction.createdAt.convertIsoToDate()?.toLocalDateTime()?.time?.to12HourTime().orEmpty()
-
-    val isCredit = transaction.type == TransactionType.CREDIT.status
-    val isBonus = transaction.source == TransactionSource.BONUS_WALLET.source
-
-    val title = when {
-        isCredit && isBonus -> Res.string.bonus_added
-        isCredit -> Res.string.payment_received
-        else -> Res.string.successful
-    }
 
     Column(modifier = Modifier.weight(1f)) {
         Text(
@@ -184,13 +179,21 @@ private fun TransactionTypeIcon(
     transaction: WalletTransaction,
 ) {
     val isCredit = transaction.type == TransactionType.CREDIT.status
-    val isBonus = transaction.source == TransactionSource.BONUS_WALLET.source
 
-    val (icon, cardColor) = when {
-        isCredit && isBonus -> Res.drawable.ic_wallet_bonus to greenColor
-        isCredit -> Res.drawable.ic_wallet_credit to greenColor
-        isCredit.not() && isBonus.not() -> Res.drawable.ic_wallet_debit to primaryColor
-        else -> Res.drawable.ic_wallet_debit to greenColor
+    val cardColor = when (transaction.type) {
+        TransactionType.CREDIT.status -> greenColor
+        TransactionType.DEBIT.status -> secondaryColor
+        TransactionType.REFUND.status -> yellowColor
+        else -> primaryColor
+    }
+
+    val icon = when {
+        transaction.type == TransactionType.REFUND.status -> Res.drawable.ic_refund
+        transaction.source == TransactionSource.BONUS_WALLET.source -> Res.drawable.ic_wallet_bonus
+        transaction.source == TransactionSource.CASH_PAYMENT.source && isCredit -> Res.drawable.ic_wallet_credit
+        transaction.source == TransactionSource.CASH_PAYMENT.source && isCredit.not() -> Res.drawable.ic_wallet_debit
+        transaction.source == TransactionSource.CASH_WALLET.source -> Res.drawable.ic_rupay
+        else -> Res.drawable.ic_wallet_bonus
     }
 
     Image(
