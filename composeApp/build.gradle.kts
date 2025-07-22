@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlinx.serialization)
     id("com.google.gms.google-services") version "4.4.3"
+    id("com.google.firebase.crashlytics") version "3.0.5" apply true
 
 }
 
@@ -86,6 +87,8 @@ kotlin {
             implementation("androidx.credentials:credentials:1.3.0")
             implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
             implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+            implementation("com.google.firebase:firebase-crashlytics-ndk")
+            implementation("com.google.firebase:firebase-analytics")
         }
 
         iosMain.dependencies {

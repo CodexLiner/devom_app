@@ -113,6 +113,8 @@ internal fun UserDetailsScreenMainContent(
         ) {
             userResponse.country = it.option
             viewModel.selectedCountry.value = Country(name = it.option, isoCode = it.id)
+            viewModel.selectedState.value = null
+            viewModel.selectedCity.value = null
             viewModel.getStateList(it.id)
             onChange(userResponse)
         }
@@ -127,6 +129,7 @@ internal fun UserDetailsScreenMainContent(
         ) {
             userResponse.state = it.option
             viewModel.selectedState.value = State(name = it.option, isoCode = it.id)
+            viewModel.selectedCity.value = null
             viewModel.getCityList(stateCode = it.id)
             onChange(userResponse)
         }

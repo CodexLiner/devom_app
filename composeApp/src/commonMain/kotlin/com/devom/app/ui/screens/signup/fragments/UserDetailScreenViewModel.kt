@@ -46,7 +46,7 @@ class UserDetailScreenViewModel : ViewModel() {
         viewModelScope.launch {
             Project.other.getAllCountriesUseCase.invoke().collect {
                 it.onResult {
-                    _countryList.value = it.data
+                    _countryList.value = it.data.filter { it.isoCode == "IN" }
                 }
             }
         }

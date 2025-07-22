@@ -36,6 +36,7 @@ import com.devom.app.ui.screens.rituals.RitualsScreen
 import com.devom.app.ui.screens.signup.DocumentUploadScreen
 import com.devom.app.ui.screens.signup.RegisterMainScreen
 import com.devom.app.ui.screens.bookingpayment.BookingSuccessScreen
+import com.devom.app.ui.screens.signup.fragments.SignupSuccessScreen
 import com.devom.app.ui.screens.transactions.TransactionDetailsScreen
 import com.devom.app.ui.screens.transactions.TransactionsScreen
 import com.devom.app.utils.decodeFromString
@@ -64,6 +65,11 @@ fun NavigationHost(
         composable(Screens.Login.path) {
             LoginScreen(navController)
         }
+
+        composable(Screens.SignUpSuccess.path) {
+            SignupSuccessScreen(navHostController = navController)
+        }
+
         composable(
             route = Screens.OtpScreen.path.plus("/{mobileNumber}"),
             arguments = listOf(navArgument("mobileNumber") { type = NavType.StringType })
