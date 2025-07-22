@@ -64,6 +64,7 @@ import com.devom.app.utils.toDevomImage
 import com.devom.app.utils.toJsonString
 import com.devom.app.utils.urlEncode
 import com.devom.models.other.BannersResponse
+import com.devom.models.pooja.GetPoojaResponse
 import com.devom.network.getUser
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_grid_cells
@@ -137,7 +138,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
         }
     }
 
-    val navigateToPanditList: (Any) -> Unit = {
+    val navigateToPanditList: (GetPoojaResponse) -> Unit = {
         navHostController.navigate(
             Screens.PanditListScreen.path + "/${
                 it.toJsonString().urlEncode()
