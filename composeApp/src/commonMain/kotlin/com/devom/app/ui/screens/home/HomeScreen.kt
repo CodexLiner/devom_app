@@ -200,7 +200,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
             if (selectedTabIndex.value == 0) {
                 val appBanners = banners.filter { it.bannerType == "app" }
 
-                if (poojaList.isNotEmpty()) {
+                if (filteredList.isNotEmpty()) {
                     item {
                         Text(
                             text = "Pooja Listing",
@@ -208,7 +208,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
                             color = blackColor,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
-                        PoojaList(poojaList.take(6), onClick = navigateToPanditList)
+                        PoojaList(filteredList.take(6), onClick = navigateToPanditList)
                     }
                 }
 
@@ -218,10 +218,10 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
                     }
                 }
 
-                if (poojaList.size > 6) {
+                if (filteredList.size > 6) {
                     item {
                         Box(modifier = Modifier.padding(top = 16.dp)) {
-                            PoojaList(poojaList.drop(6), onClick = navigateToPanditList)
+                            PoojaList(filteredList.drop(6), onClick = navigateToPanditList)
                         }
                     }
                 }
