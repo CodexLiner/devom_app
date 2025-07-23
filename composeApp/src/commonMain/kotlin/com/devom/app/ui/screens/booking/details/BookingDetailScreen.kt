@@ -131,7 +131,7 @@ fun ColumnScope.BookingDetailScreenContent(
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = "Your OTP to ${if (isPoojaStarted) "start" else "complete"} Pooja:",
+                        text = "Your OTP to ${if (isPoojaStarted.not()) "start" else "complete"} Pooja:",
                         fontWeight = FontWeight.W500,
                         style = text_style_lead_body_1,
                         color = textBlackShade
