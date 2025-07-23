@@ -214,7 +214,11 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
 
                 if (appBanners.isNotEmpty()) {
                     item {
-                        HomeScreenBanner(appBanners)
+                        HomeScreenBanner(appBanners) { poojaId ->
+                            poojaList.find { it.id == poojaId }?.let {
+                                navigateToPanditList(it)
+                            }
+                        }
                     }
                 }
 
@@ -231,7 +235,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
 }
 
 @Composable
-fun HomeScreenBanner(banners: List<BannersResponse>) {
+fun HomeScreenBanner(banners: List<BannersResponse> , onClick : (Int) -> Unit) {
     BoxWithConstraints {
         val width = maxWidth
         LazyRow(
@@ -239,14 +243,14 @@ fun HomeScreenBanner(banners: List<BannersResponse>) {
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(banners) {
-                BannerItem(it, width = width)
+                BannerItem(it, width = width , onClick)
             }
         }
     }
 }
 
 @Composable
-fun BannerItem(banner: BannersResponse, width: Dp) {
+fun BannerItem(banner: BannersResponse, width: Dp , onClick : (Int) -> Unit) {
     Box(
         modifier = Modifier.padding(top = 16.dp)
             .width(width * .7f)
@@ -266,10 +270,10 @@ fun BannerItem(banner: BannersResponse, width: Dp) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
-            Spacer(modifier = Modifier)
+            Spacer(modifier = Modifier.weight(1f))
             Column(
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(1.1f)
                     .fillMaxHeight(),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Center
@@ -285,7 +289,9 @@ fun BannerItem(banner: BannersResponse, width: Dp) {
                         width = 1.dp,
                         color = whiteColor,
                         shape = RoundedCornerShape(12.dp)
-                    ).padding(horizontal = 12.dp, vertical = 4.dp),
+                    ).padding(horizontal = 12.dp, vertical = 4.dp).clickable {
+                        if (banner.redirectType.lowercase() == "pooja") onClick(banner.redirectValue.toIntOrNull() ?: 0)
+                    },
                     text = banner.buttonText,
                     color = whiteColor,
                     fontWeight = FontWeight.W600,

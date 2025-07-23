@@ -42,11 +42,14 @@ import com.devom.app.utils.toColor
 import com.devom.app.utils.toDevomImage
 import com.devom.models.slots.GetBookingsResponse
 import com.devom.utils.date.convertIsoToDate
+import com.devom.utils.date.convertToAmPm
 import com.devom.utils.date.toLocalDateTime
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_check
 import devom_app.composeapp.generated.resources.ic_invoice
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.Month
+import kotlinx.datetime.toLocalTime
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -169,8 +172,7 @@ fun BookingPoojaDetails(booking: GetBookingsResponse) {
             )
 
             val date = booking.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date.toString()
-            val time =
-                booking.bookingDate.convertIsoToDate()?.toLocalDateTime()?.time?.to12HourTime()
+            val time = booking.startTime.convertToAmPm()
             Text(
                 text = date.plus(" $time"),
                 fontWeight = FontWeight.W500,

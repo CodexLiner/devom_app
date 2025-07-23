@@ -425,6 +425,7 @@ fun PanditDetailsSheet(
                         }
 
                         StatusTabRow(
+                            calculateSize = false,
                             modifier = Modifier.wrapContentWidth(),
                             selectedTabIndex = selectedIndex,
                             tabs = listOf(
