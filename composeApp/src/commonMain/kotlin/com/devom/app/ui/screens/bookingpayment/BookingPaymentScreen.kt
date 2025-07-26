@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,17 +35,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import co.touchlab.kermit.Logger
 import com.devom.app.theme.backgroundColor
-import com.devom.app.theme.bgColor
 import com.devom.app.theme.blackColor
 import com.devom.app.theme.greyColor
 import com.devom.app.theme.primaryColor
 import com.devom.app.theme.textBlackShade
 import com.devom.app.theme.text_style_h5
-import com.devom.app.theme.text_style_lead_text
 import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.ButtonPrimary
-import com.devom.app.ui.components.TextInputField
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.utils.toRupay
 import com.devom.models.pooja.GetPoojaResponse
@@ -62,11 +57,7 @@ import devom_app.composeapp.generated.resources.book_now
 import devom_app.composeapp.generated.resources.booking_confirmation
 import devom_app.composeapp.generated.resources.ic_arrow_left
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDate
 import me.meenagopal24.sdk.PaymentSheet
-import me.meenagopal24.sdk.models.ConfigOptions
-import me.meenagopal24.sdk.models.DisplayOptions
-import me.meenagopal24.sdk.models.PreferencesOptions
 import me.meenagopal24.sdk.models.PrefillOptions
 import me.meenagopal24.sdk.models.RazorpayCheckoutOptions
 import me.meenagopal24.sdk.models.ThemeOptions
@@ -139,7 +130,7 @@ fun ColumnScope.BookingPaymentScreenContent(
             .fillMaxWidth()
             .weight(1f)
     ) {
-        PoojaDetailsSection(pooja, pandit, input , (amount / 100f).toString())
+        PoojaDetailsSection(pooja, pandit, input , (amount / 100f).toString() , isUrgent = bookingDate == today)
 
         PaymentDetailsSection(
             selectedMethod = selectedPaymentMode,
@@ -278,7 +269,8 @@ fun PoojaDetailsSection(
     pooja: GetPoojaResponse?,
     pandit: GetAllPanditByPoojaIdResponse?,
     input: BookPanditSlotInput?,
-    amount : String = ""
+    amount: String = "",
+    isUrgent: Boolean
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -308,7 +300,7 @@ fun PoojaDetailsSection(
             )
             ItemPoojaDetail(
                 title = "Service Charges",
-                description = amount.toRupay(),
+                description = amount.toRupay().plus(if (isUrgent) "(urgent booking)" else ""),
                 modifier = Modifier.weight(1f)
             )
         }
