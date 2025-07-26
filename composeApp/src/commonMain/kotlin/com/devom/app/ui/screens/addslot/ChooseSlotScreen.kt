@@ -69,6 +69,7 @@ import devom_app.composeapp.generated.resources.set_availablity
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
@@ -175,7 +176,7 @@ fun ChooseScreenContent(
         }
 
         Spacer(Modifier.height(24.dp))
-        SlotsSections(availableSlots, selectedDate, onSlotSelected)
+        SlotsSections(availableSlots, selectedDate, onSlotSelected , isUrgent)
     }
 }
 
@@ -184,6 +185,7 @@ fun ColumnScope.SlotsSections(
     availableSlots: State<List<Slot>>,
     selectedDate: LocalDate,
     onSlotSelected: (Slot) -> Unit = {},
+    isUrgent: Boolean,
 ) {
     Text(text = "Slots Available", fontSize = 18.sp, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(8.dp))
@@ -203,6 +205,8 @@ fun ColumnScope.SlotsSections(
     ) {
         val filteredSlots = availableSlots.value.filter {
             it.availableDate.formatIsoTo(yyyy_MM_DD) == selectedDate.format(yyyy_MM_DD)
+        }.filter {
+            if (isUrgent) LocalTime.parse(it.startTime) >= Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).time else true
         }
         if (filteredSlots.isNotEmpty()) {
             LazyVerticalGrid(
