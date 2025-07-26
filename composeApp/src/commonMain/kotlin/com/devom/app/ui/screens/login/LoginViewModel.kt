@@ -27,6 +27,9 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 
 class LoginViewModel : ViewModel() {
+    init {
+        Project.other.clearCacheUseCase.invoke()
+    }
 
     /**
      * send otp on the entered mobile number

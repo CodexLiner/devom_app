@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import co.touchlab.kermit.Logger
+import com.devom.Project
 import com.devom.app.firebase.MyFirebaseMessagingService
 import com.devom.app.theme.AppTheme
 import com.devom.app.ui.components.AppContainer
@@ -61,6 +62,7 @@ internal fun App() = AppTheme {
             baseUrl = BASE_URL
             onLogOut = {
                 Logger.d("ON_LOGOUT") { "user has been logged out" }
+                Project.other.clearCacheUseCase.invoke()
                 Application.hideLoader()
                 isLoggedIn(false)
             }

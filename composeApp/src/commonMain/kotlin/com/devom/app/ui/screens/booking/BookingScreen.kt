@@ -29,13 +29,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.devom.app.models.ApplicationStatus
 import com.devom.app.theme.backgroundColor
 import com.devom.app.theme.blackColor
+import com.devom.app.theme.greyColor
 import com.devom.app.theme.primaryColor
 import com.devom.app.theme.text_style_h4
 import com.devom.app.theme.whiteColor
@@ -47,6 +50,7 @@ import com.devom.app.ui.components.TabRowItem
 import com.devom.app.ui.components.TextInputField
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.ui.screens.booking.components.BookingCard
+import com.devom.app.ui.screens.transactions.TransactionDateHeader
 import com.devom.app.utils.toColor
 import com.devom.models.slots.GetBookingsResponse
 import com.devom.utils.date.convertIsoToDate
@@ -103,6 +107,7 @@ fun BookingScreen(navHostController: NavHostController, onNavigationIconClick: (
 
 
         if (filteredBookings.isNotEmpty()) {
+            val grouped = filteredBookings.groupBy { it.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date.toString() }
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(
@@ -113,18 +118,28 @@ fun BookingScreen(navHostController: NavHostController, onNavigationIconClick: (
                 ),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(filteredBookings) { booking ->
-                    BookingCard(
-                        booking = booking,
-                        onReviewClick = {
-                            sheetState.value = true
-                            selectedBooking.value = booking
-                        },
-                        onClick = {
-                            navHostController.navigate(Screens.BookingDetails.path + "/${booking.bookingId}")
-                            selectedBooking.value = null
-                        }
-                    )
+                grouped.forEach { (date, bookings) ->
+                    item {
+                        Text(
+                            text = date,
+                            color = greyColor,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500
+                        )
+                    }
+                    items(bookings) { booking ->
+                        BookingCard(
+                            booking = booking,
+                            onReviewClick = {
+                                sheetState.value = true
+                                selectedBooking.value = booking
+                            },
+                            onClick = {
+                                navHostController.navigate(Screens.BookingDetails.path + "/${booking.bookingId}")
+                                selectedBooking.value = null
+                            }
+                        )
+                    }
                 }
             }
         } else NoContentView(

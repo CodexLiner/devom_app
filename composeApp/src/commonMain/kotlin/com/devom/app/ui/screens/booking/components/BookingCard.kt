@@ -2,20 +2,16 @@ package com.devom.app.ui.screens.booking.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,34 +19,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.devom.app.models.ApplicationStatus
 import com.devom.app.models.getColor
 import com.devom.app.theme.greyColor
-import com.devom.app.theme.primaryColor
 import com.devom.app.theme.textBlackShade
 import com.devom.app.theme.text_style_lead_text
 import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AsyncImage
-import com.devom.app.utils.to12HourTime
-import com.devom.app.utils.toColor
 import com.devom.app.utils.toDevomImage
 import com.devom.models.slots.GetBookingsResponse
 import com.devom.utils.date.convertIsoToDate
 import com.devom.utils.date.convertToAmPm
 import com.devom.utils.date.toLocalDateTime
 import devom_app.composeapp.generated.resources.Res
-import devom_app.composeapp.generated.resources.ic_check
 import devom_app.composeapp.generated.resources.ic_invoice
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.Month
-import kotlinx.datetime.toLocalTime
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -162,9 +148,9 @@ fun BookingPoojaDetails(booking: GetBookingsResponse) {
                 color = greyColor
             )
         }
-        Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier.padding(end = 16.dp)) {
             Text(
-                "DATE & TIME",
+                "TIME",
                 fontWeight = FontWeight.W600,
                 fontSize = 12.sp,
                 style = text_style_lead_text,
@@ -174,7 +160,7 @@ fun BookingPoojaDetails(booking: GetBookingsResponse) {
             val date = booking.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date.toString()
             val time = booking.startTime.convertToAmPm()
             Text(
-                text = date.plus(" $time"),
+                text = time,
                 fontWeight = FontWeight.W500,
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
