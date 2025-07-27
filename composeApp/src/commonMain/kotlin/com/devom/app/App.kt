@@ -94,8 +94,6 @@ fun MainScreen(isLoggedIn: Boolean) {
 }
 
 
-
-
 object AuthManager {
     private val settings = Settings()
 
