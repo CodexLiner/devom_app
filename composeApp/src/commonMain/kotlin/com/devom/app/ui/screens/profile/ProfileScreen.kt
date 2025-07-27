@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.devom.app.AuthManager
 import com.devom.app.NOTIFICATION_PERMISSION_GRANTED
 import com.devom.app.models.ApplicationStatus
 import com.devom.app.settings
@@ -106,7 +107,7 @@ fun ProfileScreen(
         AppBar(
             title = "Profile", onNavigationIconClick = onNavigationIconClick, actions = {
                 IconButton(onClick = {
-                    Application.logout()
+                    AuthManager.logout()
                 }) {
                     Icon(
                         painterResource(Res.drawable.ic_logout),

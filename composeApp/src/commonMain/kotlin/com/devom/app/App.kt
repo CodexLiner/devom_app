@@ -31,53 +31,36 @@ import com.devom.utils.Application.loaderState
 import com.devom.utils.Application.loginState
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import me.meenagopal24.sdk.PaymentSheet
+import kotlin.coroutines.CoroutineContext
 
 val settings = Settings()
 
 @Composable
 internal fun App() = AppTheme {
-    var accessKey by remember { mutableStateOf(settings.get<String>(ACCESS_TOKEN_KEY)) }
-    var refreshToken by remember { mutableStateOf(settings.get<String>(ACCESS_TOKEN_KEY)) }
-    var uuid by remember { mutableStateOf(settings.get<String>(UUID_KEY)) }
-    PaymentSheet.setApiKey("rzp_test_Zj1CPzIAHZ4lwN")
+    val isLoggedIn by AuthManager.isLoggedIn.collectAsState()
 
-    val isLoggedIn by loginState.collectAsState()
-    var initialized by remember { mutableStateOf(false) }
-
+    // Configure network only once when the user logs in
     LaunchedEffect(isLoggedIn) {
-        if (!isLoggedIn) {
-            listOf(ACCESS_TOKEN_KEY, UUID_KEY).forEach { settings.remove(it) }
-        } else {
-            accessKey = settings[ACCESS_TOKEN_KEY]
-            refreshToken = settings[ACCESS_TOKEN_KEY]
-            uuid = settings[UUID_KEY]
+        if (isLoggedIn) {
+            AuthManager.login(
+                accessToken = AuthManager.accessToken.orEmpty(),
+                refreshToken = AuthManager.refreshToken.orEmpty(),
+                uuid = AuthManager.uuid.orEmpty()
+            )
         }
-
-        val loggedIn = listOf(accessKey, refreshToken, uuid).all { !it.isNullOrEmpty() }
-        isLoggedIn(loggedIn)
-
-        NetworkClient.configure {
-            setTokens(access = accessKey.orEmpty(), refresh = refreshToken.orEmpty())
-            baseUrl = BASE_URL
-            onLogOut = {
-                Logger.d("ON_LOGOUT") { "user has been logged out" }
-                Project.other.clearCacheUseCase.invoke()
-                Application.hideLoader()
-                isLoggedIn(false)
-            }
-            addHeaders {
-                append(UUID_KEY, uuid.orEmpty())
-                append(APPLICATION_ID , "com.devom.app")
-            }
-        }
-
-        initialized = true
     }
 
-    if (initialized) {
-        MainScreen(isLoggedIn)
-    }
+    MainScreen(isLoggedIn)
+}
+
+
+fun getLoginStatus(): Boolean {
+    val accessKey = settings.get<String>(ACCESS_TOKEN_KEY)
+    val uuid =  settings.get<String>(UUID_KEY)
+    return accessKey.orEmpty().isNotEmpty() && uuid.orEmpty().isNotEmpty()
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -107,5 +90,63 @@ fun MainScreen(isLoggedIn: Boolean) {
         MyFirebaseMessagingService.getToken { token , _ ->
             Logger.d("FIREBASE_ACCESS_TOKEN :- $token")
         }
+    }
+}
+
+
+
+
+object AuthManager {
+    private val settings = Settings()
+
+    private val _isLoggedIn = MutableStateFlow(checkLoginStatus())
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
+
+    val accessToken: String?
+        get() = settings.get(ACCESS_TOKEN_KEY)
+
+    val refreshToken: String?
+        get() = settings.get(REFRESH_TOKEN_KEY)
+
+    val uuid: String?
+        get() = settings.get(UUID_KEY)
+    init {
+        configureNetwork()
+    }
+
+    fun login(accessToken: String, refreshToken: String, uuid: String) {
+        settings.putString(ACCESS_TOKEN_KEY, accessToken)
+        settings.putString(REFRESH_TOKEN_KEY, refreshToken)
+        settings.putString(UUID_KEY, uuid)
+        _isLoggedIn.value = true
+        configureNetwork()
+    }
+
+    fun logout() {
+        settings.remove(ACCESS_TOKEN_KEY)
+        settings.remove(REFRESH_TOKEN_KEY)
+        settings.remove(UUID_KEY)
+        _isLoggedIn.value = false
+        Project.other.clearCacheUseCase.invoke()
+        Application.hideLoader()
+    }
+
+    private fun configureNetwork() {
+        NetworkClient.configure {
+            setTokens(access = accessToken.orEmpty(), refresh = refreshToken.orEmpty())
+            baseUrl = BASE_URL
+            onLogOut = {
+                Logger.d("ON_LOGOUT") { "user has been logged out" }
+                logout()
+            }
+            addHeaders {
+                append(UUID_KEY, uuid.orEmpty())
+                append(APPLICATION_ID , "com.devom.app")
+            }
+        }
+    }
+
+    private fun checkLoginStatus(): Boolean {
+        return !accessToken.isNullOrEmpty() && !uuid.isNullOrEmpty()
     }
 }
