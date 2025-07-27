@@ -56,13 +56,6 @@ internal fun App() = AppTheme {
     MainScreen(isLoggedIn)
 }
 
-
-fun getLoginStatus(): Boolean {
-    val accessKey = settings.get<String>(ACCESS_TOKEN_KEY)
-    val uuid =  settings.get<String>(UUID_KEY)
-    return accessKey.orEmpty().isNotEmpty() && uuid.orEmpty().isNotEmpty()
-}
-
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainScreen(isLoggedIn: Boolean) {
