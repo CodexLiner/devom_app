@@ -152,9 +152,10 @@ fun ColumnScope.BookingPaymentScreenContent(
             .padding(horizontal = 16.dp, vertical = 16.dp)
             .height(58.dp)
     ) {
-        val bookSlot: () -> Unit = {
+        val bookSlot: (Boolean) -> Unit = { ign ->
             input?.let {
                 viewModel.bookPanditSlot(
+                    ignoreWallet = ign,
                     input = it.copy(
                         totalAmount = amount / 100f,
                         userId = user.userId,
@@ -178,7 +179,7 @@ fun ColumnScope.BookingPaymentScreenContent(
 
         if (selectedPaymentMode.equals("wallet", true)) {
             if ((balance?.cashWallet?.toFloatOrNull() ?: 0f) >= (amount / 100)) {
-                bookSlot()
+                bookSlot(true)
                 return@ButtonPrimary
             }
 
@@ -202,7 +203,7 @@ fun ColumnScope.BookingPaymentScreenContent(
                 Logger.d("RazorpayID $id")
                 Logger.d("RazorpayData $data")
                 viewModel.verifyTransaction(data) {
-                    bookSlot()
+                    bookSlot(true)
                 }
             }
 
@@ -211,7 +212,7 @@ fun ColumnScope.BookingPaymentScreenContent(
             }
 
         } else {
-            bookSlot()
+            bookSlot(false)
         }
     }
 }

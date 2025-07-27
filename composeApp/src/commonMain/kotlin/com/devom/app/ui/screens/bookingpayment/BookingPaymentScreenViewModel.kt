@@ -11,6 +11,7 @@ import com.devom.models.payment.WalletBalance
 import com.devom.models.slots.BookPanditSlotInput
 import com.devom.network.getUser
 import com.devom.utils.Application
+import com.devom.utils.cachepolicy.CachePolicy
 import com.devom.utils.network.onResult
 import com.devom.utils.network.onResultNothing
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,7 @@ class BookingPaymentScreenViewModel : ViewModel() {
         input: BookPanditSlotInput,
         selectedPaymentMode: String,
         poojaPrice: Float,
+        ignoreWallet : Boolean = false,
         onSuccess: () -> Unit,
     ) {
         viewModelScope.launch {
@@ -39,7 +41,7 @@ class BookingPaymentScreenViewModel : ViewModel() {
                 return@launch
             }
 
-            if ((_walletBalance.value?.cashWallet?.toFloatOrNull() ?: 0f) >= poojaPrice) {
+            if ((_walletBalance.value?.cashWallet?.toFloatOrNull() ?: 0f) >= poojaPrice || ignoreWallet) {
                 viewModelScope.launch {
                     bookSlot(input, onSuccess)
                 }
@@ -60,7 +62,7 @@ class BookingPaymentScreenViewModel : ViewModel() {
 
     fun getWalletBalance() {
         viewModelScope.launch {
-            Project.payment.getWalletBalanceUseCase.invoke().collect {
+            Project.payment.getWalletBalanceUseCase.invoke(CachePolicy.NetworkOnly).collect {
                 it.onResult {
                     _walletBalance.value = it.data.balance
                 }

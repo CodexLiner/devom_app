@@ -90,21 +90,36 @@ fun BookingScreen(navHostController: NavHostController, onNavigationIconClick: (
 
         val today = Clock.System.now().toLocalDateTime().date
 
-        val filteredBookings = when (selectedTabIndex.value) {
-            0 -> bookings.value.filter {
-                val bookingDate = it.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date
-                bookingDate != null && ((it.status == ApplicationStatus.PENDING.status && bookingDate == today) || (bookingDate > today && it.status != ApplicationStatus.COMPLETED.status && it.status != ApplicationStatus.CANCELLED.status && it.status != ApplicationStatus.REJECTED.status))
-            }
+        val pastStatuses = setOf(
+            ApplicationStatus.COMPLETED.status,
+            ApplicationStatus.CANCELLED.status,
+            ApplicationStatus.REJECTED.status,
+            ApplicationStatus.PAST.status
+        )
 
-            1 -> bookings.value.filter {
-                val bookingDate = it.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date
-                bookingDate != null && (bookingDate < today || it.status == ApplicationStatus.COMPLETED.status || it.status == ApplicationStatus.CANCELLED.status || it.status == ApplicationStatus.REJECTED.status)
-            }
+        val upcomingStatuses = setOf(
+            ApplicationStatus.PENDING.status,
+            ApplicationStatus.ACCEPTED.status,
+            ApplicationStatus.UPCOMING.status,
+            ApplicationStatus.CONFIRMED.status,
+            ApplicationStatus.VERIFIED.status,
+            ApplicationStatus.STARTED.status
+        )
 
-            else -> bookings.value
+        val filteredBookings = bookings.value.filter { booking ->
+            val bookingDate = booking.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date
+            when (selectedTabIndex.value) {
+                0 -> {
+                    bookingDate != null && (booking.status in upcomingStatuses || (bookingDate >= today && booking.status !in pastStatuses))
+                }
+
+                1 -> {
+                    bookingDate != null && (booking.status in pastStatuses || (bookingDate < today && booking.status !in upcomingStatuses))
+                }
+
+                else -> true
+            }
         }
-
-
 
         if (filteredBookings.isNotEmpty()) {
             val grouped = filteredBookings.groupBy { it.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date.toString() }

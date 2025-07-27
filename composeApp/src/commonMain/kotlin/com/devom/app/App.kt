@@ -8,9 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
@@ -26,21 +23,19 @@ import com.devom.app.ui.navigation.Screens
 import com.devom.app.ui.providers.LoadingCompositionProvider
 import com.devom.network.NetworkClient
 import com.devom.utils.Application
-import com.devom.utils.Application.isLoggedIn
 import com.devom.utils.Application.loaderState
-import com.devom.utils.Application.loginState
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import me.meenagopal24.sdk.PaymentSheet
-import kotlin.coroutines.CoroutineContext
 
 val settings = Settings()
 
 @Composable
 internal fun App() = AppTheme {
     val isLoggedIn by AuthManager.isLoggedIn.collectAsState()
+    PaymentSheet.setApiKey("rzp_test_Zj1CPzIAHZ4lwN")
 
     // Configure network only once when the user logs in
     LaunchedEffect(isLoggedIn) {
