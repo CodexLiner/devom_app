@@ -112,6 +112,31 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+
+    signingConfigs {
+        create("universal") {
+            storeFile = file("DevomApp.jks")
+            storePassword = "Devom@2025"
+            keyAlias = "Devom"
+            keyPassword = "Devom@2025"
+        }
+    }
+
+    buildTypes {
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("universal")
+        }
+
+        getByName("release") {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("universal")
+        }
+    }
 }
 
 //https://developer.android.com/develop/ui/compose/testing#setup
