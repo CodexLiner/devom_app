@@ -6,6 +6,7 @@ import com.devom.Project
 import com.devom.app.models.ApplicationStatus
 import com.devom.models.pandit.CreateReviewInput
 import com.devom.models.poojaitems.GetPoojaItemsResponse
+import com.devom.models.slots.CancelBookingInput
 import com.devom.models.slots.GetBookingsResponse
 import com.devom.models.slots.RemoveAndUpdatePoojaItemRequest
 import com.devom.models.slots.UpdateBookingStatusInput
@@ -24,8 +25,6 @@ class BookingViewModel : ViewModel() {
 
     private val _bookings = MutableStateFlow<List<GetBookingsResponse>>(listOf())
     val bookings: StateFlow<List<GetBookingsResponse>> = _bookings
-    private val _poojaItems = MutableStateFlow<List<GetPoojaItemsResponse>>(listOf())
-    val poojaItems: StateFlow<List<GetPoojaItemsResponse>> = _poojaItems
 
     private val _bookingDetailItem = MutableStateFlow<GetBookingsResponse?>(null)
     val bookingDetailItem: StateFlow<GetBookingsResponse?> = _bookingDetailItem
@@ -52,55 +51,6 @@ class BookingViewModel : ViewModel() {
         }
     }
 
-    fun updateBookingStatus(id: Int, applicationStatus: ApplicationStatus) {
-        viewModelScope.launch {
-            Project.pandit.updateBookingStatusUseCase.invoke(
-                UpdateBookingStatusInput(
-                    id = id,
-                    status = applicationStatus.status
-                )
-            ).collect {
-                it.withSuccessWithoutData {
-                    getBookings()
-                    Application.showToast("Booking status updated successfully")
-                }
-                it.onResult {
-                    getBookings()
-                    Application.showToast("Booking status updated successfully")
-                }
-            }
-        }
-    }
-
-    fun getPoojaItems() {
-        viewModelScope.launch {
-            Project.poojaItem.getPoojaItemUseCase.invoke().collect {
-                it.withSuccess {
-                    _poojaItems.value = it.data
-                }
-            }
-        }
-    }
-
-    fun addPoojaItem(string: String, booking: GetBookingsResponse) {
-        val input = RemoveAndUpdatePoojaItemRequest(
-            addItems = booking.bookingItems.toMutableList().map { it.id }.toMutableList().apply {
-                add(string.toInt())
-            }.toSet().toList()
-        )
-        viewModelScope.launch {
-            Project.pandit.removeAndUpdateItemsInBookingUseCase.invoke(
-                input = input,
-                bookingId = booking.bookingId.toString()
-            ).collect {
-                it.onResult {
-                    getBookingById(booking.bookingId.toString())
-                    Application.showToast("Pooja item added successfully")
-                }
-            }
-        }
-    }
-
     fun addBookingReview(booking: GetBookingsResponse, rating: Int, reviewText: String) {
         viewModelScope.launch {
             Project.pandit.createPanditReviewUseCase.invoke(
@@ -115,6 +65,21 @@ class BookingViewModel : ViewModel() {
             ).collect {
                 it.onResultNothing {
                     Application.showToast("Review added successfully")
+                }
+            }
+        }
+    }
+
+    fun cancelBooking(bookingId: CancelBookingInput) {
+        viewModelScope.launch {
+            Project.pandit.cancelBookingUseCase.invoke(bookingId).collect {
+                it.onResultNothing {
+                    getBookings()
+                    Application.showToast("Booking cancelled successfully")
+                }
+                it.onResult {
+                    getBookings()
+                    Application.showToast("Booking cancelled successfully")
                 }
             }
         }

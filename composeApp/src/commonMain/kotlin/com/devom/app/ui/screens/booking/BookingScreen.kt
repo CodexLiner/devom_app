@@ -2,19 +2,25 @@ package com.devom.app.ui.screens.booking
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -22,25 +28,36 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.devom.app.models.ApplicationStatus
+import com.devom.app.models.RepeatOption
 import com.devom.app.theme.backgroundColor
 import com.devom.app.theme.blackColor
 import com.devom.app.theme.greyColor
+import com.devom.app.theme.inputColor
 import com.devom.app.theme.primaryColor
+import com.devom.app.theme.text_style_h3
 import com.devom.app.theme.text_style_h4
+import com.devom.app.theme.text_style_lead_body_1
+import com.devom.app.theme.text_style_lead_text
 import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.ButtonPrimary
@@ -50,11 +67,14 @@ import com.devom.app.ui.components.TabRowItem
 import com.devom.app.ui.components.TextInputField
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.ui.screens.booking.components.BookingCard
-import com.devom.app.ui.screens.transactions.TransactionDateHeader
 import com.devom.app.utils.toColor
+import com.devom.models.slots.CancelBookingInput
 import com.devom.models.slots.GetBookingsResponse
+import com.devom.models.slots.Slot
 import com.devom.utils.date.convertIsoToDate
 import com.devom.utils.date.toLocalDateTime
+import devom_app.composeapp.generated.resources.Confirmation_Alert
+import devom_app.composeapp.generated.resources.Confirmation_Alert_Message
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_no_bookings
 import devom_app.composeapp.generated.resources.ic_star
@@ -84,7 +104,8 @@ fun BookingScreen(navHostController: NavHostController, onNavigationIconClick: (
     ) {
         AppBar(title = "Bookings", onNavigationIconClick = onNavigationIconClick)
         StatusTabRow(selectedTabIndex = selectedTabIndex, tabs = tabs)
-        val sheetState = remember { mutableStateOf(false) }
+        val reviewSheetState = remember { mutableStateOf(false) }
+        val cancelSheetState = remember { mutableStateOf(false) }
         val selectedBooking = remember { mutableStateOf<GetBookingsResponse?>(null) }
 
 
@@ -146,8 +167,12 @@ fun BookingScreen(navHostController: NavHostController, onNavigationIconClick: (
                         BookingCard(
                             booking = booking,
                             onReviewClick = {
-                                sheetState.value = true
+                                reviewSheetState.value = true
                                 selectedBooking.value = booking
+                            },
+                            onCancelBooking = {
+                                selectedBooking.value = booking
+                                cancelSheetState.value = true
                             },
                             onClick = {
                                 navHostController.navigate(Screens.BookingDetails.path + "/${booking.bookingId}")
@@ -165,11 +190,20 @@ fun BookingScreen(navHostController: NavHostController, onNavigationIconClick: (
 
         selectedBooking.value?.let {
             AddBookingReviewSheet(
-                showSheet = sheetState.value,
-                onDismiss = { sheetState.value = false }
+                showSheet = reviewSheetState.value,
+                onDismiss = { reviewSheetState.value = false }
             ) { rating, reviewText ->
                 viewModel.addBookingReview(it, rating = rating, reviewText = reviewText)
             }
+
+            CancelBookingBottomSheet(
+                booking = it,
+                showSheet = cancelSheetState.value,
+                onDismiss = { cancelSheetState.value = false },
+                onClick = {
+                    viewModel.cancelBooking(it)
+                },
+            )
         }
     }
 }
@@ -230,6 +264,8 @@ fun AddBookingReviewSheet(
                         }
                     }
                     TextInputField(
+                        minLines = 5,
+                        singleLine = false,
                         placeholder = "Say something about service?",
                         modifier = Modifier.fillMaxWidth()) {
                         description.value = it
@@ -248,4 +284,123 @@ fun AddBookingReviewSheet(
             }
         }
     }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CancelBookingBottomSheet(
+    booking: GetBookingsResponse,
+    showSheet: Boolean,
+    onDismiss: () -> Unit,
+    onClick: (CancelBookingInput) -> Unit,
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
+    val reason = remember { mutableStateOf("") }
+
+    if (showSheet) {
+        ModalBottomSheet(
+            containerColor = whiteColor,
+            onDismissRequest = {
+                scope.launch {
+                    sheetState.hide()
+                    onDismiss()
+                }
+            },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    textAlign = TextAlign.Center,
+                    text = stringResource(Res.string.Confirmation_Alert),
+                    style = text_style_h3
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    textAlign = TextAlign.Center,
+                    text = stringResource(Res.string.Confirmation_Alert_Message),
+                    style = text_style_lead_text
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                TextInputField(
+                    minLines = 5,
+                    singleLine = false,
+                    placeholder = "Say something about service?",
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    reason.value = it
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    ActionButton(
+                        text = "Cancel",
+                        backgroundColor = whiteColor,
+                        contentColor = greyColor,
+                        borderColor = inputColor
+                    ) {
+                        scope.launch {
+                            sheetState.hide()
+                            onDismiss()
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    ActionButton(
+                        text = "Confirm"
+                    ) {
+                        scope.launch {
+                            sheetState.hide()
+                            onDismiss()
+                            onClick(
+                                CancelBookingInput(
+                                    bookingId = booking.bookingId.toString(),
+                                    name = booking.poojaName,
+                                    reason = reason.value,
+                                    description = reason.value
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RowScope.ActionButton(
+    text: String,
+    backgroundColor: Color = primaryColor,
+    contentColor: Color = whiteColor,
+    borderColor: Color? = null,
+    onClick: () -> Unit
+) {
+    ButtonPrimary(
+        buttonText = text,
+        fontStyle = text_style_lead_body_1,
+        textColor = contentColor,
+        colors = ButtonDefaults.buttonColors()
+            .copy(containerColor = backgroundColor, contentColor = contentColor),
+        modifier = Modifier
+            .padding(vertical = 2.dp)
+            .height(48.dp)
+            .weight(1f)
+            .then(
+                if (borderColor != null)
+                    Modifier.border(1.dp, borderColor, RoundedCornerShape(12.dp))
+                else Modifier
+            ),
+        onClick = onClick
+    )
 }

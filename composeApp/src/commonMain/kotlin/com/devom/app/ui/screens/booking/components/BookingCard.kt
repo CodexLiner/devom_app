@@ -127,21 +127,35 @@ fun BookingUserDetail(
                 )
             }
         }
-        val (icon, onClick) = if (booking.status == ApplicationStatus.COMPLETED.status) {
-            Res.drawable.ic_invoice to onReviewClick
-        } else {
-            Res.drawable.vertical_ellipsis to {
-                expanded = true
+
+        val excludedStatuses = listOf(
+            ApplicationStatus.REJECTED.status,
+            ApplicationStatus.CANCELLED.status,
+            ApplicationStatus.STARTED.status
+        )
+
+        val (icon, onClick) = when {
+            booking.status == ApplicationStatus.COMPLETED.status -> {
+                Res.drawable.ic_invoice to onReviewClick
             }
+            booking.status !in excludedStatuses -> {
+                Res.drawable.vertical_ellipsis to {
+                    expanded = true
+                }
+            }
+            else -> null to {}
         }
 
-        Image(
-            modifier = Modifier
-                .clickable(onClick = onClick)
-                .padding(end = 8.dp),
-            contentDescription = "",
-            painter = painterResource(icon),
-        )
+
+        icon?.let {
+            Image(
+                modifier = Modifier
+                    .clickable(onClick = onClick)
+                    .padding(end = 8.dp),
+                contentDescription = "",
+                painter = painterResource(icon),
+            )
+        }
 
         BookingMenu(
             expanded = expanded,

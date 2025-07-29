@@ -62,6 +62,9 @@
     <string name="invite_friends">Invite Friends</string>
     <string name="successful">Successful</string>
     <string name="Confirmation_Time_Slots">Confirmation Time Slots</string>
+    <string name="Confirmation_Alert">Confirmation Alert</string>
+    <string name="Confirmation_Alert_Message">Cancelling this booking cannot be undone. Do you want to continue?</string>
+    <string name="Reason_for_cancel">Reason for cancellation (optional)</string>
     <string name="bonus_wallet">Bonus Wallet</string>
     <string name="referral_code">Referral Code (optional)</string>
     <string name="enter_full_name">Enter full name*</string>
