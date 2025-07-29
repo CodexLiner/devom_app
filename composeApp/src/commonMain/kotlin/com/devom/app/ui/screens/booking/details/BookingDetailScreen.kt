@@ -65,7 +65,6 @@ fun BookingDetailScreen(navController: NavController, bookingId: String?) {
 
     LaunchedEffect(Unit) {
         viewModel.getBookingById(bookingId.orEmpty())
-        viewModel.getPoojaItems()
     }
 
     Column(

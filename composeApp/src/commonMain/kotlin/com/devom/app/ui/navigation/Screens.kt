@@ -38,6 +38,8 @@ sealed class Screens(val path: String) {
     data object BookingPaymentScreen : Screens(path = "booking_payment_screen")
     data object PanditListScreen : Screens(path = "pandit_list_screen")
     data object UrgentBooking : Screens(path = "urgent_booking")
+    data object WebView : Screens(path = "webview")
+
 
 
 }

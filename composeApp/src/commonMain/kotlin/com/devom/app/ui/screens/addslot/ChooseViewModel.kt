@@ -3,14 +3,8 @@ package com.devom.app.ui.screens.addslot
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devom.Project
-import com.devom.models.slots.CreatePanditSlotInput
 import com.devom.models.slots.Slot
-import com.devom.network.getUser
-import com.devom.utils.Application
 import com.devom.utils.network.onResult
-import com.devom.utils.network.withError
-import com.devom.utils.network.withLoading
-import com.devom.utils.network.withSuccessWithoutData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 

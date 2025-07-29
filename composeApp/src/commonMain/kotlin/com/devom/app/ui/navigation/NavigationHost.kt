@@ -39,6 +39,7 @@ import com.devom.app.ui.screens.bookingpayment.BookingSuccessScreen
 import com.devom.app.ui.screens.signup.fragments.SignupSuccessScreen
 import com.devom.app.ui.screens.transactions.TransactionDetailsScreen
 import com.devom.app.ui.screens.transactions.TransactionsScreen
+import com.devom.app.ui.screens.webview.WebView
 import com.devom.app.utils.decodeFromString
 import com.devom.app.utils.urlDecode
 import com.devom.models.pooja.GetPoojaResponse
@@ -214,6 +215,14 @@ fun NavigationHost(
                 pandit = pandit,
                 pooja = pooja
             )
+        }
+
+
+        composable(
+            route = Screens.WebView.path.plus("/{url}"),
+            arguments = listOf(navArgument("url") { type = NavType.StringType })
+        ) {
+            WebView(url = it.arguments?.getString("url").orEmpty())
         }
     }
 }

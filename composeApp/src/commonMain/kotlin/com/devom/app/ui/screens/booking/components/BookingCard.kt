@@ -6,21 +6,30 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.devom.app.models.ApplicationStatus
@@ -37,6 +46,7 @@ import com.devom.utils.date.convertToAmPm
 import com.devom.utils.date.toLocalDateTime
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_invoice
+import devom_app.composeapp.generated.resources.vertical_ellipsis
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -44,8 +54,10 @@ fun BookingCard(
     showStatus : Boolean = true,
     booking: GetBookingsResponse,
     onReviewClick : () -> Unit = {},
+    onCancelBooking: () -> Unit = {},
     onClick: () -> Unit = {},
 ) {
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -61,7 +73,12 @@ fun BookingCard(
             modifier = Modifier.size(104.dp, 115.dp).clip(RoundedCornerShape(12.dp)),
         )
         Column(modifier = Modifier.weight(1f).padding(vertical = 12.dp)) {
-            BookingUserDetail(booking, showStatus , onReviewClick)
+            BookingUserDetail(
+                booking = booking,
+                showStatus = showStatus,
+                onReviewClick = onReviewClick,
+                onCancelBooking = onCancelBooking
+            )
             BookingId(booking = booking)
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),
@@ -77,9 +94,11 @@ fun BookingCard(
 fun BookingUserDetail(
     booking: GetBookingsResponse,
     showStatus: Boolean,
-    onReviewClick : () -> Unit = {},
+    onCancelBooking: () -> Unit = {},
+    onReviewClick: () -> Unit = {}
+) {
+    var expanded by remember { mutableStateOf(false) }
 
-    ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -108,13 +127,30 @@ fun BookingUserDetail(
                 )
             }
         }
-       if (booking.status == ApplicationStatus.COMPLETED.status) {
-           Image(
-               modifier = Modifier.clickable(onClick = onReviewClick).padding(end = 8.dp),
-               contentDescription = "",
-               painter = painterResource(Res.drawable.ic_invoice),
-           )
-       }
+        val (icon, onClick) = if (booking.status == ApplicationStatus.COMPLETED.status) {
+            Res.drawable.ic_invoice to onReviewClick
+        } else {
+            Res.drawable.vertical_ellipsis to {
+                expanded = true
+            }
+        }
+
+        Image(
+            modifier = Modifier
+                .clickable(onClick = onClick)
+                .padding(end = 8.dp),
+            contentDescription = "",
+            painter = painterResource(icon),
+        )
+
+        BookingMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            onCancelClick = {
+                onCancelBooking()
+            }
+        )
+
     }
 }
 
@@ -157,7 +193,6 @@ fun BookingPoojaDetails(booking: GetBookingsResponse) {
                 color = textBlackShade
             )
 
-            val date = booking.bookingDate.convertIsoToDate()?.toLocalDateTime()?.date.toString()
             val time = booking.startTime.convertToAmPm()
             Text(
                 text = time,
@@ -167,5 +202,28 @@ fun BookingPoojaDetails(booking: GetBookingsResponse) {
                 color = greyColor
             )
         }
+    }
+}
+
+@Composable
+fun BookingMenu(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    onCancelClick: () -> Unit,
+) {
+    DropdownMenu(
+        shadowElevation = 5.dp,
+        expanded = expanded,
+        offset = DpOffset(x = (120).dp, y = 0.dp),
+        onDismissRequest = onDismissRequest,
+        modifier = Modifier.background(Color.White)
+    ) {
+        DropdownMenuItem(
+            text = { Text("Cancel Booking") },
+            onClick = {
+                onCancelClick()
+                onDismissRequest()
+            }
+        )
     }
 }
