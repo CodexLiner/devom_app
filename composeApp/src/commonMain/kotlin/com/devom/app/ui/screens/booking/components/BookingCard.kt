@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,9 +39,7 @@ import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AsyncImage
 import com.devom.app.utils.toDevomImage
 import com.devom.models.slots.GetBookingsResponse
-import com.devom.utils.date.convertIsoToDate
 import com.devom.utils.date.convertToAmPm
-import com.devom.utils.date.toLocalDateTime
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_invoice
 import devom_app.composeapp.generated.resources.vertical_ellipsis
@@ -51,6 +47,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun BookingCard(
+    isDetails : Boolean = false,
     showStatus : Boolean = true,
     booking: GetBookingsResponse,
     onReviewClick : () -> Unit = {},
@@ -74,6 +71,7 @@ fun BookingCard(
         )
         Column(modifier = Modifier.weight(1f).padding(vertical = 12.dp)) {
             BookingUserDetail(
+                isDetails = isDetails,
                 booking = booking,
                 showStatus = showStatus,
                 onReviewClick = onReviewClick,
@@ -95,7 +93,8 @@ fun BookingUserDetail(
     booking: GetBookingsResponse,
     showStatus: Boolean,
     onCancelBooking: () -> Unit = {},
-    onReviewClick: () -> Unit = {}
+    onReviewClick: () -> Unit = {},
+    isDetails: Boolean
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -146,16 +145,17 @@ fun BookingUserDetail(
             else -> null to {}
         }
 
-
-        icon?.let {
-            Image(
-                modifier = Modifier
-                    .clickable(onClick = onClick)
-                    .padding(end = 8.dp),
-                contentDescription = "",
-                painter = painterResource(icon),
-            )
-        }
+       if (isDetails.not()) {
+           icon?.let {
+               Image(
+                   modifier = Modifier
+                       .clickable(onClick = onClick)
+                       .padding(end = 8.dp),
+                   contentDescription = "",
+                   painter = painterResource(icon),
+               )
+           }
+       }
 
         BookingMenu(
             expanded = expanded,

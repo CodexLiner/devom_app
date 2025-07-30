@@ -146,6 +146,7 @@ fun ColumnScope.BookingDetailScreenContent(
 
         item {
             BookingCard(
+                isDetails = true,
                 showStatus = false,
                 booking = booking
             )
