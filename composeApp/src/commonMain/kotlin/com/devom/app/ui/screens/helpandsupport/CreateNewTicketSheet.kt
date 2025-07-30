@@ -101,7 +101,7 @@ fun CreateNewTicketSheetContent(
             message = "Upload your file here",
             allowedDocs = listOf(SupportedFiles.IMAGE)
         ) { file, _ ->
-            createTicketInput.value = createTicketInput.value.copy(image = file.source().buffered().readByteArray())
+            createTicketInput.value = createTicketInput.value.copy(image = file.source().buffered().readByteArray() , fileName = file.name)
             selectedFile.value = file.name
             errorState.value = false
         }
