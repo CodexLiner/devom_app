@@ -79,7 +79,7 @@ fun BookingDetailScreen(navController: NavController, bookingId: String?) {
                     val contentColor = booking.status.getColor()
                     Box(
                         modifier = Modifier.padding(end = 8.dp)
-                            .background(contentColor.copy(0.08f), shape = RoundedCornerShape(50))
+                            .background(contentColor.copy(0.13f), shape = RoundedCornerShape(50))
                     ) {
                         Text(
                             modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
