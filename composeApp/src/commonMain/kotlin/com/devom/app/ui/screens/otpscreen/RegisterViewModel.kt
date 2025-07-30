@@ -23,6 +23,7 @@ import com.devom.network.NetworkClient
 import com.devom.network.USER
 import com.devom.utils.Application.isLoggedIn
 import com.devom.utils.Application.showToast
+import com.devom.utils.network.withError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -47,6 +48,9 @@ class RegisterViewModel : ViewModel() {
                         refreshToken = result.data.refreshToken,
                         uuid = result.data.uuid
                     )
+                }
+                result.withError {
+                    showToast("Please enter a valid OTP code")
                 }
             }
         }
