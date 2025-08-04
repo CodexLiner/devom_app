@@ -190,7 +190,7 @@ private fun WithdrawButton(
         onClick = onClick,
         content = {
             Text(
-                modifier = Modifier.background(blackColor, RoundedCornerShape(12.dp))
+                modifier = Modifier.background(primaryColor, RoundedCornerShape(12.dp))
                     .padding(vertical = 10.dp, horizontal = 8.dp),
                 text = buttonText,
                 color = whiteColor,

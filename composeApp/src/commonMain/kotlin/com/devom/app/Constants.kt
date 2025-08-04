@@ -9,6 +9,7 @@ import com.devom.app.theme.yellowColor
 const val EMPTY = ""
 const val ACCESS_TOKEN_KEY = "locallySavedAccessTokenKey"
 const val NOTIFICATION_PERMISSION_GRANTED = "notificationPermissionGranted"
+const val UNREAD_NOTIFICATION = "unreadNotification"
 const val REFRESH_TOKEN_KEY = "locallySavedRefreshTokenKey"
 const val UUID_KEY = "uuid"
 const val APPLICATION_ID = "applicationId"

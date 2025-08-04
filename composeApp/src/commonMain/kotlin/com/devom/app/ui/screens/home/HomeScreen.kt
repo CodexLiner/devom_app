@@ -16,12 +16,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -45,6 +49,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import co.touchlab.kermit.Logger
+import com.devom.app.UNREAD_NOTIFICATION
+import com.devom.app.firebase.MyFirebaseMessagingService
+import com.devom.app.settings
 import com.devom.app.theme.backgroundColor
 import com.devom.app.theme.blackColor
 import com.devom.app.theme.primaryColor
@@ -66,6 +74,7 @@ import com.devom.app.utils.urlEncode
 import com.devom.models.other.BannersResponse
 import com.devom.models.pooja.GetPoojaResponse
 import com.devom.network.getUser
+import com.russhwolf.settings.get
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_grid_cells
 import devom_app.composeapp.generated.resources.ic_music
@@ -81,25 +90,42 @@ fun HomeScreen(navHostController: NavHostController, onNavigationIconClick: () -
     val viewModel: HomeScreenViewModel = viewModel {
         HomeScreenViewModel()
     }
+    val badge = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         viewModel.getPoojaList()
         viewModel.getBanners()
+        MyFirebaseMessagingService.onNewNotification = {
+            badge.value = settings.get<Boolean>(UNREAD_NOTIFICATION) == true
+        }
+        badge.value = settings.get<Boolean>(UNREAD_NOTIFICATION) == true
     }
     Column(modifier = Modifier.fillMaxSize().background(backgroundColor)) {
         AppBar(
-            title = "Hi ${getUser().fullName}",
-            onNavigationIconClick = onNavigationIconClick,
+            title = "Hi ${getUser().fullName}", onNavigationIconClick = onNavigationIconClick,
+
             actions = {
-                IconButton(onClick = {
-                    navHostController.navigate(Screens.Notifications.path)
-                }) {
-                    Icon(
-                        painterResource(Res.drawable.ic_notification),
-                        contentDescription = null,
-                        tint = Color.White
-                    )
+                BadgedBox(
+                    badge = {
+                        if (badge.value) {
+                            Badge(
+                                modifier = Modifier.size(10.dp).offset(x = (-4).dp),
+                                containerColor = Color.Red
+                            )
+                        }
+                    }) {
+                    IconButton(
+                        onClick = {
+                            navHostController.navigate(Screens.Notifications.path)
+                        }) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_notification),
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
                 }
             }
+
         )
         HomeScreenContent(viewModel, navHostController)
     }
@@ -264,41 +290,40 @@ fun BannerItem(banner: BannersResponse, width: Dp , onClick : (Int) -> Unit) {
             contentScale = ContentScale.Crop
         )
 
-        Row(
-            modifier = Modifier
-                .matchParentSize().background(textBlackShade.copy(.3f)).padding(horizontal = 35.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Column(
-                modifier = Modifier
-                    .weight(1.1f)
-                    .fillMaxHeight(),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = banner.title.capitalize(Locale.current),
-                    style = text_style_h5,
-                    color = whiteColor,
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    modifier = Modifier.border(
-                        width = 1.dp,
-                        color = whiteColor,
-                        shape = RoundedCornerShape(12.dp)
-                    ).padding(horizontal = 12.dp, vertical = 4.dp).clickable {
-                        if (banner.redirectType.lowercase() == "pooja") onClick(banner.redirectValue.toIntOrNull() ?: 0)
-                    },
-                    text = banner.buttonText,
-                    color = whiteColor,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 12.sp
-                )
-            }
-        }
+//        Row(
+//            modifier = Modifier
+//                .matchParentSize().background(textBlackShade.copy(.3f)).padding(horizontal = 35.dp),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.End
+//        ) {
+//            Column(
+//                modifier = Modifier
+//                    .weight(1f)
+//                    .fillMaxHeight(),
+//                horizontalAlignment = Alignment.Start,
+//                verticalArrangement = Arrangement.Center
+//            ) {
+//                Text(
+//                    text = banner.title.capitalize(Locale.current),
+//                    style = text_style_h5,
+//                    color = whiteColor,
+//                )
+//                Spacer(modifier = Modifier.height(12.dp))
+//                Text(
+//                    modifier = Modifier.border(
+//                        width = 1.dp,
+//                        color = whiteColor,
+//                        shape = RoundedCornerShape(12.dp)
+//                    ).padding(horizontal = 12.dp, vertical = 4.dp).clickable {
+//                        if (banner.redirectType.lowercase() == "pooja") onClick(banner.redirectValue.toIntOrNull() ?: 0)
+//                    },
+//                    text = banner.buttonText,
+//                    color = whiteColor,
+//                    fontWeight = FontWeight.W600,
+//                    fontSize = 12.sp
+//                )
+//            }
+//        }
     }
 }
 

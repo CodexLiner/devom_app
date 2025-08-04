@@ -198,6 +198,8 @@ fun ColumnScope.BankWalletScreenContent(
                     Logger.d("RazorpayID $id")
                     Logger.d("RazorpayData $data")
                     viewModel.verifyTransaction(data) {
+                        Application.showToast("Rs $amount has been added successfully.")
+                        navController.popBackStack()
                         viewModel.getWalletBalance()
                         amount = ""
                         focusManager.clearFocus()

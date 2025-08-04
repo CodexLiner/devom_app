@@ -6,5 +6,6 @@ interface MyFirebaseMessaging {
 }
 
 expect object MyFirebaseMessagingService {
+    var onNewNotification: () -> Unit
     fun getToken(onToken: (String , String) -> Unit)
 }

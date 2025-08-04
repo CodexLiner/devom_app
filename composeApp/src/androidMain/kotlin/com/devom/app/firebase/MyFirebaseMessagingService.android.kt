@@ -8,10 +8,12 @@ import androidx.core.app.NotificationManagerCompat
 import co.touchlab.kermit.Logger
 import com.devom.app.NOTIFICATION_PERMISSION_GRANTED
 import com.devom.app.R
+import com.devom.app.UNREAD_NOTIFICATION
 import com.devom.app.settings
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.russhwolf.settings.set
 
 
 class AndroidFirebaseMessagingService : FirebaseMessagingService() {
@@ -23,8 +25,11 @@ class AndroidFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
+        Logger.d("FIREBASE_NOTIFICATION: ")
         message.notification?.let {
-           if (settings.getBoolean(NOTIFICATION_PERMISSION_GRANTED , true)) showNotification(it.title, it.body)
+            settings[UNREAD_NOTIFICATION] = true
+            MyFirebaseMessagingService.onNewNotification.invoke()
+            if (settings.getBoolean(NOTIFICATION_PERMISSION_GRANTED, true)) showNotification(it.title, it.body)
         }
     }
 
@@ -47,6 +52,7 @@ class AndroidFirebaseMessagingService : FirebaseMessagingService() {
 }
 
 actual object MyFirebaseMessagingService {
+    actual var onNewNotification: (() -> Unit) = {}
     actual fun getToken(onToken: (String , String) -> Unit) {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -55,4 +61,5 @@ actual object MyFirebaseMessagingService {
                 }
         }
     }
+
 }

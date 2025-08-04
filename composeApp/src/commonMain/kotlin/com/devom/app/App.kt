@@ -26,8 +26,12 @@ import com.devom.utils.Application
 import com.devom.utils.Application.loaderState
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.get
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import me.meenagopal24.sdk.PaymentSheet
 
 val settings = Settings()
@@ -115,6 +119,10 @@ object AuthManager {
         _isLoggedIn.value = false
         Project.other.clearCacheUseCase.invoke()
         Application.hideLoader()
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(2000)
+            Application.hideLoader()
+        }
     }
 
     private fun configureNetwork() {

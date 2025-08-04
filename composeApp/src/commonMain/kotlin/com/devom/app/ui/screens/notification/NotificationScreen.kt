@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,17 +32,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import coil3.compose.AsyncImage
+import com.devom.app.UNREAD_NOTIFICATION
+import com.devom.app.settings
 import com.devom.app.theme.greyColor
 import com.devom.app.theme.primaryColor
 import com.devom.app.theme.textBlackShade
 import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.NoContentView
 import com.devom.models.notification.GetNotificationResponse
-import org.jetbrains.compose.resources.painterResource
+import com.russhwolf.settings.set
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_arrow_left
 import devom_app.composeapp.generated.resources.ic_notification
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun NotificationScreen(navHostController: NavHostController) {
@@ -56,6 +59,9 @@ fun NotificationScreen(navHostController: NavHostController) {
             onNavigationIconClick = { navHostController.popBackStack() }
         )
         NotificationScreenContent(notifications.value)
+    }
+    LaunchedEffect(Unit) {
+        settings[UNREAD_NOTIFICATION] = false
     }
 }
 

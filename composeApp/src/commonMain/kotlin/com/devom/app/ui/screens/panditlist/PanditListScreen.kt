@@ -88,6 +88,7 @@ import devom_app.composeapp.generated.resources.ic_filters
 import devom_app.composeapp.generated.resources.ic_search
 import devom_app.composeapp.generated.resources.search
 import kotlinx.coroutines.launch
+import network.chaintech.cmpcharts.common.extensions.formatToSinglePrecision
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.round
@@ -323,8 +324,8 @@ fun PanditRatingsAndPricing(pandit: GetAllPanditByPoojaIdResponse) {
     val formattedRating = try {
         val raw = pandit.averageRating.toDouble()
         val rounded = (round(raw * 10) / 10)
-        rounded.toString()
-    } catch (e: Exception) {
+        rounded.toFloat().formatToSinglePrecision()
+    } catch (_: Exception) {
         "0.0"
     }
 
