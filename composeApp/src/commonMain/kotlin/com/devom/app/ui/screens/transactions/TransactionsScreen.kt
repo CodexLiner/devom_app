@@ -122,7 +122,7 @@ fun TransactionDetailContent(transactions: List<WalletTransaction>) {
 
 @Composable
 fun TransactionItem(transaction: WalletTransaction) {
-    val isCredit = transaction.type == TransactionType.CREDIT.status
+    val isCredit = transaction.type == TransactionType.CREDIT.status || transaction.type == TransactionType.REFUND.status
 
 
     Row(

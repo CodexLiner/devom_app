@@ -285,7 +285,11 @@ fun BannerItem(banner: BannersResponse, width: Dp , onClick : (Int) -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         AsyncImage(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().clickable {
+                if (banner.redirectType.lowercase() == "pooja") onClick(
+                    banner.redirectValue.toIntOrNull() ?: 0
+                )
+            },
             model = banner.imageUrl.toDevomImage(),
             contentScale = ContentScale.Crop
         )
@@ -339,7 +343,7 @@ fun HomeScreenAllContent(
         Column(
             modifier = Modifier.weight(1f).padding(vertical = 24.dp, horizontal = 16.dp),
         ) {
-            Text(style = text_style_h4, text = "Urgent Booking", color = whiteColor)
+            Text(style = text_style_lead_text, text = "Urgent Booking\n(10% extra charge applies)", color = whiteColor)
             Text(
                 style = text_style_lead_text,
                 text = "Book Now",

@@ -301,7 +301,12 @@ fun PoojaDetailsSection(
             )
             ItemPoojaDetail(
                 title = "Service Charges",
-                description = amount.toRupay().plus(if (isUrgent) "(urgent booking)" else ""),
+                description = if (isUrgent) {
+                    "${amount.toRupay()} (includes 10% urgent booking fee)"
+                } else {
+                    amount.toRupay()
+                },
+
                 modifier = Modifier.weight(1f)
             )
         }
