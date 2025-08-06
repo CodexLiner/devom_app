@@ -30,7 +30,9 @@ fun ButtonPrimary(
     shape: Shape = RoundedCornerShape(12.dp),
     colors: ButtonColors = ButtonDefaults.buttonColors().copy(
         containerColor = orangeShadow,
-        contentColor = whiteColor
+        contentColor = whiteColor,
+        disabledContainerColor = orangeShadow.copy(alpha = 0.5f),
+        disabledContentColor = whiteColor.copy(alpha = 0.5f)
     ),
     textColor: Color = whiteColor,
     leadingIcon: @Composable (() -> Unit)? = null,

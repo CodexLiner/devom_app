@@ -6,12 +6,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,11 +25,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.devom.app.theme.backgroundColor
@@ -38,8 +46,10 @@ import com.devom.app.ui.components.ButtonPrimary
 import com.devom.app.ui.components.ShapedScreen
 import com.devom.app.ui.components.TextInputField
 import com.devom.app.ui.navigation.Screens
+import com.devom.app.ui.screens.booking.details.Checkbox
 import com.devom.app.ui.screens.signup.fragments.UserDetailsScreenMainContent
 import com.devom.app.utils.toColor
+import com.devom.app.utils.urlEncode
 import com.devom.models.auth.UserRequestResponse
 import com.devom.utils.Application
 import org.jetbrains.compose.resources.painterResource
@@ -56,6 +66,8 @@ fun RegisterMainScreen(
     viewModel: SignUpViewModel = SignUpViewModel(),
     code: String,
 ) {
+    var checked by remember { mutableStateOf(false) }
+
     val createUserStatus by viewModel.signUpState.collectAsStateWithLifecycle()
     var createUserRequest by remember {
         mutableStateOf(UserRequestResponse(mobileNo = phone.replace("-", ""), referralCode = code))
@@ -101,23 +113,80 @@ fun RegisterMainScreen(
                         ) {
                             createUserRequest.referralCode = it
                         }
+
+                        TermsAndConditionsCheckbox(
+                            checked = checked,
+                            onTermsClick = {
+                                val encodedUrl = "https://devom.co.in/terms-conditions".urlEncode()
+                                navController.navigate("${Screens.WebView.path}/$encodedUrl")
+                            },
+                            onCheckedChange = {
+                                checked = !checked
                     }
+                        )
                 }
-                RegisterButtonContent(viewModel, createUserRequest, navController)
+                }
+                RegisterButtonContent(viewModel, createUserRequest, navController , checked)
             }
         }
     )
 }
 
 @Composable
+fun TermsAndConditionsCheckbox(
+    checked: Boolean,
+    onCheckedChange: () -> Unit,
+    onTermsClick: () -> Unit,
+) {
+    val annotatedText = buildAnnotatedString {
+        append("I accept the ")
+
+        pushStringAnnotation(tag = "TERMS", annotation = "terms")
+        withStyle(
+            style = SpanStyle(
+                color = Color.Black,
+                fontWeight = FontWeight.Normal,
+                textDecoration = TextDecoration.Underline
+            )
+        ) {
+            append("Terms & Conditions")
+        }
+        pop()
+    }
+
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 24.dp)) {
+        Checkbox (
+            isChecked = checked,
+            onClick = onCheckedChange
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        ClickableText(
+            text = annotatedText,
+            style = TextStyle(color = Color.Black, fontSize = 16.sp),
+            onClick = { offset ->
+                annotatedText
+                    .getStringAnnotations(tag = "TERMS", start = offset, end = offset)
+                    .firstOrNull()
+                    ?.let { onTermsClick() }
+            }
+        )
+    }
+}
+
+
+@Composable
 fun RegisterButtonContent(
     viewModel: SignUpViewModel,
     createUserRequest: UserRequestResponse,
     navController: NavHostController,
+    checked: Boolean,
 ) {
     val requiredText = stringResource(Res.string.all_field_required)
     Column(modifier = Modifier.navigationBarsPadding().padding(horizontal = 16.dp)) {
         ButtonPrimary(
+            enabled = checked,
             fontStyle = text_style_lead_text,
             modifier = Modifier.fillMaxWidth().height(58.dp),
             onClick = {

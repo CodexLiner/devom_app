@@ -39,6 +39,7 @@ import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.UserProfilePicture
 import com.devom.app.ui.navigation.Screens
 import com.devom.app.utils.toColor
+import com.devom.app.utils.urlEncode
 import com.devom.models.auth.UserRequestResponse
 import com.devom.models.payment.GetWalletBalanceResponse
 import devom_app.composeapp.generated.resources.Res
@@ -47,10 +48,14 @@ import devom_app.composeapp.generated.resources.help_support
 import devom_app.composeapp.generated.resources.ic_help_support
 import devom_app.composeapp.generated.resources.ic_nav_bookings
 import devom_app.composeapp.generated.resources.ic_nav_wallet
+import devom_app.composeapp.generated.resources.ic_privacy_policy
+import devom_app.composeapp.generated.resources.ic_question_rounded
 import devom_app.composeapp.generated.resources.ic_refer
 import devom_app.composeapp.generated.resources.my_booking
 import devom_app.composeapp.generated.resources.my_wallet
+import devom_app.composeapp.generated.resources.privacy_policy
 import devom_app.composeapp.generated.resources.refer_earn
+import devom_app.composeapp.generated.resources.terms_and_conditions
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -98,6 +103,24 @@ internal fun NavigationDrawerContent(
             text = stringResource(Res.string.refer_earn)
         ) {
             appNavHostController.navigate(Screens.ReferAndEarn.path)
+            onDismiss()
+        }
+
+        DrawerItem(
+            painter = painterResource(Res.drawable.ic_privacy_policy),
+            text = stringResource(Res.string.privacy_policy)
+        ) {
+            val encodedUrl = "https://devom.co.in/privacy-policy".urlEncode()
+            appNavHostController.navigate("${Screens.WebView.path}/$encodedUrl")
+            onDismiss()
+        }
+
+        DrawerItem(
+            painter = painterResource(Res.drawable.ic_question_rounded),
+            text = stringResource(Res.string.terms_and_conditions)
+        ) {
+            val encodedUrl = "https://devom.co.in/terms-conditions".urlEncode()
+            appNavHostController.navigate("${Screens.WebView.path}/$encodedUrl")
             onDismiss()
         }
     }

@@ -88,7 +88,8 @@
     <string name="referral_message">🔥 Signup on Devom using my referral code <b>%1$s</b> and we both get rewarded! 📲 Click the link to join now:\n</string>
     <string name="search_contacts">Search Contacts</string>
 
-
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_and_conditions">Terms and Conditions</string>
 
 
 <!--    app side strings-->

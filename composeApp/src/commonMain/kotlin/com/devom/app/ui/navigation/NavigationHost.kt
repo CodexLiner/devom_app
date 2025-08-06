@@ -222,7 +222,7 @@ fun NavigationHost(
             route = Screens.WebView.path.plus("/{url}"),
             arguments = listOf(navArgument("url") { type = NavType.StringType })
         ) {
-            WebView(url = it.arguments?.getString("url").orEmpty())
+            WebView(navHostController = navController , url = it.arguments?.getString("url").orEmpty())
         }
     }
 }

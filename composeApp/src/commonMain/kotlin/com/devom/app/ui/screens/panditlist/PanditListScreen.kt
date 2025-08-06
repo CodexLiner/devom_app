@@ -419,7 +419,7 @@ fun PanditDetailsSheet(
                                 color = textBlackShade
                             )
                             Text(
-                                text = "About to be shown here after added",
+                                text = pandit?.aboutUs.orEmpty().ifBlank { "N/A" },
                                 style = text_style_lead_body_1,
                                 color = greyColor
                             )
@@ -431,7 +431,7 @@ fun PanditDetailsSheet(
                             selectedTabIndex = selectedIndex,
                             tabs = listOf(
                                 TabRowItem(title = "Reviews", icon = null),
-                                TabRowItem(title = "Videos", icon = null)
+                                TabRowItem(title = "Media", icon = null)
                             )
                         )
 
@@ -458,11 +458,17 @@ fun PanditDetailsSheet(
 
                                         }
                                     }
+
+                                    items(pandit?.photoUrls.orEmpty()) {
+                                        MediaItem(model = it, SupportedFiles.IMAGE.type) {
+
+                                        }
+                                    }
+
                                 }
                             }
                         }
                     }
-
                 }
 
                 ButtonPrimary(
