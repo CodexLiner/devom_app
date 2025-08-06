@@ -63,6 +63,7 @@ import com.devom.app.theme.whiteColor
 import com.devom.app.ui.components.AppBar
 import com.devom.app.ui.components.AsyncImage
 import com.devom.app.ui.components.ButtonPrimary
+import com.devom.app.ui.components.ImageViewer
 import com.devom.app.ui.components.NoContentView
 import com.devom.app.ui.components.RatingStars
 import com.devom.app.ui.components.StatusTabRow
@@ -75,6 +76,7 @@ import com.devom.app.utils.toDevomImage
 import com.devom.app.utils.toJsonString
 import com.devom.app.utils.toRupay
 import com.devom.app.utils.urlEncode
+import com.devom.models.pandit.Media
 import com.devom.models.pandit.Review
 import com.devom.models.pooja.GetPoojaResponse
 import com.devom.models.slots.GetAllPanditByPoojaIdResponse
@@ -364,6 +366,8 @@ fun PanditDetailsSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val selectedIndex = remember { mutableStateOf(0) }
+    val viewImage = remember { mutableStateOf(false) }
+    val selectedMedia = remember { mutableStateOf<Media?>(null) }
 
     if (showSheet) {
         ModalBottomSheet(
@@ -455,13 +459,21 @@ fun PanditDetailsSheet(
                                 ) {
                                     items(pandit?.videoUrls.orEmpty()) {
                                         MediaItem(model = it.url, SupportedFiles.VIDEO.type) {
-
+                                            viewImage.value = true
+                                            selectedMedia.value = Media(
+                                                documentUrl = it.url,
+                                                documentType = SupportedFiles.VIDEO.type
+                                            )
                                         }
                                     }
 
                                     items(pandit?.photoUrls.orEmpty()) {
                                         MediaItem(model = it, SupportedFiles.IMAGE.type) {
-
+                                            viewImage.value = true
+                                            selectedMedia.value = Media(
+                                                documentUrl = it,
+                                                documentType = SupportedFiles.IMAGE.type
+                                            )
                                         }
                                     }
 
@@ -485,6 +497,8 @@ fun PanditDetailsSheet(
             }
         }
     }
+    ImageViewer(viewImage, selectedMedia)
+
 }
 
 
