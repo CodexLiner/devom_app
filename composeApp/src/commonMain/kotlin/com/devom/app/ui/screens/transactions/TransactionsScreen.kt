@@ -107,7 +107,7 @@ fun TransactionsScreenContent(
 fun TransactionDetailContent(transactions: List<WalletTransaction>) {
     val groupedTransactions = transactions.groupBy { it.createdAt.convertIsoToDate()?.toLocalDateTime()?.date.toString() }
     LazyColumn(
-        contentPadding = PaddingValues(bottom = 200.dp)
+        contentPadding = PaddingValues(bottom = 100.dp)
     ) {
         groupedTransactions.forEach { (date, transactions) ->
             item {

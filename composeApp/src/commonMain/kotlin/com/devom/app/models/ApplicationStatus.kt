@@ -31,8 +31,7 @@ fun String.getColor(): Color = when (this) {
     ApplicationStatus.UPCOMING.status, -> warningColor
 
     ApplicationStatus.REJECTED.status,
-    ApplicationStatus.CANCELLED.status,
-        -> errorColor
+    ApplicationStatus.CANCELLED.status, -> errorColor
 
     ApplicationStatus.PAST.status -> neutralColor
     else -> secondaryColor

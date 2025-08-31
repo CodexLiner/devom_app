@@ -3,7 +3,6 @@ package com.devom.app.ui.screens.home
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,8 +10,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -41,23 +39,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import co.touchlab.kermit.Logger
 import com.devom.app.UNREAD_NOTIFICATION
 import com.devom.app.firebase.MyFirebaseMessagingService
 import com.devom.app.settings
 import com.devom.app.theme.backgroundColor
 import com.devom.app.theme.blackColor
 import com.devom.app.theme.primaryColor
-import com.devom.app.theme.textBlackShade
-import com.devom.app.theme.text_style_h4
 import com.devom.app.theme.text_style_h5
 import com.devom.app.theme.text_style_lead_text
 import com.devom.app.theme.whiteColor
@@ -77,7 +68,6 @@ import com.devom.network.getUser
 import com.russhwolf.settings.get
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_grid_cells
-import devom_app.composeapp.generated.resources.ic_music
 import devom_app.composeapp.generated.resources.ic_notification
 import devom_app.composeapp.generated.resources.ic_pray
 import devom_app.composeapp.generated.resources.ic_search
@@ -145,7 +135,7 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
                 poojaList.distinctBy { it.category.lowercase() }.map {
                     TabRowItem(
                         it.category,
-                        if (it.category.lowercase() == "pooja") Res.drawable.ic_pray else Res.drawable.ic_music
+                        if (it.category.lowercase() == "pooja") Res.drawable.ic_pray else Res.drawable.ic_pray
                     )
                 }
             )
@@ -208,14 +198,20 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
         }
 
         LazyColumn(
-            contentPadding = PaddingValues(bottom = 200.dp),
+            contentPadding = PaddingValues(bottom = 100.dp),
             modifier = Modifier.animateContentSize()
         ) {
             item {
                 if (selectedTabIndex.value == 0) {
                     HomeScreenAllContent(navHostController)
                 } else {
+                    val selectedTitle = tabs.getOrNull(selectedTabIndex.value)?.title.orEmpty()
+                    val banner = poojaList.find {
+                        it.category.equals(selectedTitle, ignoreCase = true)
+                    }?.categoryImage.orEmpty()
+
                     PoojaContent(
+                        banner = banner,
                         poojaList = filteredList,
                         title = tabs.getOrNull(selectedTabIndex.value)?.title.orEmpty(),
                         onClick = navigateToPanditList
@@ -261,19 +257,37 @@ fun HomeScreenContent(viewModel: HomeScreenViewModel, navHostController: NavHost
 }
 
 @Composable
-fun HomeScreenBanner(banners: List<BannersResponse> , onClick : (Int) -> Unit) {
+fun HomeScreenBanner(
+    banners: List<BannersResponse>,
+    onClick: (Int) -> Unit
+) {
+    if (banners.isEmpty()) return
+
     BoxWithConstraints {
         val width = maxWidth
+        val startIndex = remember(banners) {
+            val midpoint = Int.MAX_VALUE / 2
+            midpoint - (midpoint % banners.size)
+        }
+        val listState = rememberLazyListState(initialFirstVisibleItemIndex = startIndex)
+
         LazyRow(
+            state = listState,
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(banners) {
-                BannerItem(it, width = width , onClick)
+            items(count = Int.MAX_VALUE, key = { it }) { virtualIndex ->
+                val realIndex = virtualIndex % banners.size
+                BannerItem(
+                    banner = banners[realIndex],
+                    width = width,
+                    onClick = onClick
+                )
             }
         }
     }
 }
+
 
 @Composable
 fun BannerItem(banner: BannersResponse, width: Dp , onClick : (Int) -> Unit) {

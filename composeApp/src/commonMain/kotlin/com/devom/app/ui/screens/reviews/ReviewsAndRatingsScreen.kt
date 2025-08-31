@@ -91,7 +91,7 @@ fun ReviewListContent(list: State<List<Review>>) {
         return
     }
 
-    LazyColumn(contentPadding = PaddingValues(start = 16.dp , end = 16.dp , top = 16.dp , bottom = 200.dp)) {
+    LazyColumn(contentPadding = PaddingValues(start = 16.dp , end = 16.dp , top = 16.dp , bottom = 100.dp)) {
         item {
             ReviewsGraph(list.value)
         }
@@ -221,10 +221,10 @@ fun ReviewerDetailRow(review: Review) {
             RatingStars(modifier = Modifier.padding(top = 4.dp), rating = review.rating.toFloat())
         }
 
-        Image(
-            painter = painterResource(Res.drawable.vertical_ellipsis),
-            contentDescription = "Options",
-        )
+//        Image(
+//            painter = painterResource(Res.drawable.vertical_ellipsis),
+//            contentDescription = "Options",
+//        )
     }
 }
 

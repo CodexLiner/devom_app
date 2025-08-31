@@ -69,7 +69,7 @@ fun HelpAndSupportDetailScreenContent(viewModel: HelpAndSupportViewModel) {
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(start = 16.dp , end = 16.dp, top = 24.dp , bottom = 200.dp)
+            contentPadding = PaddingValues(start = 16.dp , end = 16.dp, top = 24.dp , bottom = 100.dp)
         ) {
             item {
                 TicketHeader(ticketCode = ticket.ticketCode, date = date)

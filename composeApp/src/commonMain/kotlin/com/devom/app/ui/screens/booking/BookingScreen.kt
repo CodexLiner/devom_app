@@ -150,7 +150,7 @@ fun BookingScreen(navHostController: NavHostController, onNavigationIconClick: (
                     start = 16.dp,
                     end = 16.dp,
                     top = 16.dp,
-                    bottom = 200.dp
+                    bottom = 100.dp
                 ),
                 modifier = Modifier.fillMaxSize()
             ) {

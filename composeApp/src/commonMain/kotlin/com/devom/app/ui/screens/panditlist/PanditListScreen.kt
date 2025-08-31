@@ -178,7 +178,7 @@ fun ColumnScope.PanditListScreenContent(
                 top = 12.dp,
                 start = 16.dp,
                 end = 12.dp,
-                bottom = 200.dp
+                bottom = 100.dp
             )
         ) {
             items(filteredPanditList.value.filter { it.fullName.contains(searchText.value, true) }) { pandit ->
