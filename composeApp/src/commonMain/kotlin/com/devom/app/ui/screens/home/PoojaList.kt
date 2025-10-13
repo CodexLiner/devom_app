@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,10 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.devom.app.theme.greenColor
 import com.devom.app.theme.greyColor
 import com.devom.app.theme.textBlackShade
 import com.devom.app.theme.whiteColor
@@ -57,7 +58,7 @@ fun PoojaCard(pooja: GetPoojaResponse, onClick: () -> Unit = {}) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(vertical = 16.dp , horizontal = 6.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -66,14 +67,23 @@ fun PoojaCard(pooja: GetPoojaResponse, onClick: () -> Unit = {}) {
                     modifier = Modifier.size(84.dp),
                 )
             }
-            Text(
-                text = pooja.name,
-                color = textBlackShade,
-                fontSize = 14.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontWeight = FontWeight.W500
-            )
+
+            Box(
+                modifier = Modifier.fillMaxWidth().height(40.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = pooja.name,
+                    color = textBlackShade,
+                    fontSize = 14.sp,
+                    lineHeight = 18.sp,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.W500
+                )
+            }
+
         }
     }
 }
