@@ -43,6 +43,7 @@ import com.devom.utils.date.convertToAmPm
 import devom_app.composeapp.generated.resources.Res
 import devom_app.composeapp.generated.resources.ic_invoice
 import devom_app.composeapp.generated.resources.vertical_ellipsis
+import devom_app.composeapp.generated.resources.vertical_ellipsis_disabled
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -133,16 +134,15 @@ fun BookingUserDetail(
             ApplicationStatus.STARTED.status
         )
 
-        val (icon, onClick) = when {
-            booking.status == ApplicationStatus.COMPLETED.status -> {
-                Res.drawable.ic_invoice to onReviewClick
-            }
-            booking.status !in excludedStatuses -> {
+        val (icon, onClick) = when (booking.status) {
+            ApplicationStatus.COMPLETED.status -> Res.drawable.ic_invoice to onReviewClick
+            !in excludedStatuses -> {
                 Res.drawable.vertical_ellipsis to {
                     expanded = true
                 }
             }
-            else -> null to {}
+
+            else -> Res.drawable.vertical_ellipsis_disabled to {}
         }
 
        if (isDetails.not()) {

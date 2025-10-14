@@ -39,7 +39,7 @@ val settings = Settings()
 @Composable
 internal fun App() = AppTheme {
     val isLoggedIn by AuthManager.isLoggedIn.collectAsState()
-    PaymentSheet.setApiKey("rzp_test_Zj1CPzIAHZ4lwN")
+    PaymentSheet.setApiKey("rzp_live_RT39hYDDmlGci6")
 
     // Configure network only once when the user logs in
     LaunchedEffect(isLoggedIn) {
@@ -133,6 +133,7 @@ object AuthManager {
                 Logger.d("ON_LOGOUT") { "user has been logged out" }
                 logout()
             }
+            enableLogging = false
             addHeaders {
                 append(UUID_KEY, uuid.orEmpty())
                 append(APPLICATION_ID , "com.devom.app")

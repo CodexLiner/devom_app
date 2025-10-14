@@ -15,7 +15,7 @@ const val UUID_KEY = "uuid"
 const val APPLICATION_ID = "applicationId"
 const val IMAGE_BASE_URL = "https://imageserver.devom.co.in/uploads/"
 const val DOCUMENT_BASE_URL = "https://imageserver.devom.co.in/uploads/documents/"
-const val BASE_URL = "https://devom-api-bold-smoke-8130.fly.dev"
+const val BASE_URL = "https://api.devom.co.in"
 const val ASSET_LINK_BASE_URL = "https://devom.co.in/app/"
 
 val RatingColors = listOf(

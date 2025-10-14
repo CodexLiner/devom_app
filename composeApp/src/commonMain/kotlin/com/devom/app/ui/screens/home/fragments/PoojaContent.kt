@@ -52,12 +52,12 @@ fun PoojaContent(
                             .matchParentSize()
                             .background(textBlackShade.copy(alpha = 0.3f))
                     )
-                    Text(
-                        text = "$title\nBooking",
-                        textAlign = TextAlign.Center,
-                        style = text_style_h4,
-                        color = whiteColor
-                    )
+//                    Text(
+//                        text = "$title\nBooking",
+//                        textAlign = TextAlign.Center,
+//                        style = text_style_h4,
+//                        color = whiteColor
+//                    )
                 }
             } else {
                 PatternDesign(modifier = Modifier)

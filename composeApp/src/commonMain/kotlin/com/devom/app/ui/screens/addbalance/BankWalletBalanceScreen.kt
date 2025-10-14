@@ -207,7 +207,7 @@ fun ColumnScope.BankWalletScreenContent(
                 }
 
                 PaymentSheet.onError = { _, _, data ->
-                    Application.showToast("Payment Failed ${data?.paymentId}")
+                    Application.showToast("Payment Failed ${data?.paymentId.orEmpty()}")
                 }
 
             } else {
