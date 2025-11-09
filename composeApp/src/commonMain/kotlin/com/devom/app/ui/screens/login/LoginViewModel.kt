@@ -40,7 +40,7 @@ class LoginViewModel : ViewModel() {
             Project.user.generateOtpUseCase.invoke(mobileNumber).collect {
                 it.onResult {
                     onOtpSent()
-                    if (mobileNumber == "6232883446") showToast("otp sent successfully ${it.data.otp}")
+                    if (mobileNumber == "9752353415") showToast("otp sent successfully ${it.data.otp}")
                 }
             }
         }
